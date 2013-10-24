@@ -5,11 +5,11 @@ Hummingbird.me Desktop App
 
 Index
 ==========================
-*[Classes](#classes)
-*[Notes](#notes)
-*[Src Requirements](#src-requirements)
-*[Building Src](#building-src)
-*[Copyright Info](#copyright-info)
+* [Classes](#classes)  
+* [Notes](#notes)  
+* [Src Requirements](#src-requirements)  
+* [Building Src](#building-src)  
+* [Copyright Info](#copyright-info)  
 
 
 Classes

@@ -83,7 +83,7 @@ Arguments such as the nomake ones are optional.
 The -opengl argument is also optional.
 The platfrom argument varies depending on the platform and the compiler.
 
-OpenSSL Libraries must be downloaded (get it from https://www.openssl.org/).
+OpenSSL Libraries must be downloaded (get it from https://www.openssl.org/).  
 **Note:** The libeay33 and the ssleay32 dlls will need to be copied to the application folder
 
 For more detail on static building visit https://qt-project.org/doc/qt-5.0/qtdoc/deployment.html.

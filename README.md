@@ -3,12 +3,18 @@ Ouroboros
 
 Hummingbird.me Desktop App
 
-## Index
+Index
+==========================
+*[Classes](#classes)
+*[Notes](#notes)
+*[Src Requirements](#src-requirements)
+*[Building Src](#building-src)
+*[Copyright Info](#copyright-info)
 
 
+Classes
+============================
 
-## Classes
-  
 **AnimeDatabase** - Main database which contains all functions to access single entities  
 **AnimeEntity** - Hold all anime data and user data for a specific anime  
 **ApiManager** - Class which links Ouroboros with the Hummingbird Api  
@@ -19,12 +25,13 @@ Hummingbird.me Desktop App
 **QueueWorker** - A Worker method which is used in conjunction with a thread to run QueueItems asynchronously  
 **ThreadManager** - Class which handles creation and deletion of threads within the application  
 
-### Classes not included  
+## Classes not included  
   
 **Private** - Header file which holds private information such as the Ma-shape key  
   
-## Notes  
-  
+Notes  
+===========================
+
 Ouroboros uses extern classes, meaning that some classes are global such as the apimanager and they won't need to be initialised manually.  
   
 Here is the list of classes that are global and their equivilent variable:  
@@ -43,7 +50,8 @@ Here are the list of current namespaces:
 * Manager  
 * Ui - Default Qt namespace  
 
-## Src Requirements
+Src Requirements
+=======================================
 
 Ouroboros is programmed in QT, so you will need to donwload it.
 You can download it from here: https://qt-project.org/
@@ -51,7 +59,8 @@ You can download it from here: https://qt-project.org/
 <b>Note:</b> This src is built using Windows 7, If you would like to build it for Mac or Linux, you are free to do so,
 but some code might need to be ported (Most of it should work as intended since Qt is cross-platfrom)
 
-## Building Src
+Building Src
+============================================
 
 If you would like to build a custom version of Ouroboros you can do it two ways.
 
@@ -79,7 +88,8 @@ OpenSSL Libraries must be downloaded (get it from https://www.openssl.org/).
 
 For more detail on static building visit https://qt-project.org/doc/qt-5.0/qtdoc/deployment.html.
 
-##Copyright info
+Copyright info
+==================================================================
 
 Copyright (C) 2010-2013 Mikunj Varsani
 

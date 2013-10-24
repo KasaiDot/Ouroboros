@@ -75,7 +75,8 @@ The Ouroboros source was built using the static libraries of Qt.
 The build configuration was as follows for Windows 7:
 
 <code>configure.bat -static -release -prefix [Path to qt folder]/qtbase -nomake test -nomake examples </code>
-<code> -nomake demos -opengl desktop -platform win32-g++ -openssl -L \<openssl folder path\>\lib -I \<openssl folder path\>\include </code>
+<code> -nomake demos -opengl desktop -platform win32-g++ -openssl -L \<openssl folder path\>\lib </code>
+<code> -I \<openssl folder path\>\include </code>
   
 This configuration will allow you to statically build release versions of Ouroboros.
 Arguments such as the nomake ones are optional.

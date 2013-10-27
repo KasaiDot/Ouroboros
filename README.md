@@ -18,12 +18,15 @@ Classes
 **AnimeDatabase** - Main database which contains all functions to access single entities  
 **AnimeEntity** - Hold all anime data and user data for a specific anime  
 **ApiManager** - Class which links Ouroboros with the Hummingbird Api  
+**FileManager** - Class which handles all loading and saving in Ouroboros  
 **Globals** - Holds global values which are tweakable  
 **Ouroboros** - Main entry point into the program  
 **QueueItem** - Single queue entity which is used by QueueManager  
 **QueueManager** - Class that handles queueing of user actions such as authenticating user, getting library etc...  
-**QueueWorker** - A Worker method which is used in conjunction with a thread to run QueueItems asynchronously  
-**ThreadManager** - Class which handles creation and deletion of threads within the application  
+**QueueWorker** - A Worker method which is used in conjunction with a thread to run QueueItems asynchronously
+**Settings** - Holds all settings of Ouroboros  
+**ThreadManager** - Class which handles creation and deletion of threads within the application 
+**User** - Class which holds user information such as username and password
 
 ## Classes not included  
   
@@ -48,7 +51,11 @@ Here are the list of current namespaces:
 * Anime  
 * Queue  
 * Manager  
-* Ui - Default Qt namespace  
+* Ui - Default Qt namespace 
+
+You may also notice that sometimes objects are created (A *a = new A) but they aren't deleted.  
+The reason is because Qt uses a parent-child heirarchy whereby if an object (must be derived from QObject) has a parent, that object will automatically be deleted upon deletion of the parent object.  
+Any objects that don't have a parent or those which do not derive from QObject must be manually deleted.  
 
 Src Requirements
 =======================================

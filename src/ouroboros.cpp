@@ -23,6 +23,8 @@
 #include <QDebug>
 
 #include "animeentity.h"
+#include "settings.h"
+#include "filemanager.h"
 
 Ouroboros::Ouroboros(QWidget *parent) :
     QMainWindow(parent),
@@ -40,6 +42,9 @@ Ouroboros::Ouroboros(QWidget *parent) :
 
     Anime_Database.AddAnime(a);
     qDebug() << Anime_Database.GetDatabaseSize();
+
+    CurrentUser.SetUserDetails("foo","bar");
+    File_Manager.SaveUserInformation();
 
 }
 

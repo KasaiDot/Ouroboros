@@ -29,7 +29,6 @@
 
 namespace Manager
 {
-
 class ApiManager : public QObject
 {
     Q_OBJECT

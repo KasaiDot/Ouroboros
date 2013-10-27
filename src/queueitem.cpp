@@ -30,7 +30,7 @@ QueueItem::QueueItem(QObject *parent, ItemType Type) :
 
 int QueueItem::Run()
 {
-
+    return 1;
 }
 
 /*************************************************

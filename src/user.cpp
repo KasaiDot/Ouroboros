@@ -16,30 +16,26 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "queueworker.h"
+#include "user.h"
 
-using namespace Queue;
+User CurrentUser;
 
-QueueWorker::QueueWorker(QList<QueueItem *> &Queue) :
-    Queue(Queue)
+User::User():
+    Username(""),
+    Password(""),
+    Authenticated(false),
+    AuthKey("")
 {
-
 }
 
-/*******************************************************
- * Runs through each item in the queue
- * If the item was run successfully it will delete it
- * if not then it will stay in the queue
- *******************************************************/
-void QueueWorker::Run()
+/*****************************************************************************
+ * Sets user details, where user is either the email or username of the user
+ * and Base64Password is user password encoded in Base64
+ ****************************************************************************/
+void User::SetUserDetails(QString Username, QString Base64Password)
 {
-    foreach (QueueItem* Item, Queue)
-    {
-        int Code = Item->Run();
-
-        if(Code == QueueItem::ItemReturn_Success)
-            emit DeleteQueueItem(Item);
-    }
-
-    emit Finished();
+    this->Username = Username;
+    this->Password = Base64Password;
+    SetAuthenticated(false);
+    SetAuthKey("");
 }

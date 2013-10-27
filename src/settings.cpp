@@ -16,30 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "queueworker.h"
+#include "settings.h"
 
-using namespace Queue;
+OuroborosSettings Settings;
 
-QueueWorker::QueueWorker(QList<QueueItem *> &Queue) :
-    Queue(Queue)
-{
-
-}
-
-/*******************************************************
- * Runs through each item in the queue
- * If the item was run successfully it will delete it
- * if not then it will stay in the queue
- *******************************************************/
-void QueueWorker::Run()
-{
-    foreach (QueueItem* Item, Queue)
-    {
-        int Code = Item->Run();
-
-        if(Code == QueueItem::ItemReturn_Success)
-            emit DeleteQueueItem(Item);
-    }
-
-    emit Finished();
-}

@@ -16,30 +16,19 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "queueworker.h"
+#ifndef SETTINGS_H
+#define SETTINGS_H
 
-using namespace Queue;
-
-QueueWorker::QueueWorker(QList<QueueItem *> &Queue) :
-    Queue(Queue)
+class OuroborosSettings
 {
+public:
 
-}
+    //Basic functions
+    bool Load();
+    bool Save();
 
-/*******************************************************
- * Runs through each item in the queue
- * If the item was run successfully it will delete it
- * if not then it will stay in the queue
- *******************************************************/
-void QueueWorker::Run()
-{
-    foreach (QueueItem* Item, Queue)
-    {
-        int Code = Item->Run();
+};
 
-        if(Code == QueueItem::ItemReturn_Success)
-            emit DeleteQueueItem(Item);
-    }
+extern OuroborosSettings Settings;
 
-    emit Finished();
-}
+#endif // SETTINGS_H

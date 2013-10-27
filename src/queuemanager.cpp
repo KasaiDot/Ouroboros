@@ -18,6 +18,8 @@
 
 #include "queuemanager.h"
 
+#include <QTimer>
+
 #include "threadmanager.h"
 
 using namespace Queue;
@@ -28,6 +30,11 @@ QueueManager::QueueManager(QObject *parent) :
     QObject(parent),
     Running(false)
 {
+    //Setup a timer to run the queue every 10 minutes
+    //Note: currently giving errors
+    QTimer *RunTimer = new QTimer(this);
+    connect(RunTimer,SIGNAL(timeout()),this,SLOT(Run()));
+    RunTimer->start(600000);
 }
 
 QueueManager::~QueueManager()
@@ -57,7 +64,10 @@ void QueueManager::Run()
     connect(Worker,SIGNAL(Finished()),Worker,SLOT(deleteLater()));
 
     //Make sure not to manually delete the thread, instead send it to the thread manager to delete
-    connect(Thread,&QThread::finished,[=](){ Thread_Manager.DeleteThread(Thread); Running = false;});
+    connect(Thread,&QThread::finished,[=](){
+                                             Thread_Manager.DeleteThread(Thread);
+                                             Running = false;
+                                           });
 
 }
 

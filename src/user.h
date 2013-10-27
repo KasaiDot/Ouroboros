@@ -16,44 +16,36 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef QUEUEMANAGER_H
-#define QUEUEMANAGER_H
+#ifndef USER_H
+#define USER_H
 
 #include <QObject>
 
-#include "queueitem.h"
-#include "queueworker.h"
-
-namespace Queue
+class User
 {
-
-class QueueManager : public QObject
-{
-    Q_OBJECT
 public:
-    explicit QueueManager(QObject *parent = 0);
-    ~QueueManager();
+    User();
+    void SetUserDetails(QString Username, QString Base64Password);
+    inline void SetAuthenticated(bool isAuthenticated) { Authenticated = isAuthenticated; }
+    inline void SetAuthKey(QString Key) { AuthKey = Key; }
+
+
+    bool isValid() const { return (!(Username.isEmpty() && Password.isEmpty())); }
+    bool isAuthenticated() const { return Authenticated; }
+    QString GetUsername() const { return Username; }
+    QString GetBase64Password() const { return Password; }
+    QString GetAuthKey() const { return AuthKey; }
 
 private:
 
-    //Main Queue
-    QList<QueueItem*> ItemQueue;
-    QueueWorker *Worker;
+    QString Username;//Email or Username
+    QString Password; //Password in base64 encoding
 
-    bool Running;
-
-signals:
-
-public slots:
-    void Run();
-
-    //Basic list functions
-    void AddItem(QueueItem* Item);
-    void DeleteItem(QueueItem* Item);
+    QString AuthKey;
+    bool Authenticated;
 
 };
 
-}
+extern User CurrentUser;
 
-extern Queue::QueueManager Queue_Manager;
-#endif // QUEUEMANAGER_H
+#endif // USER_H

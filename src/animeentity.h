@@ -34,10 +34,11 @@ class UserAnimeInformation
 public:
     UserAnimeInformation();
 
-
     //****************************************** Setters and Getter methods *********************************************************************/
     int GetEpisodesWatched() const { return EpisodesWatched; }
-    inline void SetEpisodesWatched(int EpisodeCount) { EpisodesWatched = EpisodeCount; }
+    inline void SetEpisodesWatched(int EpisodeCount) { if((EpisodeCount <= AnimeEpisodes) && (EpisodeCount >= 0)) EpisodesWatched = EpisodeCount; }
+    inline void IncrementEpisodeCount() { if(EpisodesWatched + 1 <= AnimeEpisodes) EpisodesWatched++; }
+    inline void DecrementEpisodeCount() { if(EpisodesWatched - 1 >= 0) EpisodesWatched--; }
 
     QDateTime GetLastWatched() const { return LastWatched; }
     inline void SetLastWatched(QDateTime Time) { LastWatched = Time; }
@@ -66,6 +67,8 @@ public:
     int GetRatingValue() const { return RatingValue; }
     inline void SetRatingValue(int Rating) { RatingValue = Rating; }
 
+    inline void SetAnimeEpisodes(int Count) { AnimeEpisodes = Count; }
+
 private:
 
     /*** User specific information ***/
@@ -80,6 +83,9 @@ private:
     bool Rewatching;
     QString RatingType;
     int RatingValue;
+
+    //Number of anime episodes
+    int AnimeEpisodes;
 
 };
 
@@ -105,6 +111,7 @@ public:
         if(GetAnimeEpisodeCount() == ANIMEENTITY_UNKNOWNE_EPISODE) return;
         if(UserInfo.GetEpisodesWatched() > GetAnimeEpisodeCount())
             UserInfo.SetEpisodesWatched(GetAnimeEpisodeCount());
+        Info.SetAnimeEpisodes(GetAnimeEpisodeCount());
     }
 
     QString GetAnimeSlug() const { return AnimeSlug; }

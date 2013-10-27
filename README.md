@@ -43,6 +43,8 @@ Here is the list of classes that are global and their equivilent variable:
 * **ApiManager** - Api_Manager  
 * **QueueManager** - Queue_Manager  
 * **ThreadManager** - Thread_Manager  
+* **FileManager** - File_Manager
+* **User** - CurrentUser
   
 You may also notice that classes have been put into namespaces. This is used to group classes based on what they are part of or what they do, E.g apimanager is part of managers  
   

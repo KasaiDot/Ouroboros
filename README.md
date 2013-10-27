@@ -25,7 +25,7 @@ Classes
 **QueueManager** - Class that handles queueing of user actions such as authenticating user, getting library etc...  
 **QueueWorker** - A Worker method which is used in conjunction with a thread to run QueueItems asynchronously
 **Settings** - Holds all settings of Ouroboros  
-**ThreadManager** - Class which handles creation and deletion of threads within the application 
+**ThreadManager** - Class which handles creation and deletion of threads within the application  
 **User** - Class which holds user information such as username and password
 
 ## Classes not included  

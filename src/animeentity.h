@@ -24,6 +24,7 @@
 #include <QObject>
 #include <QStringList>
 #include <QDateTime>
+#include <QJsonDocument>
 
 namespace Anime
 {
@@ -98,8 +99,12 @@ public:
     //Compares the titles of two entities, if they are the same it returns true
     bool CompareTitle(AnimeEntity &Entity);
 
-    // Override '==' operator so that we can compare entities
+    //Override '==' operator so that we can compare entities
     bool operator ==(const AnimeEntity &Other);
+
+    //Constructs json documents for saving
+    QJsonDocument BuildAnimeJsonDocument();
+    QJsonDocument BuildUserJsonDocument();
 
     //****************************************** Setters and Getter methods *********************************************************************/
 
@@ -143,6 +148,7 @@ public:
 
     QStringList GetAnimeGenres() const { return AnimeGenres; }
     inline void SetAnimeGenres(QStringList Genres) { AnimeGenres = Genres; }
+    inline void AddAnimeGenre(QString Genre) { if(!Genre.isEmpty()) AnimeGenres.append(Genre); }
 
 
 private:

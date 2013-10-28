@@ -35,7 +35,10 @@ FileManager::FileManager()
 
     //Dirs
     FileManagerInfo.UserFolderPath = "/Users/";
-    FileManagerInfo.UserAnimePath = FileManagerInfo.UserFolderPath + "<user>/Anime"; // <user> can be replaced easily with the user's Username
+    FileManagerInfo.DatabaseFolderPath = "/Database/";
+    FileManagerInfo.UserAnimePath = FileManagerInfo.UserFolderPath + "<user>/Anime/"; // <user> can be replaced easily with the user's Username
+    FileManagerInfo.DatabaseAnimePath = FileManagerInfo.DatabaseFolderPath + "Anime/";
+
 }
 
 /********************************************************
@@ -85,4 +88,49 @@ bool FileManager::SaveUserInformation()
     File.close();
 
     return true;
+}
+
+/*******************************
+ * Save an anime entity to file
+ ******************************/
+bool FileManager::SaveAnimeEntity(Anime::AnimeEntity *Entity, bool SaveUserInfo)
+{
+    //Filename will always be the slug of the anime
+    QString Filename = Entity->GetAnimeSlug().append(".json");
+
+    //UserInfo
+    if(SaveUserInfo)
+    {
+        if(!CurrentUser.isValid()) return false;
+        QJsonDocument UserJson = Entity->BuildUserJsonDocument();
+
+        //prepare file
+        QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.UserAnimePath;
+        Filepath.replace(QString("<user>"),CurrentUser.GetUsername());
+
+        CheckDir(Filepath);
+
+        QFile UserFile(Filepath.append(Filename));
+        if(!UserFile.open(QIODevice::WriteOnly))
+            return false;
+
+        UserFile.write(UserJson.toJson());
+        UserFile.close();
+    }
+
+    //AnimeInfo
+    QJsonDocument AnimeJson = Entity->BuildAnimeJsonDocument();
+    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.DatabaseAnimePath;
+
+    CheckDir(Filepath);
+
+    QFile AnimeFile(Filepath.append(Filename));
+    if(!AnimeFile.open(QIODevice::WriteOnly))
+        return false;
+
+    AnimeFile.write(AnimeJson.toJson());
+    AnimeFile.close();
+
+    return true;
+
 }

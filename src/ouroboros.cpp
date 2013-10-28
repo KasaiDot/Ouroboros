@@ -37,7 +37,9 @@ Ouroboros::Ouroboros(QWidget *parent) :
     qsrand((uint)CurrentTime.msec());
 
     /** Testing save **/
+
     CurrentUser.SetUserDetails("User","pass");
+
 
     Anime::AnimeEntity *a = new Anime::AnimeEntity();
     a->SetAnimeSlug("cowboy-bepop");
@@ -67,7 +69,14 @@ Ouroboros::Ouroboros(QWidget *parent) :
 
     a->SetUserInfo(UserInfo);
 
-    File_Manager.SaveAnimeEntity(a);
+    Anime_Database.AddAnime(a);
+    File_Manager.SaveAnimeDatabase();
+
+    //File_Manager.SaveAnimeEntity(a);
+
+    //File_Manager.LoadAnimeDatabase();
+    //qDebug() << Anime_Database.GetDatabaseSize();
+
 }
 
 Ouroboros::~Ouroboros()

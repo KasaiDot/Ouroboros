@@ -57,7 +57,7 @@ public:
     //Each anime entity will have its' own file with user info
     //Using this method, we don't have to save all of the anime entities if just one has to be saved
     //Same thing applies for loading, if there is an error loading an entity, then we don't have to load everything, instead we just load that entity
-    bool SaveAnimeDatabase();
+    void SaveAnimeDatabase();
     bool SaveAnimeEntity(Anime::AnimeEntity *Entity, bool SaveUserInfo = true);
     bool SaveApiResponse(QString Response, QString Filename); //Used for saving anime lists
     bool SaveAnimeImage(QString AnimeSlug, QByteArray &Data);

@@ -19,6 +19,8 @@
 #include "animedatabase.h"
 
 #include <QApplication>
+#include <QVariantMap>
+#include <QVariantList>
 
 using namespace Anime;
 
@@ -47,6 +49,18 @@ AnimeDatabase::~AnimeDatabase()
  *****************************************************/
 void AnimeDatabase::AddAnime(AnimeEntity *Anime)
 {
+    //if anime exits then check if the last watched date is more recent
+    if(Database.contains(Anime->GetAnimeSlug()))
+    {
+        AnimeEntity *OldAnime = GetAnime(Anime->GetAnimeSlug());
+        if(OldAnime->GetUserInfo().GetLastWatched() < Anime->GetUserInfo().GetLastWatched())
+        {
+            //Move the userinfo of the old anime to the new one, incase the new anime information has been updated
+            UserAnimeInformation OldInfo = Anime->GetUserInfo();
+            Anime->SetUserInfo(OldInfo);
+        }
+    }
+
     Database.insert(Anime->GetAnimeSlug(),Anime);
 }
 
@@ -71,7 +85,6 @@ bool AnimeDatabase::RemoveAnime(AnimeEntity *Anime)
 
 /*******************************************************
  * Retrieves anime from the database based on the slug
- *
  * Should be used in conjunction with 'Contains'
  *******************************************************/
 AnimeEntity* AnimeDatabase::GetAnime(QString Slug) const
@@ -99,4 +112,60 @@ QString AnimeDatabase::GetAnimeSlug(QString Title)
     }
 
     return Slug;
+}
+
+/********************************************
+ * Gets the json data from the library
+ * or from file and turns it into an entity
+ *******************************************/
+void AnimeDatabase::ParseJson(QByteArray Data)
+{
+    QJsonDocument Doc = QJsonDocument::fromJson(Data);
+    QVariantMap UserInfoMap = Doc.toVariant().toMap();
+    QVariantMap AnimeInfoMap = UserInfoMap.value("anime").toMap();
+
+    //Check wether we have a slug value
+    if(!AnimeInfoMap.contains("slug")) return;
+
+    //User info
+    UserAnimeInformation UserInfo;
+    UserInfo.SetEpisodesWatched(UserInfoMap.value("episodes_watched",0).toInt());
+    UserInfo.SetLastWatched(QDateTime::fromString(UserInfoMap.value("last_watched",QDateTime::currentDateTime().toString("yyyy-dd-MMThh:mm:ssZ")).toString(),"yyyy-dd-MMThh:mm:ssZ"));
+    UserInfo.SetRewatchedTimes(UserInfoMap.value("rewatched_times",0).toInt());
+    UserInfo.SetNotes(UserInfoMap.value("notes","").toString());
+    UserInfo.SetNotePresent(UserInfoMap.value("notes_present",false).toBool());
+    UserInfo.SetStatus(UserInfoMap.value("status","unknown").toString());
+    UserInfo.SetPrivate(UserInfoMap.value("private",false).toBool());
+    UserInfo.SetRewatching(UserInfoMap.value("rewatching",false).toBool());
+    UserInfo.SetRatingType(UserInfoMap.value("rating").toMap().value("type","basic").toString());
+    UserInfo.SetRatingValue(UserInfoMap.value("rating").toMap().value("value",-1).toInt());
+
+    //Anime info
+    AnimeEntity *Entity = new AnimeEntity();
+    Entity->SetAnimeSlug(AnimeInfoMap.value("slug","").toString());
+    Entity->SetAnimeStatus(AnimeInfoMap.value("status","unknown").toString());
+    Entity->SetAnimeUrl(AnimeInfoMap.value("url","").toString());
+    Entity->SetAnimeTitle(AnimeInfoMap.value("title","").toString());
+    Entity->SetAnimeAlternateTitle(AnimeInfoMap.value("alternate_title","").toString());
+    Entity->SetAnimeEpisodeCount(AnimeInfoMap.value("episode_count",-1).toInt());
+    Entity->SetAnimeImage(AnimeInfoMap.value("cover_image","").toString());
+    Entity->SetAnimeSynopsis(AnimeInfoMap.value("synopsis","").toString());
+    Entity->SetAnimeShowType(AnimeInfoMap.value("show_type","").toString());
+
+    //Go through each genre
+    if(AnimeInfoMap.contains("genres"))
+    {
+        QVariantList GenreList = AnimeInfoMap.value("genres").toList();
+        foreach(QVariant Genre, GenreList)
+        {
+            QVariantMap GenreMap = Genre.toMap();
+            Entity->AddAnimeGenre(GenreMap.value("name").toString());
+        }
+    }
+
+    Entity->SetUserInfo(UserInfo);
+
+    //Now add it to the list
+    AddAnime(Entity);
+
 }

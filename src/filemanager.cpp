@@ -90,6 +90,20 @@ bool FileManager::SaveUserInformation()
     return true;
 }
 
+/***********************************************
+ * Cycles through every entity in the database
+ * and calls SaveAnimeEntity
+ **********************************************/
+void FileManager::SaveAnimeDatabase()
+{
+    QList<Anime::AnimeEntity*> AnimeList = Anime_Database.GetAnimeEntities();
+    for(QList<Anime::AnimeEntity*>::Iterator AnimeIt = AnimeList.begin(); AnimeIt != AnimeList.end(); ++AnimeIt)
+    {
+        SaveAnimeEntity((*AnimeIt));
+    }
+
+}
+
 /*******************************
  * Save an anime entity to file
  ******************************/
@@ -133,4 +147,80 @@ bool FileManager::SaveAnimeEntity(Anime::AnimeEntity *Entity, bool SaveUserInfo)
 
     return true;
 
+}
+
+/**************************************************************
+ * Gets the list of all the anime in the /<user>/Anime folder
+ * and uses the filename to call LoadAnimeEntity
+ *************************************************************/
+bool FileManager::LoadAnimeDatabase()
+{
+    if(!CurrentUser.isValid()) return false;
+
+    //Get File List
+    QString DirPath = QApplication::applicationDirPath() + FileManagerInfo.UserAnimePath;
+    DirPath.replace(QString("<user>"),CurrentUser.GetUsername());
+    QDir UserDir(DirPath);
+
+    if(!UserDir.exists()) return false;
+
+    QStringList Filters;
+    Filters << "*.json";
+    QFileInfoList FileList = UserDir.entryInfoList(Filters);
+    if(FileList.size() == 0) return false;
+
+    foreach (QFileInfo File, FileList)
+    {
+        qDebug() << File.completeBaseName();
+        QString Slug = File.completeBaseName(); //Gets the name of the file without the .json
+        LoadAnimeEntity(Slug);
+    }
+
+    return true;
+}
+
+/*******************************************************
+ * Gets anime info and user info from file
+ * and combines them, then passes them to the database
+ ******************************************************/
+bool FileManager::LoadAnimeEntity(QString Slug)
+{
+    if(!CurrentUser.isValid()) return false;
+
+    //Get the user and anime files
+    QString Filename = Slug + ".json";
+
+    QString UserFilePath = QApplication::applicationDirPath() + FileManagerInfo.UserAnimePath;
+    UserFilePath.replace(QString("<user>"),CurrentUser.GetUsername());
+
+    QString AnimeFilePath = QApplication::applicationDirPath() + FileManagerInfo.DatabaseAnimePath;
+
+    QFile UserFile(UserFilePath.append(Filename));
+    QFile AnimeFile(AnimeFilePath.append(Filename));
+
+    //Check wether they exist
+    //TODO: if anime file is not found, then get it via the api
+    if(!(UserFile.exists() || AnimeFile.exists())) return false;
+
+    //Read files
+    if(!UserFile.open(QIODevice::ReadOnly)) return false;
+    QByteArray UserArray = UserFile.readAll();
+    UserFile.close();
+
+    if(!AnimeFile.open(QIODevice::ReadOnly)) return false;
+    QByteArray AnimeArray = AnimeFile.readAll();
+    AnimeFile.close();
+
+    //We have to combine the arrays before parsing it
+    QJsonObject UserObject(QJsonObject::fromVariantMap(QJsonDocument::fromJson(UserArray).toVariant().toMap()));
+    QJsonObject AnimeObject(QJsonObject::fromVariantMap(QJsonDocument::fromJson(AnimeArray).toVariant().toMap()));
+
+    QJsonValue AnimeValue(AnimeObject);
+    UserObject.insert("anime",AnimeValue);
+
+    //Now we can pass it to the database to handle
+    QJsonDocument Doc(UserObject);
+    Anime_Database.ParseJson(Doc.toJson());
+
+    return true;
 }

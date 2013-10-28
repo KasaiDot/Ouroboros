@@ -46,6 +46,7 @@ public:
 
     //Note: May take out and replace with more specific functions
     inline QMap<QString,AnimeEntity*> *GetDatabase() { return &Database; }
+    inline QList<AnimeEntity*> GetAnimeEntities() { return Database.values(); }
 
     //Removes item from the DB and returns it
     AnimeEntity* TakeAnime(QString Slug) { return Database.take(Slug); }
@@ -54,7 +55,7 @@ public:
     QString GetAnimeSlug(QString Title);
 
     //Parses JSON data recieved from the api and creates a list
-    void ParseJson(QString Data);
+    void ParseJson(QByteArray Data);
 
 private:
 

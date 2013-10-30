@@ -19,7 +19,7 @@
 #ifndef ANIMEENTITY_H
 #define ANIMEENTITY_H
 
-#define ANIMEENTITY_UNKNOWNE_EPISODE -1
+#define ANIMEENTITY_UNKNOWN_EPISODE -1
 
 #include <QObject>
 #include <QStringList>
@@ -38,7 +38,7 @@ public:
     //****************************************** Setters and Getter methods *********************************************************************/
     int GetEpisodesWatched() const { return EpisodesWatched; }
     inline void SetEpisodesWatched(int EpisodeCount) { if((EpisodeCount <= AnimeEpisodes) && (EpisodeCount >= 0)) EpisodesWatched = EpisodeCount; }
-    inline void IncrementEpisodeCount() { if(EpisodesWatched + 1 <= AnimeEpisodes) EpisodesWatched++; }
+    inline void IncrementEpisodeCount() { if(EpisodesWatched + 1 <= AnimeEpisodes || AnimeEpisodes < 0) EpisodesWatched++; }
     inline void DecrementEpisodeCount() { if(EpisodesWatched - 1 >= 0) EpisodesWatched--; }
 
     QDateTime GetLastWatched() const { return LastWatched; }
@@ -113,7 +113,7 @@ public:
     {
         UserInfo = Info;
         //Check that the current episode is less than the anime episodes
-        if(GetAnimeEpisodeCount() == ANIMEENTITY_UNKNOWNE_EPISODE) return;
+        if(GetAnimeEpisodeCount() == ANIMEENTITY_UNKNOWN_EPISODE) return;
         if(UserInfo.GetEpisodesWatched() > GetAnimeEpisodeCount())
             UserInfo.SetEpisodesWatched(GetAnimeEpisodeCount());
         Info.SetAnimeEpisodes(GetAnimeEpisodeCount());

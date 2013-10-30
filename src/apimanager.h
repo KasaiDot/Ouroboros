@@ -56,8 +56,8 @@ private:
         Call_GetLibrary
     };
 
-    QNetworkReply* DoHttpGet(QNetworkAccessManager *NetworkManager, QUrl const &Url);
-    QNetworkReply* DoHttpPost(QNetworkAccessManager *NetworkManager, QUrl const &Url, QString Data);
+    QNetworkReply* DoHttpGet(QNetworkAccessManager *NetworkManager, QUrl const &Url, bool HummingbirdHeader = true);
+    QNetworkReply* DoHttpPost(QNetworkAccessManager *NetworkManager, QUrl const &Url, QString Data, bool HummingbirdHeader = true);
 
     ApiReturnStatus ProcessReply(QNetworkReply *Reply, ApiCall Call);
 

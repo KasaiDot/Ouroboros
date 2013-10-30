@@ -147,7 +147,7 @@ void AnimeDatabase::ParseJson(QByteArray Data)
     Entity->SetAnimeUrl(AnimeInfoMap.value("url","").toString());
     Entity->SetAnimeTitle(AnimeInfoMap.value("title","").toString());
     Entity->SetAnimeAlternateTitle(AnimeInfoMap.value("alternate_title","").toString());
-    Entity->SetAnimeEpisodeCount(AnimeInfoMap.value("episode_count",-1).toInt());
+    Entity->SetAnimeEpisodeCount(AnimeInfoMap.value("episode_count",ANIMEENTITY_UNKNOWN_EPISODE).toInt());
     Entity->SetAnimeImage(AnimeInfoMap.value("cover_image","").toString());
     Entity->SetAnimeSynopsis(AnimeInfoMap.value("synopsis","").toString());
     Entity->SetAnimeShowType(AnimeInfoMap.value("show_type","").toString());

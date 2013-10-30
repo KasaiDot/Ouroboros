@@ -20,6 +20,7 @@
 #define OUROBOROS_H
 
 #include <QMainWindow>
+#include <QTabWidget>
 
 #include "threadmanager.h"
 #include "animedatabase.h"
@@ -36,6 +37,9 @@ class Ouroboros : public QMainWindow
 public:
     explicit Ouroboros(QWidget *parent = 0);
     ~Ouroboros();
+
+    //Get Functions
+    QTabWidget* GetMainTabWidget();
 
 private:
     Ui::Ouroboros *ui;

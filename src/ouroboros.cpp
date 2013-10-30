@@ -19,12 +19,14 @@
 #include "ouroboros.h"
 #include "ui_ouroboros.h"
 
-#include <QTime>
+#include <QTimer>
 #include <QDebug>
 
 #include "animeentity.h"
 #include "settings.h"
 #include "filemanager.h"
+#include "queuemanager.h"
+#include "guimanager.h"
 
 Ouroboros::Ouroboros(QWidget *parent) :
     QMainWindow(parent),
@@ -32,14 +34,21 @@ Ouroboros::Ouroboros(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //Set the ui for the manager
+    GUI_Manager.SetMainWindow(this);
+
     //Generate a random seed
     QTime CurrentTime = QTime::currentTime();
     qsrand((uint)CurrentTime.msec());
 
+    //Setup a timer to run the queue every 10 minutes
+    QTimer *RunTimer = new QTimer(this);
+    connect(RunTimer,SIGNAL(timeout()),&Queue_Manager,SLOT(Run()));
+    RunTimer->start(600000);
+
     /** Testing save **/
 
     CurrentUser.SetUserDetails("User","pass");
-
 
     Anime::AnimeEntity *a = new Anime::AnimeEntity();
     a->SetAnimeSlug("cowboy-bepop");
@@ -82,4 +91,9 @@ Ouroboros::Ouroboros(QWidget *parent) :
 Ouroboros::~Ouroboros()
 {
     delete ui;
+}
+/************************************ Getter functions ****************************************/
+QTabWidget *Ouroboros::GetMainTabWidget()
+{
+    return ui->MainTabWidget;
 }

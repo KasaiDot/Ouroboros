@@ -45,15 +45,16 @@ ApiManager::ApiReturnStatus ApiManager::ProcessReply(QNetworkReply *Reply, ApiMa
     return Api_Success;
 }
 
-/**************************************************************************
+/***************************************************************************
  * This functions sends out a GET call and returns the reply once recieved
- **************************************************************************/
-QNetworkReply *ApiManager::DoHttpGet(QNetworkAccessManager *NetworkManager, const QUrl &Url)
+ ***************************************************************************/
+QNetworkReply *ApiManager::DoHttpGet(QNetworkAccessManager *NetworkManager, const QUrl &Url, bool HummingbirdHeader)
 {
     QNetworkRequest Request(Url);
 
     //Set the hummingbird api headers
-    Request.setRawHeader("X-Mashape-Authorization",HUMMINGBIRD_API_KEY);
+    if(HummingbirdHeader)
+        Request.setRawHeader("X-Mashape-Authorization",HUMMINGBIRD_API_KEY);
 
     QNetworkReply *Reply = NetworkManager->get(Request);
 
@@ -65,15 +66,16 @@ QNetworkReply *ApiManager::DoHttpGet(QNetworkAccessManager *NetworkManager, cons
     return Reply;
 }
 
-/**************************************************************************
+/***************************************************************************
  * This functions sends out a POST call and returns the reply once recieved
- **************************************************************************/
-QNetworkReply *ApiManager::DoHttpPost(QNetworkAccessManager *NetworkManager, const QUrl &Url, QString Data)
+ ***************************************************************************/
+QNetworkReply *ApiManager::DoHttpPost(QNetworkAccessManager *NetworkManager, const QUrl &Url, QString Data, bool HummingbirdHeader)
 {
     QNetworkRequest Request(Url);
 
     //Set the hummingbird api headers
-    Request.setRawHeader("X-Mashape-Authorization",HUMMINGBIRD_API_KEY);
+    if(HummingbirdHeader)
+        Request.setRawHeader("X-Mashape-Authorization",HUMMINGBIRD_API_KEY);
 
     QNetworkReply *Reply = NetworkManager->post(Request,Data.toUtf8());
 

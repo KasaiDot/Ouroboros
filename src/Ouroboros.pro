@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     queueworker.cpp \
     settings.cpp \
     user.cpp \
-    filemanager.cpp
+    filemanager.cpp \
+    guimanager.cpp
 
 HEADERS  += ouroboros.h \
     threadmanager.h \
@@ -39,6 +40,7 @@ HEADERS  += ouroboros.h \
     private.h \
     settings.h \
     user.h \
-    filemanager.h
+    filemanager.h \
+    guimanager.h
 
 FORMS    += ouroboros.ui

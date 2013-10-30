@@ -30,11 +30,6 @@ QueueManager::QueueManager(QObject *parent) :
     QObject(parent),
     Running(false)
 {
-    //Setup a timer to run the queue every 10 minutes
-    //Note: currently giving errors
-    QTimer *RunTimer = new QTimer(this);
-    connect(RunTimer,SIGNAL(timeout()),this,SLOT(Run()));
-    RunTimer->start(600000);
 }
 
 QueueManager::~QueueManager()

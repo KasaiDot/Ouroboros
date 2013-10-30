@@ -1,24 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>Ouroboros</class>
- <widget class="QMainWindow" name="Ouroboros" >
-  <property name="geometry" >
+ <widget class="QMainWindow" name="Ouroboros">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>762</width>
+    <height>536</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Ouroboros</string>
   </property>
-  <widget class="QMenuBar" name="menuBar" />
-  <widget class="QToolBar" name="mainToolBar" />
-  <widget class="QWidget" name="centralWidget" />
-  <widget class="QStatusBar" name="statusBar" />
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QTabWidget" name="MainTabWidget">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>30</y>
+      <width>571</width>
+      <height>411</height>
+     </rect>
+    </property>
+    <property name="tabShape">
+     <enum>QTabWidget::Rounded</enum>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <property name="documentMode">
+     <bool>true</bool>
+    </property>
+    <widget class="QWidget" name="Tab_CurrentlyWatching">
+     <attribute name="title">
+      <string>Currently watching</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="Tab_Completed">
+     <attribute name="title">
+      <string>Completed</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="Tab_OnHold">
+     <attribute name="title">
+      <string>On hold</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="Tab_PlanToWatch">
+     <attribute name="title">
+      <string>Plan to watch</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="Tab_Dropped">
+     <attribute name="title">
+      <string>Dropped</string>
+     </attribute>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="MainMenuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>762</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="MainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="MainStatusBar"/>
  </widget>
- <layoutDefault spacing="6" margin="11" />
- <pixmapfunction></pixmapfunction>
+ <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
 </ui>

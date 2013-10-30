@@ -15,22 +15,23 @@ Index
 Classes
 ============================
 
-**AnimeDatabase** - Main database which contains all functions to access single entities  
-**AnimeEntity** - Hold all anime data and user data for a specific anime  
-**ApiManager** - Class which links Ouroboros with the Hummingbird Api  
-**FileManager** - Class which handles all loading and saving in Ouroboros  
-**Globals** - Holds global values which are tweakable  
-**Ouroboros** - Main entry point into the program  
-**QueueItem** - Single queue entity which is used by QueueManager  
+**AnimeDatabase** - Main database which contains all functions to access single entities.  
+**AnimeEntity** - Hold all anime data and user data for a specific anime.  
+**ApiManager** - Class which links Ouroboros with the Hummingbird Api.  
+**FileManager** - Class which handles all loading and saving in Ouroboros.  
+**Globals** - Holds global values which are tweakable.  
+**GUIManager** - Class which acts like an interface between the ui and the data.  
+**Ouroboros** - Main entry point into the program.  
+**QueueItem** - Single queue entity which is used by QueueManager.  
 **QueueManager** - Class that handles queueing of user actions such as authenticating user, getting library etc...  
-**QueueWorker** - A Worker method which is used in conjunction with a thread to run QueueItems asynchronously  
-**Settings** - Holds all settings of Ouroboros  
-**ThreadManager** - Class which handles creation and deletion of threads within the application  
-**User** - Class which holds user information such as username and password
+**QueueWorker** - A Worker method which is used in conjunction with a thread to run QueueItems asynchronously.  
+**Settings** - Holds all settings of Ouroboros.  
+**ThreadManager** - Class which handles creation and deletion of threads within the application.  
+**User** - Class which holds user information such as username and password.
 
 ## Classes not included  
   
-**Private** - Header file which holds private information such as the Ma-shape key  
+**Private** - Header file which holds private information such as the Ma-shape key.  
   
 Notes  
 ===========================
@@ -44,7 +45,8 @@ Here is the list of classes that are global and their equivilent variable:
 * **QueueManager** - Queue_Manager  
 * **ThreadManager** - Thread_Manager  
 * **FileManager** - File_Manager
-* **User** - CurrentUser
+* **User** - CurrentUser  
+* **GUIManager** - GUI_Manager
   
 You may also notice that classes have been put into namespaces. This is used to group classes based on what they are part of or what they do, E.g apimanager is part of managers  
   

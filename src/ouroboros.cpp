@@ -34,6 +34,8 @@ Ouroboros::Ouroboros(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    SetViewLayouts();
+
     //Set the ui for the manager
     GUI_Manager.SetMainWindow(this);
 
@@ -81,10 +83,13 @@ Ouroboros::Ouroboros(QWidget *parent) :
     Anime_Database.AddAnime(a);
     File_Manager.SaveAnimeDatabase();
 
+    GUI_Manager.PopulateModel();
+
     //File_Manager.SaveAnimeEntity(a);
 
     //File_Manager.LoadAnimeDatabase();
     //qDebug() << Anime_Database.GetDatabaseSize();
+
 
 }
 
@@ -92,8 +97,49 @@ Ouroboros::~Ouroboros()
 {
     delete ui;
 }
+
+/*****************************************************
+ * Function sets the view so it fills up the tab page
+ *****************************************************/
+void Ouroboros::SetViewLayouts()
+{
+    ui->MainTabWidget->widget(TAB_CURRENTLY_WATCHING)->setLayout(ui->Layout_CurrentlyWatching);
+    ui->MainTabWidget->widget(TAB_COMPLETED)->setLayout(ui->Layout_Completed);
+    ui->MainTabWidget->widget(TAB_DROPPED)->setLayout(ui->Layout_Dropped);
+    ui->MainTabWidget->widget(TAB_ON_HOLD)->setLayout(ui->Layout_OnHold);
+    ui->MainTabWidget->widget(TAB_PLAN_TO_WATCH)->setLayout(ui->Layout_PlanToWatch);
+}
+
 /************************************ Getter functions ****************************************/
 QTabWidget *Ouroboros::GetMainTabWidget()
 {
     return ui->MainTabWidget;
+}
+
+QTreeView *Ouroboros::GetView(Ouroboros::Views Type)
+{
+    switch(Type)
+    {
+        case CurrentlyWatching:
+            return ui->View_CurrentlyWatching;
+        break;
+
+        case OnHold:
+           return ui->View_OnHold;
+        break;
+
+        case PlanToWatch:
+            return ui->View_PlanToWatch;
+        break;
+
+        case Dropped:
+            return ui->View_Dropped;
+        break;
+
+        case Completed:
+            return ui->View_Completed;
+        break;
+    }
+
+    return  nullptr;
 }

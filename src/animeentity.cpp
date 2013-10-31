@@ -41,7 +41,7 @@ AnimeEntity::AnimeEntity():
 /***************************************************************************
  * This functions copies values from the entity provided to the new entity
  ***************************************************************************/
-AnimeEntity::AnimeEntity(const AnimeEntity &Entity)
+AnimeEntity::AnimeEntity( AnimeEntity &Entity)
 {
     SetAnimeAlternateTitle(Entity.GetAnimeAlternateTitle());
     SetAnimeEpisodeCount(Entity.GetAnimeEpisodeCount());
@@ -53,7 +53,8 @@ AnimeEntity::AnimeEntity(const AnimeEntity &Entity)
     SetAnimeSynopsis(Entity.GetAnimeSynopsis());
     SetAnimeTitle(Entity.GetAnimeTitle());
     SetAnimeUrl(Entity.GetAnimeUrl());
-    SetUserInfo(Entity.GetUserInfo());
+    UserAnimeInformation *Info = Entity.GetUserInfo();
+    SetUserInfo(*Info);
 }
 
 /**************************************************************************
@@ -78,8 +79,6 @@ bool AnimeEntity::operator ==(const AnimeEntity &Other)
 
     return false;
 }
-
-
 
 /*****************************************************************
  * These functions construct Json documents for the filemanager
@@ -190,8 +189,6 @@ QJsonDocument AnimeEntity::BuildUserJsonDocument()
     return UserDoc;
 
 }
-
-
 
 //******************************************************************************************************
 

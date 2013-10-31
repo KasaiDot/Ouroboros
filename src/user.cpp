@@ -34,7 +34,7 @@ User::User():
  ****************************************************************************/
 void User::SetUserDetails(QString Username, QString Base64Password)
 {
-    this->Username = Username;
+    this->Username = Username.toLower();
     this->Password = Base64Password;
     SetAuthenticated(false);
     SetAuthKey("");

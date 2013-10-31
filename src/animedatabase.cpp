@@ -53,11 +53,11 @@ void AnimeDatabase::AddAnime(AnimeEntity *Anime)
     if(Database.contains(Anime->GetAnimeSlug()))
     {
         AnimeEntity *OldAnime = GetAnime(Anime->GetAnimeSlug());
-        if(OldAnime->GetUserInfo().GetLastWatched() < Anime->GetUserInfo().GetLastWatched())
+        if(OldAnime->GetUserInfo()->GetLastWatched() < Anime->GetUserInfo()->GetLastWatched())
         {
             //Move the userinfo of the old anime to the new one, incase the new anime information has been updated
-            UserAnimeInformation OldInfo = Anime->GetUserInfo();
-            Anime->SetUserInfo(OldInfo);
+            UserAnimeInformation *OldInfo = Anime->GetUserInfo();
+            Anime->SetUserInfo(*OldInfo);
         }
     }
 
@@ -167,5 +167,23 @@ void AnimeDatabase::ParseJson(QByteArray Data)
 
     //Now add it to the list
     AddAnime(Entity);
+
+}
+
+/*************************************************
+ * Splits json data up and calls parse json
+ * used when you have multiple anime information
+ *************************************************/
+void AnimeDatabase::ParseMultipleJson(QByteArray Data)
+{
+
+    QJsonDocument MainDoc = QJsonDocument::fromJson(Data);
+    QVariantList AnimeList = MainDoc.toVariant().toList();
+
+    foreach(QVariant Variant,AnimeList)
+    {
+       QJsonDocument Doc = QJsonDocument::fromVariant(Variant);
+       ParseJson(Doc.toJson());
+    }
 
 }

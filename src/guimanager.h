@@ -59,7 +59,7 @@
 #include "ouroboros.h"
 
 /********************************* Delegates *****************************************************/
-// A Delegate is basically a control which we cqan embed into a view, E.g, in a torrent application
+// A Delegate is basically a control which we can embed into a view, E.g, in a torrent application
 // we would use a delegate to add a progress bar to the view
 
 //Progress Bar
@@ -108,8 +108,11 @@ public:
         {
             if(UserEpisodeCount > AnimeEpisodeCount)
                 UserEpisodeCount = AnimeEpisodeCount;
+
+            ProgressBar.maximum = AnimeEpisodeCount;
         } else {
             AnimeEpisodeText = "-";
+            ProgressBar.maximum = UserEpisodeCount + 50;
         }
 
         QString UserEpisodeText = QString::number(UserEpisodeCount);
@@ -247,7 +250,7 @@ private:
     QSortFilterProxyModel *Filter_Search;
 
     //Functions
-    void SetViewHeaders();
+    void SetModelHeaders();
     void SetUpFilters();
     void SetUpDelegates();
 

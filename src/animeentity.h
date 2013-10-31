@@ -24,6 +24,7 @@
 #include <QObject>
 #include <QStringList>
 #include <QDateTime>
+#include <QDebug>
 #include <QJsonDocument>
 
 namespace Anime
@@ -37,7 +38,7 @@ public:
 
     //****************************************** Setters and Getter methods *********************************************************************/
     int GetEpisodesWatched() const { return EpisodesWatched; }
-    inline void SetEpisodesWatched(int EpisodeCount) { if((EpisodeCount <= AnimeEpisodes) && (EpisodeCount >= 0)) EpisodesWatched = EpisodeCount; }
+    inline void SetEpisodesWatched(int EpisodeCount) { if(((EpisodeCount <= AnimeEpisodes) && (EpisodeCount >= 0)) || (AnimeEpisodes < 0)) EpisodesWatched = EpisodeCount; }
     inline void IncrementEpisodeCount() { if(EpisodesWatched + 1 <= AnimeEpisodes || AnimeEpisodes < 0) EpisodesWatched++; }
     inline void DecrementEpisodeCount() { if(EpisodesWatched - 1 >= 0) EpisodesWatched--; }
 
@@ -94,7 +95,7 @@ class AnimeEntity
 {
 public:
     AnimeEntity();
-    AnimeEntity(const AnimeEntity &Entity);
+    AnimeEntity(AnimeEntity &Entity);
 
     //Compares the titles of two entities, if they are the same it returns true
     bool CompareTitle(AnimeEntity &Entity);
@@ -108,7 +109,7 @@ public:
 
     //****************************************** Setters and Getter methods *********************************************************************/
 
-    UserAnimeInformation GetUserInfo() const { return UserInfo; }
+    UserAnimeInformation *GetUserInfo() { return &UserInfo; } //Return a pointer as to not make a copy of the information
     inline void SetUserInfo(UserAnimeInformation Info)
     {
         UserInfo = Info;

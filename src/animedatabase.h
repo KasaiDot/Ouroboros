@@ -56,6 +56,7 @@ public:
 
     //Parses JSON data recieved from the api and creates a list
     void ParseJson(QByteArray Data);
+    void ParseMultipleJson(QByteArray Data);
 
 private:
 

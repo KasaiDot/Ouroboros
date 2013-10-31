@@ -18,6 +18,9 @@
 
 #include "guimanager.h"
 #include "animedatabase.h"
+#include "filemanager.h"
+
+#include <QHeaderView>
 
 using namespace Manager;
 GUIManager GUI_Manager;
@@ -27,10 +30,6 @@ GUIManager::GUIManager(QObject *parent) :
 {
     //Set up the models
     DataModel = new QStandardItemModel(this);
-
-    SetViewHeaders();
-    SetUpFilters();
-    SetUpDelegates();
 }
 
 /******************************************************
@@ -45,6 +44,11 @@ void GUIManager::SetMainWindow(Ouroboros *Main)
 
     //Set defaults
     TabChanged(0);
+
+    //Setup required items
+    SetUpDelegates();
+    SetUpFilters();
+    SetModelHeaders();
 }
 
 /********************************************
@@ -76,15 +80,21 @@ void GUIManager::AddAnime(Anime::AnimeEntity *Entity)
     //We need to create 5 seperate items then add them to the Datamodel
     QStandardItem *Item_Name = new QStandardItem(Entity->GetAnimeTitle());
     QStandardItem *Item_Progress = new QStandardItem();
-    QStandardItem *Item_Rating = new QStandardItem(Entity->GetUserInfo().GetRatingValue());
+    QStandardItem *Item_Rating = new QStandardItem(Entity->GetUserInfo()->GetRatingValue());
     QStandardItem *Item_Type = new QStandardItem(Entity->GetAnimeShowType());
+
+    if(Entity->GetUserInfo()->GetRatingValue() < 0)
+        Item_Rating->setText("-");
 
     //Set the slug, user episode count, etc
     Item_Name->setData(Entity->GetAnimeSlug(),ROLE_ANIME_SLUG);
-    Item_Name->setData(Entity->GetUserInfo().GetStatus(),ROLE_USER_STATUS);
+    Item_Name->setData(Entity->GetUserInfo()->GetStatus(),ROLE_USER_STATUS);
 
     Item_Progress->setData(Entity->GetAnimeEpisodeCount(),ROLE_ANIME_EPISODES);
-    Item_Progress->setData(Entity->GetUserInfo().GetEpisodesWatched(),ROLE_USER_EPISODES);
+    Item_Progress->setData(Entity->GetUserInfo()->GetEpisodesWatched(),ROLE_USER_EPISODES);
+
+    Item_Rating->setTextAlignment(Qt::AlignHCenter);
+    Item_Type->setTextAlignment(Qt::AlignHCenter);
 
     //Add items to the model
     QList<QStandardItem *> ItemList;
@@ -108,17 +118,25 @@ void GUIManager::UpdateAnime(QStandardItem *Item, Anime::AnimeEntity *Entity)
     QStandardItem *Item_Rating = DataModel->item(Item->row(),HEADER_RATING);
     QStandardItem *Item_Type = DataModel->item(Item->row(),HEADER_SHOW_TYPE);
 
+    QString ItemRating = (Entity->GetUserInfo()->GetRatingValue() < 0) ? "-" : QString::number(Entity->GetUserInfo()->GetRatingValue());
+
     //set the text
     Item_Name->setText(Entity->GetAnimeTitle());
-    Item_Rating->setText(QString::number(Entity->GetUserInfo().GetRatingValue()));
+    Item_Rating->setText(ItemRating);
     Item_Type->setText(Entity->GetAnimeShowType());
+
+    Item_Rating->setTextAlignment(Qt::AlignHCenter);
+    Item_Type->setTextAlignment(Qt::AlignHCenter);
 
     //set data
     Item_Name->setData(Entity->GetAnimeSlug(),ROLE_ANIME_SLUG);
-    Item_Name->setData(Entity->GetUserInfo().GetStatus(),ROLE_USER_STATUS);
+    Item_Name->setData(Entity->GetUserInfo()->GetStatus(),ROLE_USER_STATUS);
 
     Item_Progress->setData(Entity->GetAnimeEpisodeCount(),ROLE_ANIME_EPISODES);
-    Item_Progress->setData(Entity->GetUserInfo().GetEpisodesWatched(),ROLE_USER_EPISODES);
+    Item_Progress->setData(Entity->GetUserInfo()->GetEpisodesWatched(),ROLE_USER_EPISODES);
+
+    //Save the anime
+    File_Manager.SaveAnimeEntity(Entity,true);
 }
 
 void GUIManager::UpdateAnime(QModelIndex Index, Anime::AnimeEntity *Entity)
@@ -145,15 +163,16 @@ void GUIManager::UpdateAnime(Anime::AnimeEntity *Entity)
  ***********************************************************************************************************/
 void GUIManager::ProgressBarButtonClicked(QModelIndex Index, ProgressDelegate::Button Type)
 {
+
     QString AnimeSlug = DataModel->item(Index.row(),HEADER_NAME)->data(ROLE_ANIME_SLUG).toString();
     Anime::AnimeEntity *Entity = Anime_Database.GetAnime(AnimeSlug);
 
     if(Type == ProgressDelegate::Plus)
     {
-        Entity->GetUserInfo().IncrementEpisodeCount();
+        Entity->GetUserInfo()->IncrementEpisodeCount();
     } else if(Type == ProgressDelegate::Minus)
     {
-        Entity->GetUserInfo().DecrementEpisodeCount();
+        Entity->GetUserInfo()->DecrementEpisodeCount();
     }
 
     //Update the view
@@ -178,18 +197,23 @@ void GUIManager::TabChanged(int Tab)
     switch(Tab)
     {
         case TAB_COMPLETED:
+            CurrentView = MainWindow->GetView(Ouroboros::Completed);
         break;
 
         case TAB_CURRENTLY_WATCHING:
+            CurrentView = MainWindow->GetView(Ouroboros::CurrentlyWatching);
         break;
 
         case TAB_DROPPED:
+            CurrentView = MainWindow->GetView(Ouroboros::Dropped);
         break;
 
         case TAB_ON_HOLD:
+            CurrentView = MainWindow->GetView(Ouroboros::OnHold);
         break;
 
         case TAB_PLAN_TO_WATCH:
+            CurrentView = MainWindow->GetView(Ouroboros::PlanToWatch);
         break;
     }
 }
@@ -197,11 +221,16 @@ void GUIManager::TabChanged(int Tab)
 /**********************************
  * Sets the headers on the views
  *********************************/
-void GUIManager::SetViewHeaders()
+void GUIManager::SetModelHeaders()
 {
     QStringList Headers;
-    Headers << "Name" << "Progress" << "Rating" << "Type";
+    Headers.append(QString("Name"));
+    Headers.append(QString("Progress"));
+    Headers.append(QString("Rating"));
+    Headers.append(QString("Type"));
+    //Headers << "Name" << "Progress" << "Rating" << "Type";
 
+    DataModel->setHorizontalHeaderLabels(Headers);
 }
 
 /*********************************************
@@ -219,26 +248,31 @@ void GUIManager::SetUpFilters()
     Filter_Completed->setSourceModel(DataModel);
     Filter_Completed->setFilterRole(ROLE_USER_STATUS);
     Filter_Completed->setFilterRegExp(FILTERTEXT_COMPLETED);
+    MainWindow->GetView(Ouroboros::Completed)->setModel(Filter_Completed);
 
     Filter_Dropped = new QSortFilterProxyModel(this);
     Filter_Dropped->setSourceModel(DataModel);
     Filter_Dropped->setFilterRole(ROLE_USER_STATUS);
     Filter_Dropped->setFilterRegExp(FILTERTEXT_DROPPED);
+    MainWindow->GetView(Ouroboros::Dropped)->setModel(Filter_Dropped);
 
     Filter_CurrentlyWatching = new QSortFilterProxyModel(this);
     Filter_CurrentlyWatching->setSourceModel(DataModel);
     Filter_CurrentlyWatching->setFilterRole(ROLE_USER_STATUS);
     Filter_CurrentlyWatching->setFilterRegExp(FILTERTEXT_CURRENTLY_WATCHING);
+    MainWindow->GetView(Ouroboros::CurrentlyWatching)->setModel(Filter_CurrentlyWatching);
 
     Filter_OnHold = new QSortFilterProxyModel(this);
     Filter_OnHold->setSourceModel(DataModel);
     Filter_OnHold->setFilterRole(ROLE_USER_STATUS);
     Filter_OnHold->setFilterRegExp(FILTERTEXT_ON_HOLD);
+    MainWindow->GetView(Ouroboros::OnHold)->setModel(Filter_OnHold);
 
     Filter_PlanToWatch = new QSortFilterProxyModel(this);
     Filter_PlanToWatch->setSourceModel(DataModel);
     Filter_PlanToWatch->setFilterRole(ROLE_USER_STATUS);
     Filter_PlanToWatch->setFilterRegExp(FILTERTEXT_PLAN_TO_WATCH);
+    MainWindow->GetView(Ouroboros::PlanToWatch)->setModel(Filter_PlanToWatch);
 
     //The search filter is special, in the sense that we just need to
     //create it and set it's source model, and when the user types into the search box
@@ -259,6 +293,12 @@ void GUIManager::SetUpDelegates()
 
     //Progress bar
     ProgressDelegate *ProgressBar = new ProgressDelegate(this);
+
+    MainWindow->GetView(Ouroboros::CurrentlyWatching)->setItemDelegateForColumn(HEADER_PROGRESS,ProgressBar);
+    MainWindow->GetView(Ouroboros::OnHold)->setItemDelegateForColumn(HEADER_PROGRESS,ProgressBar);
+    MainWindow->GetView(Ouroboros::Completed)->setItemDelegateForColumn(HEADER_PROGRESS,ProgressBar);
+    MainWindow->GetView(Ouroboros::Dropped)->setItemDelegateForColumn(HEADER_PROGRESS,ProgressBar);
+    MainWindow->GetView(Ouroboros::PlanToWatch)->setItemDelegateForColumn(HEADER_PROGRESS,ProgressBar);
 
     //connect signals and slots
     connect(ProgressBar,SIGNAL(ButtonClicked(QModelIndex,ProgressDelegate::Button)),this,SLOT(ProgressBarButtonClicked(QModelIndex,ProgressDelegate::Button)));

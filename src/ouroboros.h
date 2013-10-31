@@ -21,6 +21,7 @@
 
 #include <QMainWindow>
 #include <QTabWidget>
+#include <QTreeView>
 
 #include "threadmanager.h"
 #include "animedatabase.h"
@@ -38,8 +39,22 @@ public:
     explicit Ouroboros(QWidget *parent = 0);
     ~Ouroboros();
 
+    //Views
+    enum Views
+    {
+        CurrentlyWatching,
+        OnHold,
+        Dropped,
+        Completed,
+        PlanToWatch
+    };
+
+    //Fills the tabs with the view
+    void SetViewLayouts();
+
     //Get Functions
     QTabWidget* GetMainTabWidget();
+    QTreeView* GetView(Ouroboros::Views Type);
 
 private:
     Ui::Ouroboros *ui;

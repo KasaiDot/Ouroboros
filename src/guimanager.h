@@ -55,6 +55,7 @@
 #include <QMouseEvent>
 #include <QSortFilterProxyModel>
 #include <QTreeView>
+#include <QProgressBar>
 
 #include "ouroboros.h"
 
@@ -79,23 +80,15 @@ public:
     //The paint method is where we do most of the work
     inline void paint(QPainter *Painter, const QStyleOptionViewItem &Option, const QModelIndex &Index) const
     {
+        QStyledItemDelegate::paint(Painter,Option,Index);
+
         //First we check if mouse is hovering above the item
         bool isHovering = ((Option.state & QStyle::State_MouseOver) == QStyle::State_MouseOver);
 
-        //Draw the progress bar
-        QStyleOptionProgressBar ProgressBar;
-        ProgressBar.state = QStyle::State_Enabled;
-        ProgressBar.direction = QApplication::layoutDirection();
-
-        ProgressBar.rect = Option.rect;
-        ProgressBar.rect.setY(ProgressBar.rect.y() + 2);
-        ProgressBar.rect.setHeight(ProgressBar.rect.height() - 3);
-
-        ProgressBar.fontMetrics = QApplication::fontMetrics();
-        ProgressBar.minimum = 0;
-        ProgressBar.maximum = 9999; //This will change depending on the anime episode count
-        ProgressBar.textAlignment = Qt::AlignHCenter;
-        ProgressBar.textVisible = true;
+        //progress bar valies
+        int MinValue = 0;
+        int CurrentValue = 0;
+        int MaxValue = 500;
 
         //Get the user episode count and anime episode count from the index
         int UserEpisodeCount = Index.data(ROLE_USER_EPISODES).toInt();
@@ -109,32 +102,72 @@ public:
             if(UserEpisodeCount > AnimeEpisodeCount)
                 UserEpisodeCount = AnimeEpisodeCount;
 
-            ProgressBar.maximum = AnimeEpisodeCount;
+            MaxValue = AnimeEpisodeCount;
         } else {
             AnimeEpisodeText = "-";
-            ProgressBar.maximum = UserEpisodeCount + 50;
+            MaxValue = UserEpisodeCount + 50;
         }
+
+        //Set Current value
+        if(UserEpisodeCount < MinValue)
+        {
+            UserEpisodeCount = MinValue;
+        }
+        CurrentValue = UserEpisodeCount;
+
 
         QString UserEpisodeText = QString::number(UserEpisodeCount);
         QString ProgressText = UserEpisodeText + "/" + AnimeEpisodeText;
 
-        //set the progress bar values
-        ProgressBar.progress = UserEpisodeCount;
-        ProgressBar.text = ProgressText;
+        //Colors
+        QColor ProgressBarOutlineColor = QColor(160,160,160);
+        QColor ProgressBarBackgroundColor = QColor(250,250,250);
+        QColor ProgressBarColor = QColor(98,226,0);
 
-        //Finally draw the progress bar
-        QApplication::style()->drawControl(QStyle::CE_ProgressBar,&ProgressBar,Painter);
+        //Paint the progressbar outline
+        QRect ProgressBarOutlineRect(Option.rect.left() + 3,Option.rect.top() + 3,Option.rect.width() - 6,Option.rect.height() - 6);
+        Painter->save();
+        Painter->setRenderHint(QPainter::Antialiasing);
+        Painter->setBrush(ProgressBarOutlineColor);
+        Painter->setPen(QColor(Qt::transparent));
+        Painter->drawRect(ProgressBarOutlineRect);
+        Painter->restore();
+
+        //Paint the progressbar background
+        QRect ProgressBarBackgroundRect(ProgressBarOutlineRect.left() + 1, ProgressBarOutlineRect.top() + 1,ProgressBarOutlineRect.width() - 2, ProgressBarOutlineRect.height() - 2);
+        Painter->save();
+        Painter->setRenderHint(QPainter::Antialiasing);
+        Painter->setBrush(ProgressBarBackgroundColor);
+        Painter->setPen(QColor(Qt::transparent));
+        Painter->drawRect(ProgressBarBackgroundRect);
+        Painter->restore();
+
+        //Paint the progressbar
+        int ProgressBarWidth = float((ProgressBarOutlineRect.width() * CurrentValue)/ MaxValue);
+        if(ProgressBarWidth > 1 && CurrentValue >= MinValue)
+        {
+            QRect ProgressBarRect(ProgressBarBackgroundRect.left(),ProgressBarBackgroundRect.top(),ProgressBarWidth - 2,ProgressBarBackgroundRect.height());
+            Painter->save();
+            Painter->setRenderHint(QPainter::Antialiasing);
+            Painter->setBrush(ProgressBarColor);
+            Painter->setPen(QColor(Qt::transparent));
+            Painter->drawRect(ProgressBarRect);
+            Painter->restore();
+
+        } else {
+            ProgressBarWidth = 1;
+        }
 
         //Draw the plus and minus boxes if mouse is hovering
         if(isHovering)
         {
             //Global values
-            QColor BoxColor = QColor(96,96,96);
+           QColor BoxColor = QColor(96,96,96);
             //We draw the + and - boxes around the progress bar
             QStyleOptionGraphicsItem Minus;
             Minus.state = QStyle::State_Enabled;
-            Minus.rect = ProgressBar.rect;
-            Minus.rect.setWidth(ProgressBar.rect.height());
+            Minus.rect = ProgressBarOutlineRect;
+            Minus.rect.setWidth(ProgressBarOutlineRect.height());
 
             Painter->fillRect(Minus.rect,QBrush(BoxColor));
             Painter->setPen(QPen(QBrush(Qt::white),1,Qt::SolidLine,Qt::RoundCap));
@@ -142,9 +175,9 @@ public:
 
             QStyleOptionGraphicsItem Plus;
             Plus.state = QStyle::State_Enabled;
-            Plus.rect = ProgressBar.rect;
-            Plus.rect.setX((ProgressBar.rect.x() + ProgressBar.rect.width() - ProgressBar.rect.height()));
-            Plus.rect.setWidth(ProgressBar.rect.height());
+            Plus.rect = ProgressBarOutlineRect;
+            Plus.rect.setX((ProgressBarOutlineRect.x() + ProgressBarOutlineRect.width() - ProgressBarOutlineRect.height()));
+            Plus.rect.setWidth(ProgressBarOutlineRect.height());
 
             Painter->fillRect(Plus.rect,QBrush(BoxColor));
             Painter->setPen(QPen(QBrush(Qt::white),1,Qt::SolidLine,Qt::RoundCap));
@@ -154,6 +187,7 @@ public:
 
             QApplication::style()->drawControl(QStyle::CE_PushButtonLabel,&Minus,Painter);
             QApplication::style()->drawControl(QStyle::CE_PushButtonLabel,&Plus,Painter);
+
         }
     }
 

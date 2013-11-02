@@ -49,12 +49,18 @@ public:
         PlanToWatch
     };
 
+    enum Actions
+    {
+        EditUserEpisodes
+    };
+
     //Fills the tabs with the view
     void SetViewLayouts();
 
     //Get Functions
     QTabWidget* GetMainTabWidget();
     QTreeView* GetView(Ouroboros::Views Type);
+    QAction* GetAction(Ouroboros::Actions Type);
 
 private:
     Ui::Ouroboros *ui;

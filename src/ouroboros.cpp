@@ -57,7 +57,7 @@ Ouroboros::Ouroboros(QWidget *parent) :
     a->SetAnimeStatus("Finished Airing");
     a->SetAnimeUrl("/anime/cowboy-bepop");
     a->SetAnimeTitle("Cowboy Bepop");
-    a->SetAnimeEpisodeCount(26);
+    a->SetAnimeEpisodeCount(120);
     a->SetAnimeImage("http://static.hummingbird.me/anime/cover_images/000/000/001/thumb/1.png?1375232521");
     a->SetAnimeSynopsis("Enter a world in the distant future,where Bounty Hunters roam the solar system.Spike and Jet,bounty hunting partners,set out on journeys in an ever struggling effort to win bounty rewards to survive.\r\nWhile traveling,they meet up with other very interesting people.Could Faye,the beautiful and ridiculously poor gambler,Edward,the computer genius,and Ein,the engineered dog be a good addition to the group?");
     a->SetAnimeShowType("TV");
@@ -69,7 +69,7 @@ Ouroboros::Ouroboros(QWidget *parent) :
     a->AddAnimeGenre("Space");
 
     Anime::UserAnimeInformation UserInfo;
-    UserInfo.SetEpisodesWatched(15);
+    UserInfo.SetEpisodesWatched(100);
     UserInfo.SetLastWatched(QDateTime::fromString(QString("2013-10-12T03:41:27Z"),"yyyy-dd-MMThh:mm:ssZ"));
     UserInfo.SetStatus("on-hold");
     UserInfo.SetPrivate(false);
@@ -103,11 +103,18 @@ Ouroboros::~Ouroboros()
  *****************************************************/
 void Ouroboros::SetViewLayouts()
 {
+    this->setCentralWidget(ui->MainTabWidget);
     ui->MainTabWidget->widget(TAB_CURRENTLY_WATCHING)->setLayout(ui->Layout_CurrentlyWatching);
     ui->MainTabWidget->widget(TAB_COMPLETED)->setLayout(ui->Layout_Completed);
     ui->MainTabWidget->widget(TAB_DROPPED)->setLayout(ui->Layout_Dropped);
     ui->MainTabWidget->widget(TAB_ON_HOLD)->setLayout(ui->Layout_OnHold);
     ui->MainTabWidget->widget(TAB_PLAN_TO_WATCH)->setLayout(ui->Layout_PlanToWatch);
+
+    ui->View_Completed->header()->setSectionsMovable(false);
+    ui->View_CurrentlyWatching->header()->setSectionsMovable(false);
+    ui->View_Dropped->header()->setSectionsMovable(false);
+    ui->View_OnHold->header()->setSectionsMovable(false);
+    ui->View_PlanToWatch->header()->setSectionsMovable(false);
 }
 
 /************************************ Getter functions ****************************************/
@@ -116,6 +123,9 @@ QTabWidget *Ouroboros::GetMainTabWidget()
     return ui->MainTabWidget;
 }
 
+/*************************
+ * Returns main views
+ ************************/
 QTreeView *Ouroboros::GetView(Ouroboros::Views Type)
 {
     switch(Type)
@@ -142,4 +152,19 @@ QTreeView *Ouroboros::GetView(Ouroboros::Views Type)
     }
 
     return  nullptr;
+}
+
+/************************
+ * Returns Actions
+ ************************/
+QAction *Ouroboros::GetAction(Ouroboros::Actions Type)
+{
+    switch (Type)
+    {
+        case EditUserEpisodes:
+            return ui->Action_EditUserEpisodes;
+        break;
+    }
+
+    return nullptr;
 }

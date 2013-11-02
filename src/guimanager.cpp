@@ -21,6 +21,8 @@
 #include "filemanager.h"
 
 #include <QHeaderView>
+#include <QMenu>
+#include <QInputDialog>
 
 using namespace Manager;
 GUIManager GUI_Manager;
@@ -30,6 +32,7 @@ GUIManager::GUIManager(QObject *parent) :
 {
     //Set up the models
     DataModel = new QStandardItemModel(this);
+    isMainWindowSet = false;
 }
 
 /******************************************************
@@ -38,17 +41,23 @@ GUIManager::GUIManager(QObject *parent) :
 void GUIManager::SetMainWindow(Ouroboros *Main)
 {
     MainWindow = Main;
+    isMainWindowSet = true;
 
     //Connect signals and slots
     connect(MainWindow->GetMainTabWidget(),SIGNAL(currentChanged(int)),this,SLOT(TabChanged(int)));
 
+    connect(MainWindow->GetView(Ouroboros::CurrentlyWatching),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
+    connect(MainWindow->GetView(Ouroboros::OnHold),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
+    connect(MainWindow->GetView(Ouroboros::Completed),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
+    connect(MainWindow->GetView(Ouroboros::PlanToWatch),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
+    connect(MainWindow->GetView(Ouroboros::Dropped),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
+
     //Set defaults
-    TabChanged(0);
+    TabChanged(MainWindow->GetMainTabWidget()->currentIndex());
 
     //Setup required items
     SetUpDelegates();
     SetUpFilters();
-    SetModelHeaders();
 }
 
 /********************************************
@@ -58,8 +67,11 @@ void GUIManager::SetMainWindow(Ouroboros *Main)
  ********************************************/
 void GUIManager::PopulateModel()
 {
+    if(!isMainWindowSet) return;
+
     //Clear the model
     DataModel->clear();
+    SetModelHeaders();
 
     QList<Anime::AnimeEntity *> AnimeList = Anime_Database.GetAnimeEntities();
 
@@ -158,6 +170,7 @@ void GUIManager::UpdateAnime(Anime::AnimeEntity *Entity)
 
 }
 
+
 /************************************************************************************************************
  * Handles the button click signal recieved from pressing either the "+" or "-" buttons on the progress bar
  ***********************************************************************************************************/
@@ -169,10 +182,12 @@ void GUIManager::ProgressBarButtonClicked(QModelIndex Index, ProgressDelegate::B
 
     if(Type == ProgressDelegate::Plus)
     {
-        Entity->GetUserInfo()->IncrementEpisodeCount();
+        if(Entity->GetUserInfo()->GetEpisodesWatched() + 1 <= Entity->GetAnimeEpisodeCount())
+            Entity->GetUserInfo()->IncrementEpisodeCount();
     } else if(Type == ProgressDelegate::Minus)
     {
-        Entity->GetUserInfo()->DecrementEpisodeCount();
+        if(Entity->GetUserInfo()->GetEpisodesWatched() - 1 >= 0)
+            Entity->GetUserInfo()->DecrementEpisodeCount();
     }
 
     //Update the view
@@ -221,16 +236,42 @@ void GUIManager::TabChanged(int Tab)
 /**********************************
  * Sets the headers on the views
  *********************************/
+
+void SetViewHeaderSize(QTreeView *View)
+{
+    int NameSize = View->fontMetrics().size(Qt::TextSingleLine,"------------ abcdefghijklmnopqrstuvwxyz 1234567890 ------------").width();
+    int ProgressSize = View->fontMetrics().size(Qt::TextSingleLine,"---------------------------------- 999/999").width();
+    int RatingSize = View->fontMetrics().size(Qt::TextSingleLine,"--------- 10 --------").width();
+    int TypeSize = View->fontMetrics().size(Qt::TextSingleLine,"---- OVA ----").width();
+
+    View->header()->resizeSection(HEADER_NAME,NameSize);
+    View->header()->resizeSection(HEADER_PROGRESS,ProgressSize);
+    View->header()->resizeSection(HEADER_RATING,RatingSize);
+    View->header()->resizeSection(HEADER_SHOW_TYPE,TypeSize);
+
+
+}
+
 void GUIManager::SetModelHeaders()
 {
     QStringList Headers;
-    Headers.append(QString("Name"));
-    Headers.append(QString("Progress"));
-    Headers.append(QString("Rating"));
-    Headers.append(QString("Type"));
-    //Headers << "Name" << "Progress" << "Rating" << "Type";
+    Headers << "Name" << "Progress" << "Rating" << "Type";
 
     DataModel->setHorizontalHeaderLabels(Headers);
+    DataModel->horizontalHeaderItem(HEADER_RATING)->setTextAlignment(Qt::AlignHCenter);
+    DataModel->horizontalHeaderItem(HEADER_SHOW_TYPE)->setTextAlignment(Qt::AlignHCenter);
+    DataModel->horizontalHeaderItem(HEADER_PROGRESS)->setTextAlignment(Qt::AlignHCenter);
+
+    if(!isMainWindowSet) return;
+
+    //Resize views
+    SetViewHeaderSize(MainWindow->GetView(Ouroboros::CurrentlyWatching));
+    SetViewHeaderSize(MainWindow->GetView(Ouroboros::OnHold));
+    SetViewHeaderSize(MainWindow->GetView(Ouroboros::PlanToWatch));
+    SetViewHeaderSize(MainWindow->GetView(Ouroboros::Completed));
+    SetViewHeaderSize(MainWindow->GetView(Ouroboros::Dropped));
+
+
 }
 
 /*********************************************
@@ -303,4 +344,73 @@ void GUIManager::SetUpDelegates()
     //connect signals and slots
     connect(ProgressBar,SIGNAL(ButtonClicked(QModelIndex,ProgressDelegate::Button)),this,SLOT(ProgressBarButtonClicked(QModelIndex,ProgressDelegate::Button)));
 
+}
+
+/************************************************** Context Menus************************************************************************/
+
+/**********************************************************
+ * Menu for when user right clicks on an item in the view
+ **********************************************************/
+void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
+{
+    QModelIndex Index = CurrentView->indexAt(Pos);
+    if(Index.row() < 0) return;
+
+    QStandardItem *Item = DataModel->item(Index.row(),HEADER_NAME);
+
+    //Get the anime slug
+    QString Slug = Item->data(ROLE_ANIME_SLUG).toString();
+    Anime::AnimeEntity *Entity = Anime_Database.GetAnime(Slug);
+
+    //Constuct the menu
+    QMenu Menu;
+    QMenu EditMenu;
+    EditMenu.setTitle("Edit");
+
+    //Menu data
+    QString Data_EditEpisode = "Edit_Episodes";
+
+    //*************Actions************************
+
+    //***** Edit Menu
+
+    //Edit user episodes
+    EditMenu.addAction(MainWindow->GetAction(Ouroboros::EditUserEpisodes)->icon(),MainWindow->GetAction(Ouroboros::EditUserEpisodes)->text())->setData(Data_EditEpisode);
+
+   //****** Main menu
+
+    //Add edit menu
+    Menu.addMenu(&EditMenu);
+
+    QAction *Action = Menu.exec(QCursor::pos());
+
+    if(!Action) return;
+
+    //Action clicked
+    if(Action->data().toString() == Data_EditEpisode)
+    {
+        EditUserEpisodes(Entity);
+    }
+}
+
+/************************************************* View info edit functions ******************************************/
+
+/*************************************************
+ * Creates a input box for user to type episodes
+ ************************************************/
+bool GUIManager::EditUserEpisodes(Anime::AnimeEntity *Entity)
+{
+    bool Ok;
+    int MinVal = 0;
+    int MaxVal = (Entity->GetAnimeEpisodeCount() < 0) ? 999 : Entity->GetAnimeEpisodeCount();
+    int EpisodesWatched = QInputDialog::getInt(MainWindow,"Set episodes watched","Episodes: ",Entity->GetUserInfo()->GetEpisodesWatched(),MinVal,MaxVal,1,&Ok);
+
+    if(!Ok) return false;
+
+    Entity->GetUserInfo()->SetEpisodesWatched(EpisodesWatched,true);
+
+    if(ModelContains(Entity->GetAnimeTitle()))
+        UpdateAnime(Entity);
+
+    return true;
 }

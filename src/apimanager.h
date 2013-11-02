@@ -47,6 +47,8 @@ public:
     ApiReturnStatus Authenticate();
     ApiReturnStatus GetLibrary();
 
+    QNetworkReply* GetAnimeImage(QNetworkAccessManager *NetworkManager, QUrl const &Url);
+
 private:
 
     //Types of api calls

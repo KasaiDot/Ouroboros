@@ -45,6 +45,7 @@ public:
         QString UserAnimePath;
         QString DatabaseFolderPath;
         QString DatabaseAnimePath;
+        QString DatabaseImagePath;
     } FileManagerInfo;
 
     //Checks if directory exists, if not then it creates one
@@ -60,7 +61,7 @@ public:
     void SaveAnimeDatabase();
     bool SaveAnimeEntity(Anime::AnimeEntity *Entity, bool SaveUserInfo = true);
     bool SaveApiResponse(QString Response, QString Filename); //Used for saving anime lists
-    bool SaveAnimeImage(QString AnimeSlug, QByteArray &Data);
+    bool SaveAnimeImage(Anime::AnimeEntity *Entity);
 
     bool LoadSettings();
     bool LoadUserInformation();

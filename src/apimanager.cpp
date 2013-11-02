@@ -31,6 +31,11 @@ ApiManager::ApiManager(QObject *parent) :
 {
 }
 
+QNetworkReply *ApiManager::GetAnimeImage(QNetworkAccessManager *NetworkManager, const QUrl &Url)
+{
+    return DoHttpGet(NetworkManager,Url,false);
+}
+
 /*************************************************************************
  * Processes Reply recieved through QNetworkManager based on the ApiCall
  ************************************************************************/

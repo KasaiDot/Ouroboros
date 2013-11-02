@@ -37,16 +37,33 @@ public:
     UserAnimeInformation();
 
     //****************************************** Setters and Getter methods *********************************************************************/
+    inline void UpdateLastWatched() { SetLastWatched(QDateTime(QDateTime::currentDateTime())); }
+
     int GetEpisodesWatched() const { return EpisodesWatched; }
-    inline void SetEpisodesWatched(int EpisodeCount) { if(((EpisodeCount <= AnimeEpisodes) && (EpisodeCount >= 0)) || (AnimeEpisodes < 0)) EpisodesWatched = EpisodeCount; }
-    inline void IncrementEpisodeCount() { if(EpisodesWatched + 1 <= AnimeEpisodes || AnimeEpisodes < 0) EpisodesWatched++; }
-    inline void DecrementEpisodeCount() { if(EpisodesWatched - 1 >= 0) EpisodesWatched--; }
+    inline void SetEpisodesWatched(int EpisodeCount, bool UpdateWatched = false)
+    {
+        if(((EpisodeCount <= AnimeEpisodes) && (EpisodeCount >= 0)) || (AnimeEpisodes < 0))
+            EpisodesWatched = EpisodeCount;
+        if(UpdateWatched)
+            UpdateLastWatched();
+    }
+    inline void IncrementEpisodeCount()
+    {
+        if(EpisodesWatched + 1 <= AnimeEpisodes || AnimeEpisodes < 0)
+            EpisodesWatched++;
+        UpdateLastWatched();
+    }
+    inline void DecrementEpisodeCount()
+    {
+        if(EpisodesWatched - 1 >= 0) EpisodesWatched--;
+        UpdateLastWatched();
+    }
 
     QDateTime GetLastWatched() const { return LastWatched; }
     inline void SetLastWatched(QDateTime Time) { LastWatched = Time; }
 
     int GetRewatchedTimes() const { return RewatchedTimes; }
-    inline void SetRewatchedTimes(int Amount) { RewatchedTimes = Amount; }
+    inline void SetRewatchedTimes(int Amount) { RewatchedTimes = Amount;}
 
     QString GetNotes() const { return Notes;}
     inline void SetNotes(QString NoteString) { Notes = NoteString; }

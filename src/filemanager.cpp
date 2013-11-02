@@ -25,6 +25,9 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QDebug>
+#include <QSharedPointer>
+
+#include "apimanager.h"
 
 using namespace Manager;
 FileManager File_Manager;
@@ -39,6 +42,7 @@ FileManager::FileManager()
     FileManagerInfo.DatabaseFolderPath = "/Database/";
     FileManagerInfo.UserAnimePath = FileManagerInfo.UserFolderPath + "<user>/Anime/"; // <user> can be replaced easily with the user's Username
     FileManagerInfo.DatabaseAnimePath = FileManagerInfo.DatabaseFolderPath + "Anime/";
+    FileManagerInfo.DatabaseImagePath = FileManagerInfo.DatabaseFolderPath + "Images/";
 
 }
 
@@ -135,19 +139,52 @@ bool FileManager::SaveAnimeEntity(Anime::AnimeEntity *Entity, bool SaveUserInfo)
 
     //AnimeInfo
     QJsonDocument AnimeJson = Entity->BuildAnimeJsonDocument();
-    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.DatabaseAnimePath;
+    QString AnimeFilepath = QApplication::applicationDirPath() + FileManagerInfo.DatabaseAnimePath;
 
-    CheckDir(Filepath);
+    CheckDir(AnimeFilepath);
 
-    QFile AnimeFile(Filepath.append(Filename));
+    QFile AnimeFile(AnimeFilepath.append(Filename));
     if(!AnimeFile.open(QIODevice::WriteOnly))
         return false;
 
     AnimeFile.write(AnimeJson.toJson());
     AnimeFile.close();
 
+    //Save the image
+    SaveAnimeImage(Entity);
+
     return true;
 
+}
+
+/*****************************************************
+ * Gets anime image and saves it to the Image folder
+ *****************************************************/
+bool FileManager::SaveAnimeImage(Anime::AnimeEntity *Entity)
+{
+    QString ImageFilePath = QApplication::applicationDirPath() + FileManagerInfo.DatabaseImagePath;
+    QString ImageFileName = Entity->GetAnimeSlug() + ".png";
+
+    CheckDir(ImageFilePath);
+
+    if(!QFile::exists(QString(ImageFilePath + ImageFileName)))
+    {
+        QSharedPointer<QNetworkAccessManager> NetworkManager = QSharedPointer<QNetworkAccessManager>(new QNetworkAccessManager,&QObject::deleteLater);
+        QNetworkReply *Reply = Api_Manager.GetAnimeImage(NetworkManager.data(),QUrl(Entity->GetAnimeImage()));
+        if(Reply->error()) return false;
+
+        QByteArray ImageData = Reply->readAll();
+        Reply->deleteLater();
+
+        QFile Image(ImageFilePath.append(ImageFileName));
+        if(!Image.open(QIODevice::WriteOnly))
+            return false;
+
+        Image.write(ImageData);
+        Image.close();
+    }
+
+    return true;
 }
 
 /**************************************************************

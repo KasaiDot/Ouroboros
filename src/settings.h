@@ -19,6 +19,8 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include <QColor>
+
 class OuroborosSettings
 {
 public:
@@ -26,6 +28,17 @@ public:
     //Basic functions
     bool Load();
     bool Save();
+
+    //Since we can't apply a stylesheet to the progress delegate,
+    //we get the colors the user sets
+    struct ProgressDelegateSettings
+    {
+        QColor TextColor = Qt::black;
+        QColor ProgressBarOutlineColor = QColor(160,160,160);
+        QColor ProgressBarBackgroundColor = QColor(250,250,250);
+        QColor ProgressBarColor = QColor(98,226,0);
+
+    } ProgressDelegate;
 
 };
 

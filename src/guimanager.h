@@ -56,8 +56,10 @@
 #include <QSortFilterProxyModel>
 #include <QTreeView>
 #include <QProgressBar>
+#include <QStaticText>
 
 #include "ouroboros.h"
+#include "settings.h"
 
 /********************************* Delegates *****************************************************/
 // A Delegate is basically a control which we can embed into a view, E.g, in a torrent application
@@ -120,12 +122,26 @@ public:
         QString ProgressText = UserEpisodeText + "/" + AnimeEpisodeText;
 
         //Colors
-        QColor ProgressBarOutlineColor = QColor(160,160,160);
-        QColor ProgressBarBackgroundColor = QColor(250,250,250);
-        QColor ProgressBarColor = QColor(98,226,0);
+        QColor TextColor = Settings.ProgressDelegate.TextColor;
+        QColor ProgressBarOutlineColor = Settings.ProgressDelegate.ProgressBarOutlineColor;
+        QColor ProgressBarBackgroundColor = Settings.ProgressDelegate.ProgressBarBackgroundColor ;
+        QColor ProgressBarColor = Settings.ProgressDelegate.ProgressBarColor;
+
+        //create the text rect
+        int MaxTextPixelSize = Option.fontMetrics.size(Qt::TextSingleLine,"999/999").width() + 8;
+        QRect TextRect(Option.rect.left() + Option.rect.width() - MaxTextPixelSize + 3,Option.rect.top() + 2,MaxTextPixelSize,Option.rect.height());
+
+        //Paint the string
+        Painter->save();
+        Painter->setRenderHint(QPainter::Antialiasing);
+        Painter->setBrush(Qt::transparent);
+        Painter->setPen(TextColor);
+        Painter->drawText(TextRect,ProgressText);
+        Painter->restore();
 
         //Paint the progressbar outline
-        QRect ProgressBarOutlineRect(Option.rect.left() + 3,Option.rect.top() + 3,Option.rect.width() - 6,Option.rect.height() - 6);
+        //note if editing progressbaroutline then you have to update the one in editor events
+        QRect ProgressBarOutlineRect(Option.rect.left() + 3,Option.rect.top() + 3,Option.rect.width() - MaxTextPixelSize - 6,Option.rect.height() - 6);
         Painter->save();
         Painter->setRenderHint(QPainter::Antialiasing);
         Painter->setBrush(ProgressBarOutlineColor);
@@ -158,6 +174,7 @@ public:
             ProgressBarWidth = 1;
         }
 
+
         //Draw the plus and minus boxes if mouse is hovering
         if(isHovering)
         {
@@ -181,8 +198,8 @@ public:
 
             Painter->fillRect(Plus.rect,QBrush(BoxColor));
             Painter->setPen(QPen(QBrush(Qt::white),1,Qt::SolidLine,Qt::RoundCap));
-            Painter->drawLine(Plus.rect.x() + 3,Plus.rect.y() + (Plus.rect.height() / 2),Plus.rect.x() + Plus.rect.width() - 3,Plus.rect.y() + (Plus.rect.height() / 2));
-            Painter->drawLine(Plus.rect.x() + (Plus.rect.width() / 2),Plus.rect.y() + 3,Plus.rect.x() + (Plus.rect.width() / 2),Plus.rect.y() + Plus.rect.height() - 3);
+            Painter->drawLine(Plus.rect.x() + 3,Plus.rect.y() + (Plus.rect.height() / 2),Plus.rect.x() + Plus.rect.width() - 3,Plus.rect.y() + (Plus.rect.height() / 2)); //- line
+            Painter->drawLine(Plus.rect.x() + (Plus.rect.width() / 2),Plus.rect.y() + 3,Plus.rect.x() + (Plus.rect.width() / 2),Plus.rect.y() + Plus.rect.height() - 3); // | line
 
 
             QApplication::style()->drawControl(QStyle::CE_PushButtonLabel,&Minus,Painter);
@@ -194,16 +211,16 @@ public:
     //Now to see if the user clicked a box, we have to check the editor events
     inline bool editorEvent(QEvent *Event, QAbstractItemModel *Model, const QStyleOptionViewItem &Option, const QModelIndex &Index)
     {
+        //Make the the progressbar rect
+        int MaxTextPixelSize = QApplication::fontMetrics().size(Qt::TextSingleLine,"999/999").width() + 8;
+        QRect ProgressBarOutlineRect(Option.rect.left() + 3,Option.rect.top() + 3,Option.rect.width() - MaxTextPixelSize - 6,Option.rect.height() - 6);
+
         //Make the hitboxes for the plus and minus buttons
-        QRect Minus(Option.rect);
-        Minus.setY(Minus.y() + 2);
-        Minus.setHeight(Minus.height() - 3);
+        QRect Minus(ProgressBarOutlineRect);
         Minus.setWidth(Minus.height());
 
-        QRect Plus(Option.rect);
-        Plus.setY(Plus.y() + 2);
-        Plus.setHeight(Plus.height() - 3);
-        Plus.setX((Plus.x() + Plus.width() - Plus.height()));
+        QRect Plus(ProgressBarOutlineRect);
+        Plus.setX(ProgressBarOutlineRect.x() + ProgressBarOutlineRect.width() - ProgressBarOutlineRect.height());
         Plus.setWidth(Plus.height());
 
         QMouseEvent* MouseEvent = static_cast<QMouseEvent*>(Event);
@@ -254,9 +271,12 @@ public:
     void UpdateAnime(QModelIndex Index,Anime::AnimeEntity *Entity);
     void UpdateAnime(Anime::AnimeEntity *Entity); //This function will get the top most found anime and update it, be careful
 
-    //checks if model contains an item based on the name
-    //Note: can return multiple results depending on the name
-    bool ModelContains(QString Name) { return (DataModel->findItems(Name,Qt::MatchFixedString,HEADER_NAME).length() > 0); }
+    //checks if model contains an item based on the Title
+    //Note: can return multiple results depending on the Title
+    bool ModelContains(QString Title) { return (DataModel->findItems(Title,Qt::MatchFixedString,HEADER_NAME).length() > 0); }
+
+    //view info edit functions
+    bool EditUserEpisodes(Anime::AnimeEntity *Entity);
 
 signals:
 
@@ -268,8 +288,12 @@ public slots:
    //Tab changed
    void TabChanged(int Tab);
 
+   //Context menus
+   void ShowViewItemComtextMenu(const QPoint &Pos);
+
 private:
     Ouroboros *MainWindow;
+    bool isMainWindowSet;
     QTreeView *CurrentView;
 
     //Data Model - Holds all data for the view

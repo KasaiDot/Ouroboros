@@ -24,7 +24,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>0</number>
       </property>
       <property name="documentMode">
        <bool>false</bool>
@@ -91,6 +91,12 @@
             <bool>false</bool>
            </property>
            <attribute name="headerCascadingSectionResizes">
+            <bool>true</bool>
+           </attribute>
+           <attribute name="headerShowSortIndicator" stdset="0">
+            <bool>false</bool>
+           </attribute>
+           <attribute name="headerStretchLastSection">
             <bool>true</bool>
            </attribute>
           </widget>
@@ -268,7 +274,7 @@
          <item>
           <widget class="QTreeView" name="View_PlanToWatch">
            <property name="contextMenuPolicy">
-            <enum>Qt::PreventContextMenu</enum>
+            <enum>Qt::CustomContextMenu</enum>
            </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
@@ -401,6 +407,15 @@
    </property>
   </widget>
   <widget class="QToolBar" name="MainToolBar">
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::TopToolBarArea</set>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>

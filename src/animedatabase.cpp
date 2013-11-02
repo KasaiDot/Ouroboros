@@ -138,7 +138,7 @@ void AnimeDatabase::ParseJson(QByteArray Data)
     UserInfo.SetPrivate(UserInfoMap.value("private",false).toBool());
     UserInfo.SetRewatching(UserInfoMap.value("rewatching",false).toBool());
     UserInfo.SetRatingType(UserInfoMap.value("rating").toMap().value("type","basic").toString());
-    UserInfo.SetRatingValue(UserInfoMap.value("rating").toMap().value("value",-1).toInt());
+    UserInfo.SetRatingValue(UserInfoMap.value("rating").toMap().value("value",-1).toFloat());
 
     //Anime info
     AnimeEntity *Entity = new AnimeEntity();

@@ -288,31 +288,31 @@ void GUIManager::SetUpFilters()
     Filter_Completed = new QSortFilterProxyModel(this);
     Filter_Completed->setSourceModel(DataModel);
     Filter_Completed->setFilterRole(ROLE_USER_STATUS);
-    Filter_Completed->setFilterRegExp(FILTERTEXT_COMPLETED);
+    Filter_Completed->setFilterRegExp(STATUS_COMPLETED);
     MainWindow->GetView(Ouroboros::Completed)->setModel(Filter_Completed);
 
     Filter_Dropped = new QSortFilterProxyModel(this);
     Filter_Dropped->setSourceModel(DataModel);
     Filter_Dropped->setFilterRole(ROLE_USER_STATUS);
-    Filter_Dropped->setFilterRegExp(FILTERTEXT_DROPPED);
+    Filter_Dropped->setFilterRegExp(STATUS_DROPPED);
     MainWindow->GetView(Ouroboros::Dropped)->setModel(Filter_Dropped);
 
     Filter_CurrentlyWatching = new QSortFilterProxyModel(this);
     Filter_CurrentlyWatching->setSourceModel(DataModel);
     Filter_CurrentlyWatching->setFilterRole(ROLE_USER_STATUS);
-    Filter_CurrentlyWatching->setFilterRegExp(FILTERTEXT_CURRENTLY_WATCHING);
+    Filter_CurrentlyWatching->setFilterRegExp(STATUS_CURRENTLY_WATCHING);
     MainWindow->GetView(Ouroboros::CurrentlyWatching)->setModel(Filter_CurrentlyWatching);
 
     Filter_OnHold = new QSortFilterProxyModel(this);
     Filter_OnHold->setSourceModel(DataModel);
     Filter_OnHold->setFilterRole(ROLE_USER_STATUS);
-    Filter_OnHold->setFilterRegExp(FILTERTEXT_ON_HOLD);
+    Filter_OnHold->setFilterRegExp(STATUS_ON_HOLD);
     MainWindow->GetView(Ouroboros::OnHold)->setModel(Filter_OnHold);
 
     Filter_PlanToWatch = new QSortFilterProxyModel(this);
     Filter_PlanToWatch->setSourceModel(DataModel);
     Filter_PlanToWatch->setFilterRole(ROLE_USER_STATUS);
-    Filter_PlanToWatch->setFilterRegExp(FILTERTEXT_PLAN_TO_WATCH);
+    Filter_PlanToWatch->setFilterRegExp(STATUS_PLAN_TO_WATCH);
     MainWindow->GetView(Ouroboros::PlanToWatch)->setModel(Filter_PlanToWatch);
 
     //The search filter is special, in the sense that we just need to
@@ -377,6 +377,106 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
     //Edit user episodes
     EditMenu.addAction(MainWindow->GetAction(Ouroboros::EditUserEpisodes)->icon(),MainWindow->GetAction(Ouroboros::EditUserEpisodes)->text())->setData(Data_EditEpisode);
 
+    //Edit status
+    QMenu StatusMenu;
+    StatusMenu.setTitle("Status");
+
+    QActionGroup *StatusGroup = new QActionGroup(this);
+    StatusGroup->setExclusive(true);
+
+    QAction Action_CurrentlyWatching(this);
+    Action_CurrentlyWatching.setText("Currently watching");
+    Action_CurrentlyWatching.setCheckable(true);
+    Action_CurrentlyWatching.setActionGroup(StatusGroup);
+    Action_CurrentlyWatching.setData(STATUS_CURRENTLY_WATCHING);
+
+    QAction Action_Dropped(this);
+    Action_Dropped.setText("Dropped");
+    Action_Dropped.setCheckable(true);
+    Action_Dropped.setActionGroup(StatusGroup);
+    Action_Dropped.setData(STATUS_DROPPED);
+
+    QAction Action_OnHold(this);
+    Action_OnHold.setText("On hold");
+    Action_OnHold.setCheckable(true);
+    Action_OnHold.setActionGroup(StatusGroup);
+    Action_OnHold.setData(STATUS_ON_HOLD);
+
+    QAction Action_Completed(this);
+    Action_Completed.setText("Completed");
+    Action_Completed.setCheckable(true);
+    Action_Completed.setActionGroup(StatusGroup);
+    Action_Completed.setData(STATUS_COMPLETED);
+
+    QAction Action_PlanToWatch(this);
+    Action_PlanToWatch.setText("Plan to watch");
+    Action_PlanToWatch.setCheckable(true);
+    Action_PlanToWatch.setActionGroup(StatusGroup);
+    Action_PlanToWatch.setData(STATUS_PLAN_TO_WATCH);
+
+    StatusMenu.addAction(&Action_CurrentlyWatching);
+    StatusMenu.addAction(&Action_Completed);
+    StatusMenu.addAction(&Action_OnHold);
+    StatusMenu.addAction(&Action_PlanToWatch);
+    StatusMenu.addAction(&Action_Dropped);
+
+    //Set the currently checked one to be users status
+    QString CurrentStatus = Entity->GetUserInfo()->GetStatus();
+    if(CurrentStatus == STATUS_CURRENTLY_WATCHING)
+    {
+        Action_CurrentlyWatching.setChecked(true);
+    } else if(CurrentStatus == STATUS_COMPLETED)
+    {
+        Action_Completed.setChecked(true);
+    } else if(CurrentStatus == STATUS_DROPPED)
+    {
+        Action_Dropped.setChecked(true);
+    } else if(CurrentStatus == STATUS_ON_HOLD)
+    {
+        Action_OnHold.setChecked(true);
+    } else if(CurrentStatus == STATUS_PLAN_TO_WATCH)
+    {
+        Action_PlanToWatch.setChecked(true);
+    }
+
+    EditMenu.addMenu(&StatusMenu);
+
+    //Edit rating
+    float UserRating = Entity->GetUserInfo()->GetRatingValue();
+
+    QMenu RatingMenu;
+    RatingMenu.setTitle("Rating");
+
+    QActionGroup *RatingGroup = new QActionGroup(this);
+    RatingGroup->addAction("-")->setCheckable(true);
+    RatingGroup->addAction("0")->setCheckable(true);
+    RatingGroup->addAction("0.5")->setCheckable(true);
+    RatingGroup->addAction("1")->setCheckable(true);
+    RatingGroup->addAction("1.5")->setCheckable(true);
+    RatingGroup->addAction("2")->setCheckable(true);
+    RatingGroup->addAction("2.5")->setCheckable(true);
+    RatingGroup->addAction("3")->setCheckable(true);
+    RatingGroup->addAction("3.5")->setCheckable(true);
+    RatingGroup->addAction("4")->setCheckable(true);
+    RatingGroup->addAction("4.5")->setCheckable(true);
+    RatingGroup->addAction("5")->setCheckable(true);
+
+    foreach(QAction *Action,RatingGroup->actions())
+    {
+        if(Action->text() == "-" && UserRating < 0)
+        {
+            Action->setChecked(true);
+        }
+
+        if(Action->text() == QString::number(UserRating))
+        {
+            Action->setChecked(true);
+        }
+    }
+
+    RatingMenu.addActions(RatingGroup->actions());
+    EditMenu.addMenu(&RatingMenu);
+
    //****** Main menu
 
     //Add edit menu
@@ -390,6 +490,36 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
     if(Action->data().toString() == Data_EditEpisode)
     {
         EditUserEpisodes(Entity);
+    }
+
+    if(StatusGroup->checkedAction()->data().toString() != CurrentStatus)
+    {
+        qDebug() << "Status changed";
+        //User changed status
+        Entity->GetUserInfo()->SetStatus(StatusGroup->checkedAction()->data().toString());
+
+        if(ModelContains(Entity->GetAnimeTitle()))
+            UpdateAnime(Entity);
+    }
+
+    if(RatingGroup->checkedAction()->text() != QString::number(UserRating))
+    {
+        //we have to check the "-" selection aswell
+        if(!(RatingGroup->checkedAction()->text() == "-" && UserRating < 0))
+        {
+            qDebug() << "Rating changed";
+
+            float NewRating;
+            if(RatingGroup->checkedAction()->text() == "-")
+                NewRating = -1;
+            else
+                NewRating = RatingGroup->checkedAction()->text().toFloat();
+
+            Entity->GetUserInfo()->SetRatingValue(NewRating);
+
+            if(ModelContains(Entity->GetAnimeTitle()))
+                UpdateAnime(Entity);
+        }
     }
 }
 

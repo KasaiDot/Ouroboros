@@ -26,12 +26,12 @@
 #define ROLE_ANIME_EPISODES (ROLE_DEFAULT + 3)
 #define ROLE_USER_STATUS (ROLE_DEFAULT + 4)
 
-//Filter text, used by filters to determine what to filter by
-#define FILTERTEXT_COMPLETED "completed"
-#define FILTERTEXT_CURRENTLY_WATCHING "currently-watching"
-#define FILTERTEXT_ON_HOLD "on-hold"
-#define FILTERTEXT_DROPPED "dropped"
-#define FILTERTEXT_PLAN_TO_WATCH "plan-to-watch"
+//all statuses
+#define STATUS_COMPLETED "completed"
+#define STATUS_CURRENTLY_WATCHING "currently-watching"
+#define STATUS_ON_HOLD "on-hold"
+#define STATUS_DROPPED "dropped"
+#define STATUS_PLAN_TO_WATCH "plan-to-watch"
 
 //Header column positions
 #define HEADER_NAME 0

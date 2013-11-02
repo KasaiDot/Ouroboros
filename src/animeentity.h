@@ -72,7 +72,7 @@ public:
     inline void SetNotePresent(bool Present) { NotesPresent = Present; }
 
     QString GetStatus() const { return Status; }
-    inline void SetStatus(QString Stat) { Status = Stat; }
+    inline void SetStatus(QString Status) { this->Status = Status; }
 
     bool isPrivate() const { return Private; }
     inline void SetPrivate(bool isPrivate) { Private = isPrivate; }
@@ -83,8 +83,8 @@ public:
     QString GetRatingType() const { return RatingType; }
     inline void SetRatingType(QString Type) { RatingType = Type; }
 
-    int GetRatingValue() const { return RatingValue; }
-    inline void SetRatingValue(int Rating) { RatingValue = Rating; }
+    float GetRatingValue() const { return RatingValue; }
+    inline void SetRatingValue(float Rating) { RatingValue = Rating; }
 
     inline void SetAnimeEpisodes(int Count) { AnimeEpisodes = Count; }
 
@@ -101,7 +101,7 @@ private:
     bool Private;
     bool Rewatching;
     QString RatingType;
-    int RatingValue;
+    float RatingValue;
 
     //Number of anime episodes
     int AnimeEpisodes;

@@ -19,6 +19,12 @@
 #ifndef APIMANAGER_H
 #define APIMANAGER_H
 
+//Api call urls
+#define API_URL_AUTH "https://hummingbirdv1.p.mashape.com/users/authenticate"
+#define API_URL_GETLIBRARY "https://hummingbirdv1.p.mashape.com/users/<username>/library?status=<status>&auth_token=<key>"
+#define API_URL_GETANIME "https://hummingbirdv1.p.mashape.com/anime/<slug>"
+#define API_URL_UPDATELIBRARY "https://hummingbirdv1.p.mashape.com/libraries/<slug>"
+
 #include <QObject>
 #include <QScopedPointer>
 #include <QNetworkAccessManager>
@@ -39,13 +45,19 @@ public:
     enum ApiReturnStatus
     {
         Reply_Error,
-
-        Api_Success
+        Reply_Timeout,
+        Api_Success,
+        Api_Failure,
+        Api_AlreadyAuth,
+        Api_InvalidCredentials,
+        Api_NotAuthed
     };
 
     //Api calls
     ApiReturnStatus Authenticate();
-    ApiReturnStatus GetLibrary();
+    ApiReturnStatus GetLibrary(QString Status);
+    ApiReturnStatus GetAnime(QString Slug);
+    ApiReturnStatus UpdateLibrary(QString Slug);
 
     QNetworkReply* GetAnimeImage(QNetworkAccessManager *NetworkManager, QUrl const &Url);
 

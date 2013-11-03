@@ -20,12 +20,14 @@
 #define USER_H
 
 #include <QObject>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 class User
 {
 public:
     User();
-    void SetUserDetails(QString Username, QString Base64Password);
+    void SetUserDetails(QString Username, QByteArray Base64Password);
     inline void SetAuthenticated(bool isAuthenticated) { Authenticated = isAuthenticated; }
     inline void SetAuthKey(QString Key) { AuthKey = Key; }
 
@@ -33,13 +35,16 @@ public:
     bool isValid() const { return (!(Username.isEmpty() && Password.isEmpty())); }
     bool isAuthenticated() const { return Authenticated; }
     QString GetUsername() const { return Username; }
-    QString GetBase64Password() const { return Password; }
+    QByteArray GetBase64Password() const { return Password; }
     QString GetAuthKey() const { return AuthKey; }
+
+    //builds the authentication doc
+    QJsonDocument BuildAuthJsonDocument();
 
 private:
 
     QString Username;//Email or Username
-    QString Password; //Password in base64 encoding
+    QByteArray Password; //Password in base64 encoding
 
     QString AuthKey;
     bool Authenticated;

@@ -124,6 +124,7 @@ void AnimeDatabase::ParseJson(QByteArray Data)
     QVariantMap UserInfoMap = Doc.toVariant().toMap();
     QVariantMap AnimeInfoMap = UserInfoMap.value("anime").toMap();
 
+
     //Check wether we have a slug value
     if(!AnimeInfoMap.contains("slug")) return;
 
@@ -138,7 +139,7 @@ void AnimeDatabase::ParseJson(QByteArray Data)
     UserInfo.SetPrivate(UserInfoMap.value("private",false).toBool());
     UserInfo.SetRewatching(UserInfoMap.value("rewatching",false).toBool());
     UserInfo.SetRatingType(UserInfoMap.value("rating").toMap().value("type","basic").toString());
-    UserInfo.SetRatingValue(UserInfoMap.value("rating").toMap().value("value",-1).toFloat());
+    UserInfo.SetRatingValue(UserInfoMap.value("rating").toMap().value("value",0).toFloat());
 
     //Anime info
     AnimeEntity *Entity = new AnimeEntity();
@@ -147,7 +148,7 @@ void AnimeDatabase::ParseJson(QByteArray Data)
     Entity->SetAnimeUrl(AnimeInfoMap.value("url","").toString());
     Entity->SetAnimeTitle(AnimeInfoMap.value("title","").toString());
     Entity->SetAnimeAlternateTitle(AnimeInfoMap.value("alternate_title","").toString());
-    Entity->SetAnimeEpisodeCount(AnimeInfoMap.value("episode_count",ANIMEENTITY_UNKNOWN_EPISODE).toInt());
+    Entity->SetAnimeEpisodeCount(AnimeInfoMap.value("episode_count",ANIMEENTITY_UNKNOWN_ANIME_EPISODE).toInt());
     Entity->SetAnimeImage(AnimeInfoMap.value("cover_image","").toString());
     Entity->SetAnimeSynopsis(AnimeInfoMap.value("synopsis","").toString());
     Entity->SetAnimeShowType(AnimeInfoMap.value("show_type","").toString());

@@ -99,7 +99,7 @@ public:
         QString AnimeEpisodeText = QString::number(AnimeEpisodeCount);
 
         //Check if we have got the anime episode count
-        if(AnimeEpisodeCount >= 0)
+        if(AnimeEpisodeCount > ANIMEENTITY_UNKNOWN_ANIME_EPISODE)
         {
             if(UserEpisodeCount > AnimeEpisodeCount)
                 UserEpisodeCount = AnimeEpisodeCount;
@@ -234,14 +234,14 @@ public:
 
             //User Clicked the button, so we send the signal for GUI_Manager to handle
             if(Minus.contains( MouseEvent->pos()))
-                emit ButtonClicked(Index,Button::Minus);
+                emit ButtonClicked(Index.data(ROLE_ANIME_SLUG).toString(),Button::Minus);
             else if(Plus.contains( MouseEvent->pos()))
-                emit ButtonClicked(Index,Button::Plus);
+                emit ButtonClicked(Index.data(ROLE_ANIME_SLUG).toString(),Button::Plus);
         }
         return true;
     }
 signals:
-    void ButtonClicked(QModelIndex Index,ProgressDelegate::Button Type);
+    void ButtonClicked(QString Slug,ProgressDelegate::Button Type);
     void SelectRow(QModelIndex Index);
 
 private:
@@ -275,6 +275,15 @@ public:
     //Note: can return multiple results depending on the Title
     bool ModelContains(QString Title) { return (DataModel->findItems(Title,Qt::MatchFixedString,HEADER_NAME).length() > 0); }
 
+    //Note: can return multiple results depending on the Title
+    //Should be used in conjunction with model contains
+    QStandardItem *GetItem(QString Title)
+    {
+        if(ModelContains(Title))
+            return (DataModel->findItems(Title,Qt::MatchFixedString,HEADER_NAME).at(0));
+        return nullptr;
+    }
+
     //view info edit functions
     bool EditUserEpisodes(Anime::AnimeEntity *Entity);
 
@@ -282,7 +291,7 @@ signals:
 
 public slots:
     //Slots for the progressbar delegate
-   void ProgressBarButtonClicked(QModelIndex Index,ProgressDelegate::Button Type);
+   void ProgressBarButtonClicked(QString Slug,ProgressDelegate::Button Type);
    void SelectRow(QModelIndex Index);
 
    //Tab changed

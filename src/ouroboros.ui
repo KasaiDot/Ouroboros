@@ -240,6 +240,9 @@
            <attribute name="headerMinimumSectionSize">
             <number>50</number>
            </attribute>
+           <attribute name="headerShowSortIndicator" stdset="0">
+            <bool>false</bool>
+           </attribute>
           </widget>
          </item>
         </layout>
@@ -312,6 +315,9 @@
            <attribute name="headerMinimumSectionSize">
             <number>50</number>
            </attribute>
+           <attribute name="headerShowSortIndicator" stdset="0">
+            <bool>false</bool>
+           </attribute>
           </widget>
          </item>
         </layout>
@@ -383,6 +389,9 @@
            </attribute>
            <attribute name="headerMinimumSectionSize">
             <number>50</number>
+           </attribute>
+           <attribute name="headerShowSortIndicator" stdset="0">
+            <bool>false</bool>
            </attribute>
            <attribute name="headerStretchLastSection">
             <bool>true</bool>

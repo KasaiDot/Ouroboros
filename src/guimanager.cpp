@@ -89,17 +89,26 @@ void GUIManager::PopulateModel()
  ************************************************************************/
 void GUIManager::AddAnime(Anime::AnimeEntity *Entity)
 {
+    QString Slug = Entity->GetAnimeSlug();
     //We need to create 5 seperate items then add them to the Datamodel
     QStandardItem *Item_Name = new QStandardItem(Entity->GetAnimeTitle());
     QStandardItem *Item_Progress = new QStandardItem();
-    QStandardItem *Item_Rating = new QStandardItem(Entity->GetUserInfo()->GetRatingValue());
+    QStandardItem *Item_Rating = new QStandardItem();
     QStandardItem *Item_Type = new QStandardItem(Entity->GetAnimeShowType());
 
-    if(Entity->GetUserInfo()->GetRatingValue() < 0)
+    float UserRating = Entity->GetUserInfo()->GetRatingValue();
+    if(UserRating <= 0)
         Item_Rating->setText("-");
+    else
+        Item_Rating->setText(QString::number(UserRating));
+
+    //Set the anime slug data on each item
+    Item_Name->setData(Slug,ROLE_ANIME_SLUG);
+    Item_Progress->setData(Slug,ROLE_ANIME_SLUG);
+    Item_Rating->setData(Slug,ROLE_ANIME_SLUG);
+    Item_Type->setData(Slug,ROLE_ANIME_SLUG);
 
     //Set the slug, user episode count, etc
-    Item_Name->setData(Entity->GetAnimeSlug(),ROLE_ANIME_SLUG);
     Item_Name->setData(Entity->GetUserInfo()->GetStatus(),ROLE_USER_STATUS);
 
     Item_Progress->setData(Entity->GetAnimeEpisodeCount(),ROLE_ANIME_EPISODES);
@@ -124,13 +133,15 @@ void GUIManager::AddAnime(Anime::AnimeEntity *Entity)
  ***********************************************************************************/
 void GUIManager::UpdateAnime(QStandardItem *Item, Anime::AnimeEntity *Entity)
 {
+    QString Slug = Entity->GetAnimeSlug();
+
     //Since we don't know if the item is the one containing the title, we have to manually get it and the other items
     QStandardItem *Item_Name = DataModel->item(Item->row(),HEADER_NAME);
     QStandardItem *Item_Progress = DataModel->item(Item->row(),HEADER_PROGRESS);
     QStandardItem *Item_Rating = DataModel->item(Item->row(),HEADER_RATING);
     QStandardItem *Item_Type = DataModel->item(Item->row(),HEADER_SHOW_TYPE);
 
-    QString ItemRating = (Entity->GetUserInfo()->GetRatingValue() < 0) ? "-" : QString::number(Entity->GetUserInfo()->GetRatingValue());
+    QString ItemRating = (Entity->GetUserInfo()->GetRatingValue() <= 0) ? "-" : QString::number(Entity->GetUserInfo()->GetRatingValue());
 
     //set the text
     Item_Name->setText(Entity->GetAnimeTitle());
@@ -140,8 +151,13 @@ void GUIManager::UpdateAnime(QStandardItem *Item, Anime::AnimeEntity *Entity)
     Item_Rating->setTextAlignment(Qt::AlignHCenter);
     Item_Type->setTextAlignment(Qt::AlignHCenter);
 
+    //Set the anime slug data on each item
+    Item_Name->setData(Slug,ROLE_ANIME_SLUG);
+    Item_Progress->setData(Slug,ROLE_ANIME_SLUG);
+    Item_Rating->setData(Slug,ROLE_ANIME_SLUG);
+    Item_Type->setData(Slug,ROLE_ANIME_SLUG);
+
     //set data
-    Item_Name->setData(Entity->GetAnimeSlug(),ROLE_ANIME_SLUG);
     Item_Name->setData(Entity->GetUserInfo()->GetStatus(),ROLE_USER_STATUS);
 
     Item_Progress->setData(Entity->GetAnimeEpisodeCount(),ROLE_ANIME_EPISODES);
@@ -165,24 +181,22 @@ void GUIManager::UpdateAnime(Anime::AnimeEntity *Entity)
 {
     if(!ModelContains(Entity->GetAnimeTitle())) return;
 
-    QStandardItem *Item_Name = DataModel->findItems(Entity->GetAnimeTitle(),Qt::MatchFixedString,HEADER_NAME).at(0);
+    QStandardItem *Item_Name = GetItem(Entity->GetAnimeTitle());
     UpdateAnime(Item_Name,Entity);
 
 }
 
-
 /************************************************************************************************************
  * Handles the button click signal recieved from pressing either the "+" or "-" buttons on the progress bar
  ***********************************************************************************************************/
-void GUIManager::ProgressBarButtonClicked(QModelIndex Index, ProgressDelegate::Button Type)
+void GUIManager::ProgressBarButtonClicked(QString Slug, ProgressDelegate::Button Type)
 {
 
-    QString AnimeSlug = DataModel->item(Index.row(),HEADER_NAME)->data(ROLE_ANIME_SLUG).toString();
-    Anime::AnimeEntity *Entity = Anime_Database.GetAnime(AnimeSlug);
+    Anime::AnimeEntity *Entity = Anime_Database.GetAnime(Slug);
 
     if(Type == ProgressDelegate::Plus)
     {
-        if(Entity->GetUserInfo()->GetEpisodesWatched() + 1 <= Entity->GetAnimeEpisodeCount())
+        if((Entity->GetUserInfo()->GetEpisodesWatched() + 1 <= Entity->GetAnimeEpisodeCount()) || Entity->GetAnimeEpisodeCount() <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE)
             Entity->GetUserInfo()->IncrementEpisodeCount();
     } else if(Type == ProgressDelegate::Minus)
     {
@@ -191,7 +205,7 @@ void GUIManager::ProgressBarButtonClicked(QModelIndex Index, ProgressDelegate::B
     }
 
     //Update the view
-    UpdateAnime(Index,Entity);
+    UpdateAnime(Entity);
 }
 
 /*********************************
@@ -287,30 +301,35 @@ void GUIManager::SetUpFilters()
     //Filters will only get data from ROLE_USER_STATUS role
     Filter_Completed = new QSortFilterProxyModel(this);
     Filter_Completed->setSourceModel(DataModel);
+    Filter_Completed->sort(HEADER_NAME);
     Filter_Completed->setFilterRole(ROLE_USER_STATUS);
     Filter_Completed->setFilterRegExp(STATUS_COMPLETED);
     MainWindow->GetView(Ouroboros::Completed)->setModel(Filter_Completed);
 
     Filter_Dropped = new QSortFilterProxyModel(this);
     Filter_Dropped->setSourceModel(DataModel);
+    Filter_Dropped->sort(HEADER_NAME);
     Filter_Dropped->setFilterRole(ROLE_USER_STATUS);
     Filter_Dropped->setFilterRegExp(STATUS_DROPPED);
     MainWindow->GetView(Ouroboros::Dropped)->setModel(Filter_Dropped);
 
     Filter_CurrentlyWatching = new QSortFilterProxyModel(this);
     Filter_CurrentlyWatching->setSourceModel(DataModel);
+    Filter_CurrentlyWatching->sort(HEADER_NAME);
     Filter_CurrentlyWatching->setFilterRole(ROLE_USER_STATUS);
     Filter_CurrentlyWatching->setFilterRegExp(STATUS_CURRENTLY_WATCHING);
     MainWindow->GetView(Ouroboros::CurrentlyWatching)->setModel(Filter_CurrentlyWatching);
 
     Filter_OnHold = new QSortFilterProxyModel(this);
     Filter_OnHold->setSourceModel(DataModel);
+    Filter_OnHold->sort(HEADER_NAME);
     Filter_OnHold->setFilterRole(ROLE_USER_STATUS);
     Filter_OnHold->setFilterRegExp(STATUS_ON_HOLD);
     MainWindow->GetView(Ouroboros::OnHold)->setModel(Filter_OnHold);
 
     Filter_PlanToWatch = new QSortFilterProxyModel(this);
     Filter_PlanToWatch->setSourceModel(DataModel);
+    Filter_PlanToWatch->sort(HEADER_NAME);
     Filter_PlanToWatch->setFilterRole(ROLE_USER_STATUS);
     Filter_PlanToWatch->setFilterRegExp(STATUS_PLAN_TO_WATCH);
     MainWindow->GetView(Ouroboros::PlanToWatch)->setModel(Filter_PlanToWatch);
@@ -320,6 +339,7 @@ void GUIManager::SetUpFilters()
     //we filter the string
     Filter_Search = new QSortFilterProxyModel(this);
     Filter_Search->setSourceModel(DataModel);
+    Filter_Search->sort(HEADER_NAME);
     Filter_Search->setFilterKeyColumn(HEADER_NAME); //We want to search the names of the anime
 }
 
@@ -342,7 +362,7 @@ void GUIManager::SetUpDelegates()
     MainWindow->GetView(Ouroboros::PlanToWatch)->setItemDelegateForColumn(HEADER_PROGRESS,ProgressBar);
 
     //connect signals and slots
-    connect(ProgressBar,SIGNAL(ButtonClicked(QModelIndex,ProgressDelegate::Button)),this,SLOT(ProgressBarButtonClicked(QModelIndex,ProgressDelegate::Button)));
+    connect(ProgressBar,SIGNAL(ButtonClicked(QString,ProgressDelegate::Button)),this,SLOT(ProgressBarButtonClicked(QString,ProgressDelegate::Button)));
 
 }
 
@@ -356,10 +376,8 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
     QModelIndex Index = CurrentView->indexAt(Pos);
     if(Index.row() < 0) return;
 
-    QStandardItem *Item = DataModel->item(Index.row(),HEADER_NAME);
-
+    QString Slug = Index.data(ROLE_ANIME_SLUG).toString();
     //Get the anime slug
-    QString Slug = Item->data(ROLE_ANIME_SLUG).toString();
     Anime::AnimeEntity *Entity = Anime_Database.GetAnime(Slug);
 
     //Constuct the menu
@@ -448,7 +466,6 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
     RatingMenu.setTitle("Rating");
 
     QActionGroup *RatingGroup = new QActionGroup(this);
-    RatingGroup->addAction("-")->setCheckable(true);
     RatingGroup->addAction("0")->setCheckable(true);
     RatingGroup->addAction("0.5")->setCheckable(true);
     RatingGroup->addAction("1")->setCheckable(true);
@@ -463,11 +480,6 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
 
     foreach(QAction *Action,RatingGroup->actions())
     {
-        if(Action->text() == "-" && UserRating < 0)
-        {
-            Action->setChecked(true);
-        }
-
         if(Action->text() == QString::number(UserRating))
         {
             Action->setChecked(true);
@@ -505,21 +517,13 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
     if(RatingGroup->checkedAction()->text() != QString::number(UserRating))
     {
         //we have to check the "-" selection aswell
-        if(!(RatingGroup->checkedAction()->text() == "-" && UserRating < 0))
-        {
-            qDebug() << "Rating changed";
+        float NewRating = RatingGroup->checkedAction()->text().toFloat();
 
-            float NewRating;
-            if(RatingGroup->checkedAction()->text() == "-")
-                NewRating = -1;
-            else
-                NewRating = RatingGroup->checkedAction()->text().toFloat();
+        Entity->GetUserInfo()->SetRatingValue(NewRating);
 
-            Entity->GetUserInfo()->SetRatingValue(NewRating);
+        if(ModelContains(Entity->GetAnimeTitle()))
+            UpdateAnime(Entity);
 
-            if(ModelContains(Entity->GetAnimeTitle()))
-                UpdateAnime(Entity);
-        }
     }
 }
 
@@ -532,7 +536,7 @@ bool GUIManager::EditUserEpisodes(Anime::AnimeEntity *Entity)
 {
     bool Ok;
     int MinVal = 0;
-    int MaxVal = (Entity->GetAnimeEpisodeCount() < 0) ? 999 : Entity->GetAnimeEpisodeCount();
+    int MaxVal = (Entity->GetAnimeEpisodeCount() == ANIMEENTITY_UNKNOWN_ANIME_EPISODE) ? 999 : Entity->GetAnimeEpisodeCount();
     int EpisodesWatched = QInputDialog::getInt(MainWindow,"Set episodes watched","Episodes: ",Entity->GetUserInfo()->GetEpisodesWatched(),MinVal,MaxVal,1,&Ok);
 
     if(!Ok) return false;

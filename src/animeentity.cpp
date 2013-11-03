@@ -30,7 +30,7 @@ AnimeEntity::AnimeEntity():
     AnimeUrl(""),
     AnimeTitle(""),
     AnimeAlternateTitle(""),
-    AnimeEpisodeCount(-1),
+    AnimeEpisodeCount(ANIMEENTITY_UNKNOWN_ANIME_EPISODE),
     AnimeImage(""),
     AnimeSynopsis(""),
     AnimeShowType(""),
@@ -190,6 +190,33 @@ QJsonDocument AnimeEntity::BuildUserJsonDocument()
 
 }
 
+/****************************************
+ * Builds JSON file for api update call
+ ****************************************/
+QJsonObject AnimeEntity::BuildUpdateJsonDocument()
+{
+    QJsonValue NullValue;
+    QJsonObject Object;
+
+    Object.insert("status",UserInfo.GetStatus());
+    Object.insert("privacy",UserInfo.isPrivate());
+    Object.insert("rewatched_times",UserInfo.GetRewatchedTimes());
+    Object.insert("episodes_watched",UserInfo.GetEpisodesWatched());
+    Object.insert("increment_episodes",false);
+
+    if(UserInfo.GetRatingValue() <= 0)
+        Object.insert("rating",NullValue);
+    else
+        Object.insert("rating",UserInfo.GetRatingValue());
+
+    if(UserInfo.GetNotes().isEmpty())
+        Object.insert("notes",NullValue);
+    else
+        Object.insert("notes",UserInfo.GetNotes());
+
+    return Object;
+}
+
 //******************************************************************************************************
 
 UserAnimeInformation::UserAnimeInformation():
@@ -202,6 +229,6 @@ UserAnimeInformation::UserAnimeInformation():
      Private(false),
      Rewatching(false),
      RatingType(""),
-     RatingValue(-1)
+     RatingValue(0)
 {
 }

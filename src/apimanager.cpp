@@ -20,6 +20,11 @@
 
 #include <QEventLoop>
 #include <QApplication>
+#include <QDebug>
+#include <QTimer>
+
+#include "user.h"
+#include "animedatabase.h"
 
 using namespace Manager;
 
@@ -31,6 +36,39 @@ ApiManager::ApiManager(QObject *parent) :
 {
 }
 
+/*****************************
+ * Authenticates current user
+ *****************************/
+ApiManager::ApiReturnStatus ApiManager::Authenticate()
+{
+    if(CurrentUser.isAuthenticated()) return Api_AlreadyAuth;
+
+    //create network manager
+    QScopedPointer<QNetworkAccessManager> NetworkManager(new QNetworkAccessManager);
+    QString Data = QString(CurrentUser.BuildAuthJsonDocument().toJson());
+
+    QNetworkReply *Reply = DoHttpPost(NetworkManager.data(),QUrl(QString(API_URL_AUTH)),Data);
+    return ProcessReply(Reply,Call_Auth);
+}
+
+ApiManager::ApiReturnStatus ApiManager::GetLibrary(QString Status)
+{
+    if(!CurrentUser.isAuthenticated()) return Api_NotAuthed;
+
+    //create network manager
+    QScopedPointer<QNetworkAccessManager> NetworkManager(new QNetworkAccessManager);
+    QString Url = API_URL_GETLIBRARY;
+    Url.replace("<username>",CurrentUser.GetUsername());
+    Url.replace("<status>",Status);
+    Url.replace("<key>",CurrentUser.GetAuthKey());
+
+    QNetworkReply *Reply = DoHttpGet(NetworkManager.data(),QUrl(Url));
+    return ProcessReply(Reply,Call_GetLibrary);
+}
+
+/******************************
+ * Gets anime image file
+ ******************************/
 QNetworkReply *ApiManager::GetAnimeImage(QNetworkAccessManager *NetworkManager, const QUrl &Url)
 {
     return DoHttpGet(NetworkManager,Url,false);
@@ -41,10 +79,62 @@ QNetworkReply *ApiManager::GetAnimeImage(QNetworkAccessManager *NetworkManager, 
  ************************************************************************/
 ApiManager::ApiReturnStatus ApiManager::ProcessReply(QNetworkReply *Reply, ApiManager::ApiCall Call)
 {
+    //Check for timeout or errors
+    if(Reply->property("Timeout").toBool())
+    {
+        Reply->deleteLater();
+        return Reply_Timeout;
+    }
+
     if(Reply->error() != QNetworkReply::NoError)
     {
+        qDebug() << "Reply error";
+        Reply->deleteLater();
         return Reply_Error;
-        delete Reply;
+    }
+
+    //Read the reply
+    QByteArray ReplyData = Reply->readAll();
+
+    //Check if user is authenticated and has the right auth token
+    if(ReplyData.contains("Invalid credentials"))
+    {
+        Reply->deleteLater();
+        return Api_InvalidCredentials;
+    }
+
+    if(ReplyData.contains("Invalid authentication token"))
+    {
+        Reply->deleteLater();
+        return Api_NotAuthed;
+    }
+
+    //Check for other errors
+    if(ReplyData.isEmpty()
+            || ReplyData.contains("Invalid JSON Object")
+            || ReplyData.contains("\"error\":"))
+    {
+        Reply->deleteLater();
+        return Api_Failure;
+    }
+
+    switch (Call)
+    {
+        case Call_Auth:
+            {
+                //remove ""
+                QString AuthKey = ReplyData.remove(0,1);
+                AuthKey.remove(AuthKey.size() - 1,1);
+
+                //Set the key
+                CurrentUser.SetAuthKey(AuthKey);
+                CurrentUser.SetAuthenticated(true);
+            }
+        break;
+
+        case Call_GetLibrary:
+            Anime_Database.ParseMultipleJson(ReplyData);
+        break;
     }
 
     return Api_Success;
@@ -59,13 +149,24 @@ QNetworkReply *ApiManager::DoHttpGet(QNetworkAccessManager *NetworkManager, cons
 
     //Set the hummingbird api headers
     if(HummingbirdHeader)
+    {
+        Request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
         Request.setRawHeader("X-Mashape-Authorization",HUMMINGBIRD_API_KEY);
+    }
 
     QNetworkReply *Reply = NetworkManager->get(Request);
+    Reply->setProperty("Timeout",false);
 
-    //Wait for the reply
+    //Wait for the reply and add a timeout period
+    QTimer Timer;
+    Timer.setSingleShot(true);
+    Timer.setInterval(10000);
+
     QEventLoop Loop;
+    QObject::connect(&Timer,SIGNAL(timeout()),&Loop,SLOT(quit()));
+    QObject::connect(&Timer,&QTimer::timeout,[=]() { Reply->setProperty("Timeout",true); });
     QObject::connect(Reply,SIGNAL(finished()),&Loop,SLOT(quit()));
+    Timer.start();
     Loop.exec();
 
     return Reply;
@@ -80,13 +181,24 @@ QNetworkReply *ApiManager::DoHttpPost(QNetworkAccessManager *NetworkManager, con
 
     //Set the hummingbird api headers
     if(HummingbirdHeader)
+    {
+        Request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
         Request.setRawHeader("X-Mashape-Authorization",HUMMINGBIRD_API_KEY);
+    }
 
     QNetworkReply *Reply = NetworkManager->post(Request,Data.toUtf8());
+    Reply->setProperty("Timeout",false);
 
-    //Wait for the reply
+    //Wait for the reply and add a timeout period
+    QTimer Timer;
+    Timer.setSingleShot(true);
+    Timer.setInterval(10000);
+
     QEventLoop Loop;
+    QObject::connect(&Timer,SIGNAL(timeout()),&Loop,SLOT(quit()));
+    QObject::connect(&Timer,&QTimer::timeout,[=]() { Reply->setProperty("Timeout",true); });
     QObject::connect(Reply,SIGNAL(finished()),&Loop,SLOT(quit()));
+    Timer.start();
     Loop.exec();
 
     return Reply;

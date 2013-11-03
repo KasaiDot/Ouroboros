@@ -32,10 +32,23 @@ User::User():
  * Sets user details, where user is either the email or username of the user
  * and Base64Password is user password encoded in Base64
  ****************************************************************************/
-void User::SetUserDetails(QString Username, QString Base64Password)
+void User::SetUserDetails(QString Username, QByteArray Base64Password)
 {
     this->Username = Username.toLower();
     this->Password = Base64Password;
     SetAuthenticated(false);
     SetAuthKey("");
+}
+
+/**********************************************
+ * Builds the JSON required for authentication
+ **********************************************/
+QJsonDocument User::BuildAuthJsonDocument()
+{
+    QJsonObject Object;
+    Object.insert("username",Username);
+    Object.insert("password",QString(QByteArray::fromBase64(Password)));
+
+    QJsonDocument Doc(Object);
+    return Doc;
 }

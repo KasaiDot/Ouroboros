@@ -25,7 +25,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QDebug>
-#include <QSharedPointer>
+#include <QScopedPointer>
 
 #include "apimanager.h"
 
@@ -65,7 +65,7 @@ bool FileManager::SaveUserInformation()
     //Create the JSON file
     //We first have to create JsonValues which will hold the values for the fields
     QJsonValue UsernameField(CurrentUser.GetUsername());
-    QJsonValue PasswordField(CurrentUser.GetBase64Password());
+    QJsonValue PasswordField(QString(CurrentUser.GetBase64Password()));
 
     //Then we add those to a json object
     QJsonObject JsonObject;
@@ -169,7 +169,7 @@ bool FileManager::SaveAnimeImage(Anime::AnimeEntity *Entity)
 
     if(!QFile::exists(QString(ImageFilePath + ImageFileName)))
     {
-        QSharedPointer<QNetworkAccessManager> NetworkManager = QSharedPointer<QNetworkAccessManager>(new QNetworkAccessManager,&QObject::deleteLater);
+        QScopedPointer<QNetworkAccessManager> NetworkManager(new QNetworkAccessManager);
         QNetworkReply *Reply = Api_Manager.GetAnimeImage(NetworkManager.data(),QUrl(Entity->GetAnimeImage()));
         if(Reply->error()) return false;
 

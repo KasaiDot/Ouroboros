@@ -19,13 +19,15 @@
 #ifndef ANIMEENTITY_H
 #define ANIMEENTITY_H
 
-#define ANIMEENTITY_UNKNOWN_EPISODE -1
+#define ANIMEENTITY_UNKNOWN_ANIME_EPISODE 0
 
 #include <QObject>
 #include <QStringList>
 #include <QDateTime>
 #include <QDebug>
 #include <QJsonDocument>
+#include <QMessageBox>
+#include <QApplication>
 
 namespace Anime
 {
@@ -42,16 +44,18 @@ public:
     int GetEpisodesWatched() const { return EpisodesWatched; }
     inline void SetEpisodesWatched(int EpisodeCount, bool UpdateWatched = false)
     {
-        if(((EpisodeCount <= AnimeEpisodes) && (EpisodeCount >= 0)) || (AnimeEpisodes < 0))
+        if(((EpisodeCount <= AnimeEpisodes) && (EpisodeCount >= 0)) || (AnimeEpisodes <= 0))
             EpisodesWatched = EpisodeCount;
         if(UpdateWatched)
             UpdateLastWatched();
     }
     inline void IncrementEpisodeCount()
     {
-        if(EpisodesWatched + 1 <= AnimeEpisodes || AnimeEpisodes < 0)
+        if(EpisodesWatched + 1 <= AnimeEpisodes || AnimeEpisodes <= 0)
+        {
             EpisodesWatched++;
-        UpdateLastWatched();
+            UpdateLastWatched();
+        }
     }
     inline void DecrementEpisodeCount()
     {
@@ -124,14 +128,17 @@ public:
     QJsonDocument BuildAnimeJsonDocument();
     QJsonDocument BuildUserJsonDocument();
 
+    //constructs json for update
+    QJsonObject BuildUpdateJsonDocument();
+
     //****************************************** Setters and Getter methods *********************************************************************/
 
     UserAnimeInformation *GetUserInfo() { return &UserInfo; } //Return a pointer as to not make a copy of the information
-    inline void SetUserInfo(UserAnimeInformation Info)
+    inline void SetUserInfo(UserAnimeInformation &Info)
     {
         UserInfo = Info;
         //Check that the current episode is less than the anime episodes
-        if(GetAnimeEpisodeCount() == ANIMEENTITY_UNKNOWN_EPISODE) return;
+        if(GetAnimeEpisodeCount() <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE) return;
         if(UserInfo.GetEpisodesWatched() > GetAnimeEpisodeCount())
             UserInfo.SetEpisodesWatched(GetAnimeEpisodeCount());
         Info.SetAnimeEpisodes(GetAnimeEpisodeCount());
@@ -153,7 +160,7 @@ public:
     inline void SetAnimeAlternateTitle(QString AlternateTitle) { AnimeAlternateTitle = AlternateTitle; }
 
     int GetAnimeEpisodeCount() const { return AnimeEpisodeCount; }
-    inline void SetAnimeEpisodeCount(int EpisodeCount) { if(EpisodeCount > 0) AnimeEpisodeCount = EpisodeCount; }
+    inline void SetAnimeEpisodeCount(int EpisodeCount) { if(EpisodeCount >= 0) AnimeEpisodeCount = EpisodeCount; }
 
     QString GetAnimeImage() const { return AnimeImage; }
     inline void SetAnimeImage(QString Image) { AnimeImage = Image; }

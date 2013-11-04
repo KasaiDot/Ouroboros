@@ -20,6 +20,8 @@
 #define QUEUEMANAGER_H
 
 #include <QObject>
+#include <QTimer>
+#include <QPointer>
 
 #include "queueitem.h"
 #include "queueworker.h"
@@ -38,11 +40,18 @@ private:
 
     //Main Queue
     QList<QueueItem*> ItemQueue;
-    QueueWorker *Worker;
+    QPointer<QueueWorker> Worker;
+
+
+    void StartRunning();
 
     bool Running;
 
+    //Used to delay the queue if a new item is added in
+    QTimer *DelayTimer;
+
 signals:
+    void PopulateModel();
 
 public slots:
     void Run();
@@ -51,6 +60,10 @@ public slots:
     void AddItem(QueueItem* Item);
     void DeleteItem(QueueItem* Item);
 
+    //Api functions
+    void AuthenticateUser();
+    void GetAnimeLibrary();
+    void UpdateLibrary(QString Slug);
 };
 
 }

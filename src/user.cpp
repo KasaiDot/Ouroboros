@@ -23,8 +23,8 @@ User CurrentUser;
 User::User():
     Username(""),
     Password(""),
-    Authenticated(false),
-    AuthKey("")
+    AuthKey(""),
+    Authenticated(false)
 {
 }
 

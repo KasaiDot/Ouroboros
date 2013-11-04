@@ -40,6 +40,7 @@ private:
 signals:
     void Finished();
     void DeleteQueueItem(QueueItem*);
+    void AuthUser();
 
 public slots:
     void Run();

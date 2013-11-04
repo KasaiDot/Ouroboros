@@ -264,13 +264,6 @@ public:
 
     QStandardItemModel* GetDataModel() const { return DataModel; }
 
-    //Add entities to the model
-    void PopulateModel();
-    void AddAnime(Anime::AnimeEntity *Entity);
-    void UpdateAnime(QStandardItem *Item,Anime::AnimeEntity *Entity);
-    void UpdateAnime(QModelIndex Index,Anime::AnimeEntity *Entity);
-    void UpdateAnime(Anime::AnimeEntity *Entity); //This function will get the top most found anime and update it, be careful
-
     //checks if model contains an item based on the Title
     //Note: can return multiple results depending on the Title
     bool ModelContains(QString Title) { return (DataModel->findItems(Title,Qt::MatchFixedString,HEADER_NAME).length() > 0); }
@@ -287,11 +280,21 @@ public:
     //view info edit functions
     bool EditUserEpisodes(Anime::AnimeEntity *Entity);
 
+    //push anime to the queue to update in the api
+    void UpdateHummingbirdAnime(QString AnimeSlug);
+
 signals:
 
 public slots:
+    //Add entities to the model
+    void PopulateModel();
+    void AddAnime(Anime::AnimeEntity *Entity);
+    void UpdateAnime(QStandardItem *Item,Anime::AnimeEntity *Entity);
+    void UpdateAnime(QModelIndex Index,Anime::AnimeEntity *Entity);
+    void UpdateAnime(Anime::AnimeEntity *Entity); //This function will get the top most found anime and update it, be careful
+
     //Slots for the progressbar delegate
-   void ProgressBarButtonClicked(QString Slug,ProgressDelegate::Button Type);
+    void ProgressBarButtonClicked(QString Slug,ProgressDelegate::Button Type);
    void SelectRow(QModelIndex Index);
 
    //Tab changed

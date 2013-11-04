@@ -3,6 +3,7 @@
 ##################
 private.h
 *.user
+Resources/
 
 #################
 ## Eclipse

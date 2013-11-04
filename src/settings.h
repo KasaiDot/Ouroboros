@@ -24,7 +24,7 @@
 class OuroborosSettings
 {
 public:
-
+    OuroborosSettings();
     //Basic functions
     bool Load();
     bool Save();
@@ -33,10 +33,10 @@ public:
     //we get the colors the user sets
     struct ProgressDelegateSettings
     {
-        QColor TextColor = Qt::black;
-        QColor ProgressBarOutlineColor = QColor(160,160,160);
-        QColor ProgressBarBackgroundColor = QColor(250,250,250);
-        QColor ProgressBarColor = QColor(98,226,0);
+        QColor TextColor;
+        QColor ProgressBarOutlineColor;
+        QColor ProgressBarBackgroundColor;
+        QColor ProgressBarColor;
 
     } ProgressDelegate;
 

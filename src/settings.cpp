@@ -20,3 +20,11 @@
 
 OuroborosSettings Settings;
 
+
+OuroborosSettings::OuroborosSettings()
+{
+    ProgressDelegate.TextColor = Qt::black;
+    ProgressDelegate.ProgressBarOutlineColor = QColor(160,160,160);
+    ProgressDelegate.ProgressBarBackgroundColor = QColor(250,250,250);
+    ProgressDelegate.ProgressBarColor = QColor(98,226,0);
+}

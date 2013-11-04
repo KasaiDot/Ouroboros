@@ -44,3 +44,6 @@ HEADERS  += ouroboros.h \
     guimanager.h
 
 FORMS    += ouroboros.ui
+
+RESOURCES += \
+    Resources.qrc

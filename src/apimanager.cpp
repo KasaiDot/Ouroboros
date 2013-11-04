@@ -25,6 +25,7 @@
 
 #include "user.h"
 #include "animedatabase.h"
+#include "guimanager.h"
 
 using namespace Manager;
 
@@ -41,7 +42,12 @@ ApiManager::ApiManager(QObject *parent) :
  *****************************/
 ApiManager::ApiReturnStatus ApiManager::Authenticate()
 {
-    if(CurrentUser.isAuthenticated()) return Api_AlreadyAuth;
+    emit ChangeStatus("Authenticating ...");
+    if(CurrentUser.isAuthenticated())
+    {
+        emit ChangeStatus("Already Authenticated");
+        return Api_AlreadyAuth;
+    }
 
     //create network manager
     QScopedPointer<QNetworkAccessManager> NetworkManager(new QNetworkAccessManager);
@@ -51,9 +57,13 @@ ApiManager::ApiReturnStatus ApiManager::Authenticate()
     return ProcessReply(Reply,Call_Auth);
 }
 
+/*************************************
+ * Gets users library based on status
+ *************************************/
 ApiManager::ApiReturnStatus ApiManager::GetLibrary(QString Status)
 {
     if(!CurrentUser.isAuthenticated()) return Api_NotAuthed;
+    emit ChangeStatus("Getting Library: " + Status);
 
     //create network manager
     QScopedPointer<QNetworkAccessManager> NetworkManager(new QNetworkAccessManager);
@@ -64,6 +74,32 @@ ApiManager::ApiReturnStatus ApiManager::GetLibrary(QString Status)
 
     QNetworkReply *Reply = DoHttpGet(NetworkManager.data(),QUrl(Url));
     return ProcessReply(Reply,Call_GetLibrary);
+}
+
+/*********************************************
+ * updates anime in users hummingbird library
+ *********************************************/
+ApiManager::ApiReturnStatus ApiManager::UpdateLibrary(QString Slug)
+{
+    if(!CurrentUser.isAuthenticated()) return Api_NotAuthed;
+
+    QString Title = Anime_Database.GetAnime(Slug)->GetAnimeTitle();
+    emit ChangeStatus("Updating: " + Title);
+
+    QScopedPointer<QNetworkAccessManager> NetworkManager(new QNetworkAccessManager);
+    QString Url = API_URL_UPDATELIBRARY;
+    Url.replace("<slug>",Slug);
+
+    Anime::AnimeEntity *Entity = Anime_Database.GetAnime(Slug);
+    QJsonObject Object = Entity->BuildUpdateJsonObject();
+    Object.insert("auth_token",CurrentUser.GetAuthKey());
+
+    QJsonDocument Doc(Object);
+    QString Data = QString(Doc.toJson());
+
+    QNetworkReply *Reply = DoHttpPost(NetworkManager.data(),QUrl(Url),Data);
+    return ProcessReply(Reply,Call_UpdateLibrary);
+
 }
 
 /******************************
@@ -82,13 +118,14 @@ ApiManager::ApiReturnStatus ApiManager::ProcessReply(QNetworkReply *Reply, ApiMa
     //Check for timeout or errors
     if(Reply->property("Timeout").toBool())
     {
+        emit ChangeStatus("Reply Timeout");
         Reply->deleteLater();
         return Reply_Timeout;
     }
 
     if(Reply->error() != QNetworkReply::NoError)
     {
-        qDebug() << "Reply error";
+        emit ChangeStatus("Authentication Error");
         Reply->deleteLater();
         return Reply_Error;
     }
@@ -99,6 +136,7 @@ ApiManager::ApiReturnStatus ApiManager::ProcessReply(QNetworkReply *Reply, ApiMa
     //Check if user is authenticated and has the right auth token
     if(ReplyData.contains("Invalid credentials"))
     {
+        emit ChangeStatus("Invalid Credentials");
         Reply->deleteLater();
         return Api_InvalidCredentials;
     }
@@ -114,6 +152,7 @@ ApiManager::ApiReturnStatus ApiManager::ProcessReply(QNetworkReply *Reply, ApiMa
             || ReplyData.contains("Invalid JSON Object")
             || ReplyData.contains("\"error\":"))
     {
+        emit ChangeStatus("Uknown Error");
         Reply->deleteLater();
         return Api_Failure;
     }
@@ -129,11 +168,18 @@ ApiManager::ApiReturnStatus ApiManager::ProcessReply(QNetworkReply *Reply, ApiMa
                 //Set the key
                 CurrentUser.SetAuthKey(AuthKey);
                 CurrentUser.SetAuthenticated(true);
+
+                emit ChangeStatus("Completed");
             }
         break;
 
         case Call_GetLibrary:
             Anime_Database.ParseMultipleJson(ReplyData);
+            emit ChangeStatus("Completed");
+        break;
+
+        case Call_UpdateLibrary:
+            emit ChangeStatus("Completed");
         break;
     }
 

@@ -17,12 +17,14 @@
 */
 
 #include "guimanager.h"
-#include "animedatabase.h"
-#include "filemanager.h"
 
 #include <QHeaderView>
 #include <QMenu>
 #include <QInputDialog>
+
+#include "animedatabase.h"
+#include "filemanager.h"
+#include "queuemanager.h"
 
 using namespace Manager;
 GUIManager GUI_Manager;
@@ -78,10 +80,13 @@ void GUIManager::PopulateModel()
     for(QList<Anime::AnimeEntity *>::const_iterator AnimeIt = AnimeList.begin(); AnimeIt != AnimeList.end(); ++AnimeIt)
     {
         Anime::AnimeEntity *Entity = *AnimeIt;
-        AddAnime(Entity);
+        if(!Entity->GetAnimeSlug().isEmpty())
+            AddAnime(Entity);
     }
 
 }
+
+
 /************************************************************************
  * Add a single entity to the list
  * Note: Model should be checked first if it already contains the entity
@@ -89,12 +94,14 @@ void GUIManager::PopulateModel()
  ************************************************************************/
 void GUIManager::AddAnime(Anime::AnimeEntity *Entity)
 {
+    if(ModelContains(Entity->GetAnimeTitle())) return;
     QString Slug = Entity->GetAnimeSlug();
     //We need to create 5 seperate items then add them to the Datamodel
     QStandardItem *Item_Name = new QStandardItem(Entity->GetAnimeTitle());
     QStandardItem *Item_Progress = new QStandardItem();
     QStandardItem *Item_Rating = new QStandardItem();
     QStandardItem *Item_Type = new QStandardItem(Entity->GetAnimeShowType());
+
 
     float UserRating = Entity->GetUserInfo()->GetRatingValue();
     if(UserRating <= 0)
@@ -191,21 +198,32 @@ void GUIManager::UpdateAnime(Anime::AnimeEntity *Entity)
  ***********************************************************************************************************/
 void GUIManager::ProgressBarButtonClicked(QString Slug, ProgressDelegate::Button Type)
 {
-
+    bool Update = false;
     Anime::AnimeEntity *Entity = Anime_Database.GetAnime(Slug);
 
     if(Type == ProgressDelegate::Plus)
     {
         if((Entity->GetUserInfo()->GetEpisodesWatched() + 1 <= Entity->GetAnimeEpisodeCount()) || Entity->GetAnimeEpisodeCount() <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE)
+        {
             Entity->GetUserInfo()->IncrementEpisodeCount();
+            Update = true;
+        }
     } else if(Type == ProgressDelegate::Minus)
     {
         if(Entity->GetUserInfo()->GetEpisodesWatched() - 1 >= 0)
+        {
             Entity->GetUserInfo()->DecrementEpisodeCount();
+            Update = true;
+        }
     }
 
     //Update the view
     UpdateAnime(Entity);
+
+    //Update hummingbird anime only when needed, to reduce api calls
+    if(Update)
+        UpdateHummingbirdAnime(Slug);
+
 }
 
 /*********************************
@@ -255,14 +273,13 @@ void SetViewHeaderSize(QTreeView *View)
 {
     int NameSize = View->fontMetrics().size(Qt::TextSingleLine,"------------ abcdefghijklmnopqrstuvwxyz 1234567890 ------------").width();
     int ProgressSize = View->fontMetrics().size(Qt::TextSingleLine,"---------------------------------- 999/999").width();
-    int RatingSize = View->fontMetrics().size(Qt::TextSingleLine,"--------- 10 --------").width();
-    int TypeSize = View->fontMetrics().size(Qt::TextSingleLine,"---- OVA ----").width();
+    int RatingSize = View->fontMetrics().size(Qt::TextSingleLine,"------- 10 ------").width();
+    int TypeSize = View->fontMetrics().size(Qt::TextSingleLine,"---- Movie ----").width();
 
     View->header()->resizeSection(HEADER_NAME,NameSize);
     View->header()->resizeSection(HEADER_PROGRESS,ProgressSize);
     View->header()->resizeSection(HEADER_RATING,RatingSize);
     View->header()->resizeSection(HEADER_SHOW_TYPE,TypeSize);
-
 
 }
 
@@ -364,6 +381,14 @@ void GUIManager::SetUpDelegates()
     //connect signals and slots
     connect(ProgressBar,SIGNAL(ButtonClicked(QString,ProgressDelegate::Button)),this,SLOT(ProgressBarButtonClicked(QString,ProgressDelegate::Button)));
 
+}
+
+/*********************************************************
+ * Calls the api function to update anime to hummingbird
+ *********************************************************/
+void GUIManager::UpdateHummingbirdAnime(QString AnimeSlug)
+{
+    Queue_Manager.UpdateLibrary(AnimeSlug);
 }
 
 /************************************************** Context Menus************************************************************************/
@@ -506,7 +531,6 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
 
     if(StatusGroup->checkedAction()->data().toString() != CurrentStatus)
     {
-        qDebug() << "Status changed";
         //User changed status
         Entity->GetUserInfo()->SetStatus(StatusGroup->checkedAction()->data().toString());
 
@@ -523,8 +547,9 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
 
         if(ModelContains(Entity->GetAnimeTitle()))
             UpdateAnime(Entity);
-
     }
+
+    UpdateHummingbirdAnime(Slug);
 }
 
 /************************************************* View info edit functions ******************************************/
@@ -548,3 +573,4 @@ bool GUIManager::EditUserEpisodes(Anime::AnimeEntity *Entity)
 
     return true;
 }
+

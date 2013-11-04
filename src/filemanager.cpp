@@ -209,9 +209,9 @@ bool FileManager::LoadAnimeDatabase()
 
     foreach (QFileInfo File, FileList)
     {
-        qDebug() << File.completeBaseName();
         QString Slug = File.completeBaseName(); //Gets the name of the file without the .json
-        LoadAnimeEntity(Slug);
+        if(!Anime_Database.Contains(Slug))
+            LoadAnimeEntity(Slug);
     }
 
     return true;

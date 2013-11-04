@@ -49,14 +49,16 @@ AnimeDatabase::~AnimeDatabase()
  *****************************************************/
 void AnimeDatabase::AddAnime(AnimeEntity *Anime)
 {
+    if(Anime->GetAnimeSlug().isEmpty()) return;
+
     //if anime exits then check if the last watched date is more recent
     if(Database.contains(Anime->GetAnimeSlug()))
     {
         AnimeEntity *OldAnime = GetAnime(Anime->GetAnimeSlug());
-        if(OldAnime->GetUserInfo()->GetLastWatched() < Anime->GetUserInfo()->GetLastWatched())
+        if(OldAnime->GetUserInfo()->GetLastWatched() > Anime->GetUserInfo()->GetLastWatched())
         {
             //Move the userinfo of the old anime to the new one, incase the new anime information has been updated
-            UserAnimeInformation *OldInfo = Anime->GetUserInfo();
+            UserAnimeInformation *OldInfo = OldAnime->GetUserInfo();
             Anime->SetUserInfo(*OldInfo);
         }
     }
@@ -152,6 +154,7 @@ void AnimeDatabase::ParseJson(QByteArray Data)
     Entity->SetAnimeImage(AnimeInfoMap.value("cover_image","").toString());
     Entity->SetAnimeSynopsis(AnimeInfoMap.value("synopsis","").toString());
     Entity->SetAnimeShowType(AnimeInfoMap.value("show_type","").toString());
+
 
     //Go through each genre
     if(AnimeInfoMap.contains("genres"))

@@ -18,12 +18,14 @@
 
 #include "queueworker.h"
 
+#include <QDebug>
+#include <QList>
+
 using namespace Queue;
 
 QueueWorker::QueueWorker(QList<QueueItem *> &Queue) :
     Queue(Queue)
 {
-
 }
 
 /*******************************************************
@@ -33,11 +35,21 @@ QueueWorker::QueueWorker(QList<QueueItem *> &Queue) :
  *******************************************************/
 void QueueWorker::Run()
 {
-    foreach (QueueItem* Item, Queue)
+    for(QList<QueueItem*>::const_iterator i = Queue.begin(); i != Queue.end(); ++i)
     {
+        QueueItem *Item = (*i);
         int Code = Item->Run();
 
         if(Code == QueueItem::ItemReturn_Success)
+            emit DeleteQueueItem(Item);
+        if(Code == QueueItem::ItemReturn_AuthFail)
+            break;
+        if(Code == QueueItem::ItemReturn_NotAuthed)
+        {
+            emit AuthUser();
+            break;
+        }
+        if(Code == QueueItem::ItemReturn_NoData)
             emit DeleteQueueItem(Item);
     }
 

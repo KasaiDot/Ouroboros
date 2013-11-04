@@ -18,19 +18,64 @@
 
 #include "queueitem.h"
 
+#include <QDebug>
+
+#include "apimanager.h"
+
 using namespace Queue;
 
 QueueItem::QueueItem(QObject *parent, ItemType Type) :
     QObject(parent),
-    Type(Type)
+    Type(Type),
+    Data("")
 {
     //We need to generate an id for the item
     Id = RandomValue(0,9999);
 }
 
+QueueItem::QueueItem(QObject *parent, QueueItem::ItemType Type, QString Data):
+    QueueItem(parent,Type)
+{
+    this->Data = Data;
+}
+
+/************************************
+ * Sends Api call based on the item
+ ************************************/
 int QueueItem::Run()
 {
-    return 1;
+    int ReturnCode;
+    switch(Type)
+    {
+        case Item_Auth:
+            ReturnCode = Api_Manager.Authenticate();
+        break;
+
+        case Item_GetLibrary:
+            if(isDataSet())
+                ReturnCode = Api_Manager.GetLibrary(Data);
+            else
+                return ItemReturn_NoData;
+        break;
+
+        case Item_UpdateLibrary:
+            if(isDataSet())
+                ReturnCode = Api_Manager.UpdateLibrary(Data);
+            else
+                return ItemReturn_NoData;
+        break;
+    }
+
+    if(ReturnCode == Manager::ApiManager::Api_NotAuthed)
+        return ItemReturn_NotAuthed;
+
+    if(ReturnCode == Manager::ApiManager::Api_InvalidCredentials)
+        return ItemReturn_AuthFail;
+
+    if(ReturnCode == Manager::ApiManager::Api_Success)
+        return ItemReturn_Success;
+
+    return ItemReturn_Fail;
 }
 
 /*************************************************

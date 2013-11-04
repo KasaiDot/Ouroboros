@@ -33,20 +33,26 @@ public:
     enum ItemType
     {
         Item_Auth,
-        Item_GetLibrary
+        Item_GetLibrary,
+        Item_UpdateLibrary
     };
 
     enum ItemReturn
     {
         ItemReturn_Success,
-        ItemReturn_Fail
+        ItemReturn_Fail,
+        ItemReturn_NoData,
+        ItemReturn_AuthFail,
+        ItemReturn_NotAuthed
     };
 
     //Constructor
     explicit QueueItem(QObject *parent, ItemType Type);
+    explicit QueueItem(QObject *parent, ItemType Type,QString Data);
 
     inline ItemType GetItemType() const { return Type; }
     inline int GetId() const { return Id; }
+    inline QString GetData() const { return Data; }
 
     // Ovveride the '==' operator to determine if one item is another
     // This is the only way to determine in a QList
@@ -56,7 +62,9 @@ private:
 
     ItemType Type;
     int Id;
+    QString Data;
 
+    inline bool isDataSet() { return (!(Data.isEmpty() || Data.isNull())); }
     inline int RandomValue(int Min, int Max) { return qrand() % ((Max + 1) - Min) + Min; }
 
 signals:

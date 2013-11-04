@@ -48,25 +48,28 @@ Ouroboros::Ouroboros(QWidget *parent) :
     connect(RunTimer,SIGNAL(timeout()),&Queue_Manager,SLOT(Run()));
     RunTimer->start(600000);
 
-    /** Testing save **/
+    //Connect signals and slots
+    connect(&Api_Manager,SIGNAL(ChangeStatus(QString)),this,SLOT(ChangeStatus(QString)));
 
     CurrentUser.SetUserDetails(TEST_USER,QByteArray(TEST_PASS).toBase64());
 
-    Api_Manager.Authenticate();
-    Api_Manager.GetLibrary(STATUS_CURRENTLY_WATCHING);
-    Api_Manager.GetLibrary(STATUS_COMPLETED);
-    Api_Manager.GetLibrary(STATUS_DROPPED);
-    Api_Manager.GetLibrary(STATUS_ON_HOLD);
-    Api_Manager.GetLibrary(STATUS_PLAN_TO_WATCH);
+    //Load local database
+    File_Manager.LoadAnimeDatabase();
     GUI_Manager.PopulateModel();
 
-    File_Manager.SaveAnimeDatabase();
+
+    Queue_Manager.AuthenticateUser();
+    Queue_Manager.GetAnimeLibrary();
 
 
 }
 
 Ouroboros::~Ouroboros()
 {
+    //Save
+    File_Manager.SaveUserInformation();
+    File_Manager.SaveAnimeDatabase();
+
     delete ui;
 }
 
@@ -145,4 +148,18 @@ QAction *Ouroboros::GetAction(Ouroboros::Actions Type)
     }
 
     return nullptr;
+}
+
+/**************************************************
+ * Changes the status on the bottom of the screen
+ **************************************************/
+void Ouroboros::ChangeStatus(QString Status)
+{
+    ui->MainStatusBar->showMessage(Status);
+}
+
+/****************** Action Triggers ********************************/
+void Ouroboros::on_Action_Synchronize_Anime_triggered()
+{
+    Queue_Manager.GetAnimeLibrary();
 }

@@ -67,7 +67,8 @@ private:
     enum ApiCall
     {
         Call_Auth,
-        Call_GetLibrary
+        Call_GetLibrary,
+        Call_UpdateLibrary
     };
 
     QNetworkReply* DoHttpGet(QNetworkAccessManager *NetworkManager, QUrl const &Url, bool HummingbirdHeader = true);
@@ -76,6 +77,7 @@ private:
     ApiReturnStatus ProcessReply(QNetworkReply *Reply, ApiCall Call);
 
 signals:
+    void ChangeStatus(QString String);
 
 public slots:
 

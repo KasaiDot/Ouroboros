@@ -193,7 +193,7 @@ QJsonDocument AnimeEntity::BuildUserJsonDocument()
 /****************************************
  * Builds JSON file for api update call
  ****************************************/
-QJsonObject AnimeEntity::BuildUpdateJsonDocument()
+QJsonObject AnimeEntity::BuildUpdateJsonObject()
 {
     QJsonValue NullValue;
     QJsonObject Object;

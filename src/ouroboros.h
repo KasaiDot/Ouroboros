@@ -64,6 +64,11 @@ public:
 
 private:
     Ui::Ouroboros *ui;
+
+public slots:
+    void ChangeStatus(QString Status);
+private slots:
+    void on_Action_Synchronize_Anime_triggered();
 };
 
 #endif // OUROBOROS_H

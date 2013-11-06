@@ -21,6 +21,7 @@
 #include <QDebug>
 
 #include "apimanager.h"
+#include "guimanager.h"
 
 using namespace Queue;
 
@@ -34,9 +35,12 @@ QueueItem::QueueItem(QObject *parent, ItemType Type) :
 }
 
 QueueItem::QueueItem(QObject *parent, QueueItem::ItemType Type, QString Data):
-    QueueItem(parent,Type)
+    QObject(parent),
+    Type(Type)
 {
     this->Data = Data;
+
+    Id = RandomValue(0,9999);
 }
 
 /************************************
@@ -44,7 +48,7 @@ QueueItem::QueueItem(QObject *parent, QueueItem::ItemType Type, QString Data):
  ************************************/
 void QueueItem::Run()
 {
-    int ReturnCode;
+    int ReturnCode = Manager::ApiManager::Api_Success;
     Error = ItemReturn_Success;
 
     switch(Type)
@@ -65,6 +69,10 @@ void QueueItem::Run()
                 ReturnCode = Api_Manager.UpdateLibrary(Data);
             else
                 Error = ItemReturn_NoData;
+        break;
+
+        case Item_PopulateModel:
+            emit PopulateModel();
         break;
     }
 

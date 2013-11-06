@@ -47,7 +47,6 @@ private:
     QTimer *DelayTimer;
 
 signals:
-    void PopulateModel();
 
 public slots:
     //Starts the queue timer

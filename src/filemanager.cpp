@@ -24,6 +24,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QVariantMap>
 #include <QDebug>
 #include <QScopedPointer>
 
@@ -35,11 +36,12 @@ FileManager File_Manager;
 FileManager::FileManager()
 {
     //Files
-    FileManagerInfo.UserInfoFile = "Info.json";
+    FileManagerInfo.UserInfoFile = "UserInfo.json";
 
     //Dirs
-    FileManagerInfo.UserFolderPath = "/Users/";
-    FileManagerInfo.DatabaseFolderPath = "/Database/";
+    FileManagerInfo.DataFolderPath = "/Data/";
+    FileManagerInfo.UserFolderPath = FileManagerInfo.DataFolderPath + "Users/";
+    FileManagerInfo.DatabaseFolderPath = FileManagerInfo.DataFolderPath + "Database/";
     FileManagerInfo.UserAnimePath = FileManagerInfo.UserFolderPath + "<user>/Anime/"; // <user> can be replaced easily with the user's Username
     FileManagerInfo.DatabaseAnimePath = FileManagerInfo.DatabaseFolderPath + "Anime/";
     FileManagerInfo.DatabaseImagePath = FileManagerInfo.DatabaseFolderPath + "Images/";
@@ -76,7 +78,7 @@ bool FileManager::SaveUserInformation()
     QJsonDocument JsonDoc(JsonObject);
 
     //Prepare file
-    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.UserFolderPath + CurrentUser.GetUsername() + "/" ;
+    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.DataFolderPath ;
     QString Filename = FileManagerInfo.UserInfoFile;
 
     //Make sure directory exists
@@ -95,6 +97,41 @@ bool FileManager::SaveUserInformation()
     return true;
 }
 
+/*************************
+ * Loads user information
+ *************************/
+bool FileManager::LoadUserInformation()
+{
+    //Prepare file
+    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.DataFolderPath ;
+    QString Filename = FileManagerInfo.UserInfoFile;
+
+    CheckDir(Filepath);
+
+    QFile File(Filepath.append(Filename));
+
+    if(!File.exists()) return false;
+    if(!File.open(QIODevice::ReadOnly)) return false;
+
+    //Read data
+    QByteArray Data = File.readAll();
+
+    File.close();
+
+    QVariantMap UserMap = QJsonDocument::fromJson(Data).toVariant().toMap();
+    if(UserMap.size() <= 0) return false;
+
+    if(!(UserMap.contains("Username") || UserMap.contains("Password"))) return false;
+
+    QString Username = UserMap.value("Username").toString();
+    QByteArray Password = UserMap.value("Password").toByteArray();
+
+    CurrentUser.SetUserDetails(Username,Password);
+    CurrentUser.SetAuthenticated(false);
+    CurrentUser.SetAuthKey("");
+
+    return true;
+}
 /***********************************************
  * Cycles through every entity in the database
  * and calls SaveAnimeEntity
@@ -186,6 +223,7 @@ bool FileManager::SaveAnimeImage(Anime::AnimeEntity *Entity)
 
     return true;
 }
+
 
 /**************************************************************
  * Gets the list of all the anime in the /<user>/Anime folder

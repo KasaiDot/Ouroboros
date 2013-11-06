@@ -16,16 +16,36 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef GLOBALS_H
-#define GLOBALS_H
+#ifndef DIALOG_SETTINGS_H
+#define DIALOG_SETTINGS_H
 
-#define APP_DEBUG false
+#include <QDialog>
 
-#define APP_NAME "Ouroboros"
-#define APP_MINOR_VERSION 0.1
-#define APP_MAJOR_VERSION 0
+#include "user.h"
 
-#define APP_LOCAL_VERSION_FILENAME "VersionInfo.xml"
-#define APP_UPDATER "Updater.exe"
+namespace Ui {
+class Dialog_Settings;
+}
 
-#endif // GLOBALS_H
+class Dialog_Settings : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit Dialog_Settings(QWidget *parent = 0);
+    ~Dialog_Settings();
+
+private slots:
+    //Test button clicked
+    void on_AccountTestButton_clicked();
+
+    void on_buttonBox_accepted();
+
+private:
+    Ui::Dialog_Settings *ui;
+
+    User CurrentUserCopy;
+
+};
+
+#endif // DIALOG_SETTINGS_H

@@ -1,5 +1,5 @@
 /*
-**  Ouroboros, Hummingbird.me Desktop App
+**  Ouroboros Updater, Hummingbird.me Desktop App Updater
 **  Copyright (C) 2013, Mikunj Varsani
 **
 **  This program is free software: you can redistribute it and/or modify
@@ -19,13 +19,15 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#define APP_DEBUG false
+/* Application name */
+#define MAIN_APP_NAME "Ouroboros.exe"
 
-#define APP_NAME "Ouroboros"
-#define APP_MINOR_VERSION 0.1
-#define APP_MAJOR_VERSION 0
+/* The Version XML File Link */
 
+#define SERVERXML "http://dl.dropboxusercontent.com/u/90910265/OuroborosInfo.xml"
 #define APP_LOCAL_VERSION_FILENAME "VersionInfo.xml"
-#define APP_UPDATER "Updater.exe"
+
+/* Updater Version */
+#define UPDATER_VERSION 0.1
 
 #endif // GLOBALS_H

@@ -22,6 +22,7 @@
 #include <QTimer>
 #include <QDebug>
 
+#include "dialog_settings.h"
 #include "animeentity.h"
 #include "settings.h"
 #include "filemanager.h"
@@ -33,6 +34,9 @@ Ouroboros::Ouroboros(QWidget *parent) :
     ui(new Ui::Ouroboros)
 {
     ui->setupUi(this);
+
+    QString Title = QString(APP_NAME) + " " + QString::number(APP_MAJOR_VERSION) + "." + QString::number(APP_MINOR_VERSION);
+    this->setWindowTitle(Title);
 
     SetViewLayouts();
 
@@ -52,15 +56,19 @@ Ouroboros::Ouroboros(QWidget *parent) :
     connect(RunTimer,SIGNAL(timeout()),&Queue_Manager,SLOT(StartRunning()));
     connect(&Api_Manager,SIGNAL(ChangeStatus(QString,int)),this,SLOT(ChangeStatus(QString,int)));
 
-    CurrentUser.SetUserDetails(TEST_USER,QByteArray(TEST_PASS).toBase64());
+    //Load user info
+    File_Manager.LoadUserInformation();
 
     //Load local database
     File_Manager.LoadAnimeDatabase();
     GUI_Manager.PopulateModel();
 
-
-    Queue_Manager.AuthenticateUser();
-    Queue_Manager.GetAnimeLibrary();
+    //Sync anime
+    if(CurrentUser.isValid())
+    {
+        Queue_Manager.AuthenticateUser();
+        Queue_Manager.GetAnimeLibrary();
+    }
 
 }
 
@@ -161,5 +169,17 @@ void Ouroboros::ChangeStatus(QString Status, int Timeout)
 /****************** Action Triggers ********************************/
 void Ouroboros::on_Action_Synchronize_Anime_triggered()
 {
+    Queue_Manager.AuthenticateUser();
     Queue_Manager.GetAnimeLibrary();
+}
+
+/*********************************
+ * Displays the settings dialog
+ *********************************/
+void Ouroboros::on_Action_ChangeSettings_triggered()
+{
+    Dialog_Settings SettingsDialog;
+    SettingsDialog.setModal(true);
+
+    SettingsDialog.exec();
 }

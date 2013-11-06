@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network
+QT       += xml core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -13,6 +13,9 @@ TEMPLATE = app
 
 CONFIG += openssl c++11
 
+win32{
+    RC_FILE = Ouroboros.rc
+}
 
 SOURCES += main.cpp\
         ouroboros.cpp \
@@ -25,7 +28,8 @@ SOURCES += main.cpp\
     settings.cpp \
     user.cpp \
     filemanager.cpp \
-    guimanager.cpp
+    guimanager.cpp \
+    dialog_settings.cpp
 
 HEADERS  += ouroboros.h \
     threadmanager.h \
@@ -39,9 +43,11 @@ HEADERS  += ouroboros.h \
     settings.h \
     user.h \
     filemanager.h \
-    guimanager.h
+    guimanager.h \
+    dialog_settings.h
 
-FORMS    += ouroboros.ui
+FORMS    += ouroboros.ui \
+    dialog_settings.ui
 
 RESOURCES += \
     Resources.qrc

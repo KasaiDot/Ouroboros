@@ -26,6 +26,7 @@
 #include "threadmanager.h"
 #include "animedatabase.h"
 #include "apimanager.h"
+#include "globals.h"
 
 namespace Ui {
 class Ouroboros;
@@ -69,6 +70,7 @@ public slots:
     void ChangeStatus(QString Status, int Timeout = 0);
 private slots:
     void on_Action_Synchronize_Anime_triggered();
+    void on_Action_ChangeSettings_triggered();
 };
 
 #endif // OUROBOROS_H

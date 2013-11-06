@@ -37,8 +37,6 @@ QueueManager::QueueManager(QObject *parent) :
 
     //Schedule run execution
     connect(DelayTimer,&QTimer::timeout,[=]() { QMetaObject::invokeMethod( this, "Run", Qt::QueuedConnection );} );
-
-    connect(this,SIGNAL(PopulateModel()),&GUI_Manager,SLOT(PopulateModel()));
 }
 
 QueueManager::~QueueManager()
@@ -76,12 +74,14 @@ void QueueManager::GetAnimeLibrary()
     QueueItem *PlanToWatch = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_PLAN_TO_WATCH);
     QueueItem *Dropped = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_DROPPED);
     QueueItem *Completed = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_COMPLETED);
+    QueueItem *PopulateModel = new QueueItem(this,QueueItem::Item_PopulateModel);
 
     AddItem(CurrentlyWatching);
+    AddItem(Completed);
     AddItem(OnHold);
     AddItem(PlanToWatch);
     AddItem(Dropped);
-    AddItem(Completed);
+    AddItem(PopulateModel);
 
     StartRunning();
 }
@@ -179,6 +179,7 @@ void QueueManager::AddItem(QueueItem *Item)
 
     //Connect signal and slots
     connect(Item,SIGNAL(Finished(QueueItem*)),this,SLOT(QueueItemFinished(QueueItem*)));
+    connect(Item,SIGNAL(PopulateModel()),&GUI_Manager,SLOT(PopulateModel()));
 
     //Add the item
     ItemQueue.enqueue(Item);

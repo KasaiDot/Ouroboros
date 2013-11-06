@@ -34,7 +34,8 @@ public:
     {
         Item_Auth,
         Item_GetLibrary,
-        Item_UpdateLibrary
+        Item_UpdateLibrary,
+        Item_PopulateModel
     };
 
     enum ItemReturn
@@ -69,6 +70,7 @@ private:
 
 signals:
     void Finished(QueueItem *Item);
+    void PopulateModel();
 
 public slots:
     void Run();

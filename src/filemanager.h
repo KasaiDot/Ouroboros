@@ -41,6 +41,7 @@ public:
         QString UserInfoFile;
 
         //Dirs
+        QString DataFolderPath;
         QString UserFolderPath;
         QString UserAnimePath;
         QString DatabaseFolderPath;

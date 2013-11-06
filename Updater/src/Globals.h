@@ -24,7 +24,7 @@
 
 /* The Version XML File Link */
 
-#define SERVERXML "http://dl.dropboxusercontent.com/u/90910265/OuroborosInfo.xml"
+#define SERVERXML <Server here>
 #define APP_LOCAL_VERSION_FILENAME "VersionInfo.xml"
 
 /* Updater Version */

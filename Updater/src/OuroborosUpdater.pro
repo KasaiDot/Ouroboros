@@ -15,6 +15,8 @@ TEMPLATE = app
 
 win32{
     RC_FILE = Ouroboros.rc
+    QMAKE_LFLAGS += -static-libgcc
+    QMAKE_LFLAGS += -static-libstdc++
 }
 
 

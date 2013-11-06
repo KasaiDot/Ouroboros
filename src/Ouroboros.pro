@@ -15,7 +15,9 @@ CONFIG += openssl c++11
 
 win32{
     RC_FILE = Ouroboros.rc
+    QMAKE_LFLAGS += -static -static-libgcc -static-libstdc++
 }
+
 
 SOURCES += main.cpp\
         ouroboros.cpp \

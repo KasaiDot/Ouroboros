@@ -23,7 +23,9 @@
 
 UpdatePerformClass::UpdatePerformClass(QObject *parent) :
     QObject(parent),
-    ErrorsDownloading(false)
+    ErrorsDownloading(false),
+    UpdatesPerformed(0),
+    UpdateCount(0)
 {
 }
 
@@ -41,15 +43,20 @@ void UpdatePerformClass::PerformUpdate()
         {
             if(LocalAppMajorVersion != AppMajorVersion || LocalAppMinorVersion != AppMinorVersion)
             {
+                UpdateCount += AppLinkList.size();
                 DownloadFiles(AppLinkList,AppDirectoryList);
             }
 
             if(QString::number(UPDATER_VERSION) != QString::number(UpdaterVersion))
             {
+                UpdateCount += AppLinkList.size();
                 DownloadFiles(UpdaterLinkList,UpdaterDirectoryList);
             }
         }
     }
+
+    if(UpdateCount == 0)
+        emit finished();
 }
 
 QNetworkReply* UpdatePerformClass::GetXML(QString Url)
@@ -173,6 +180,7 @@ void UpdatePerformClass::updateDataReadProgress(qint64 bytesRead, qint64 totalBy
 
 void UpdatePerformClass::ReplyFinished(QNetworkReply *Reply, QUrl Url, QString Directory, bool Rename)
 {
+    UpdatesPerformed++;
     if(!Reply->error() == QNetworkReply::NoError) return;
 
     /* Start making the file */
@@ -203,6 +211,9 @@ void UpdatePerformClass::ReplyFinished(QNetworkReply *Reply, QUrl Url, QString D
 
     if(Rename)
         RenameFile(Filename);
+
+    if(UpdateCount <= UpdatesPerformed)
+        emit finished();
 }
 
 /*******************************

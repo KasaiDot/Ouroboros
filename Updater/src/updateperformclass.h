@@ -78,6 +78,9 @@ private:
 
     bool ErrorsDownloading;
     bool DataRead;
+
+    int UpdatesPerformed;
+    int UpdateCount;
     
 };
 

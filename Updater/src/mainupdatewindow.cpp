@@ -41,9 +41,9 @@ MainUpdateWindow::MainUpdateWindow(QWidget *parent) :
     QObject::connect(UpdateClass,SIGNAL(SetProgressLabel(QString)),ui->ProgressLabel,SLOT(setText(QString)));
 
     QObject::connect(UpdateClass,SIGNAL(OpenWarningMessageBox(QString,QString)),this,SLOT(OpenWarningMessageBox(QString,QString)));
+    QObject::connect(UpdateClass,&UpdatePerformClass::finished,[=]() { QMetaObject::invokeMethod( this, "LaunchApp", Qt::QueuedConnection );} );
 
     /* Connects the Slots and Signals */
-    QObject::connect(UpdateClass,SIGNAL(finished()),this,SLOT(LaunchApp()));
 
     UpdateClass->PerformUpdate();
 

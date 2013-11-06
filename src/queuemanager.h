@@ -22,9 +22,9 @@
 #include <QObject>
 #include <QTimer>
 #include <QPointer>
+#include <QQueue>
 
 #include "queueitem.h"
-#include "queueworker.h"
 
 namespace Queue
 {
@@ -39,11 +39,7 @@ public:
 private:
 
     //Main Queue
-    QList<QueueItem*> ItemQueue;
-    QPointer<QueueWorker> Worker;
-
-
-    void StartRunning();
+    QQueue<QueueItem*> ItemQueue;
 
     bool Running;
 
@@ -54,7 +50,11 @@ signals:
     void PopulateModel();
 
 public slots:
-    void Run();
+    //Starts the queue timer
+    void StartRunning();
+
+    //Handles queue item once finished
+    void QueueItemFinished(QueueItem *Item);
 
     //Basic list functions
     void AddItem(QueueItem* Item);
@@ -64,6 +64,11 @@ public slots:
     void AuthenticateUser();
     void GetAnimeLibrary();
     void UpdateLibrary(QString Slug);
+
+private slots:
+    //Runs through the queue
+    void Run();
+
 };
 
 }

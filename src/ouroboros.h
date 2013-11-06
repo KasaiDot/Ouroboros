@@ -66,7 +66,7 @@ private:
     Ui::Ouroboros *ui;
 
 public slots:
-    void ChangeStatus(QString Status);
+    void ChangeStatus(QString Status, int Timeout = 0);
 private slots:
     void on_Action_Synchronize_Anime_triggered();
 };

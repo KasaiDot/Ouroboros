@@ -115,17 +115,19 @@ QNetworkReply *ApiManager::GetAnimeImage(QNetworkAccessManager *NetworkManager, 
  ************************************************************************/
 ApiManager::ApiReturnStatus ApiManager::ProcessReply(QNetworkReply *Reply, ApiManager::ApiCall Call)
 {
+    int StatusTimeout = 5000;
+
     //Check for timeout or errors
     if(Reply->property("Timeout").toBool())
     {
-        emit ChangeStatus("Reply Timeout");
+        emit ChangeStatus("Reply Timeout",StatusTimeout);
         Reply->deleteLater();
         return Reply_Timeout;
     }
 
     if(Reply->error() != QNetworkReply::NoError)
     {
-        emit ChangeStatus("Authentication Error");
+        emit ChangeStatus("Authentication Error",StatusTimeout);
         Reply->deleteLater();
         return Reply_Error;
     }
@@ -136,7 +138,7 @@ ApiManager::ApiReturnStatus ApiManager::ProcessReply(QNetworkReply *Reply, ApiMa
     //Check if user is authenticated and has the right auth token
     if(ReplyData.contains("Invalid credentials"))
     {
-        emit ChangeStatus("Invalid Credentials");
+        emit ChangeStatus("Invalid Credentials",StatusTimeout);
         Reply->deleteLater();
         return Api_InvalidCredentials;
     }
@@ -152,7 +154,7 @@ ApiManager::ApiReturnStatus ApiManager::ProcessReply(QNetworkReply *Reply, ApiMa
             || ReplyData.contains("Invalid JSON Object")
             || ReplyData.contains("\"error\":"))
     {
-        emit ChangeStatus("Uknown Error");
+        emit ChangeStatus("Uknown Error",StatusTimeout);
         Reply->deleteLater();
         return Api_Failure;
     }
@@ -169,17 +171,17 @@ ApiManager::ApiReturnStatus ApiManager::ProcessReply(QNetworkReply *Reply, ApiMa
                 CurrentUser.SetAuthKey(AuthKey);
                 CurrentUser.SetAuthenticated(true);
 
-                emit ChangeStatus("Completed");
+                emit ChangeStatus("Completed",StatusTimeout);
             }
         break;
 
         case Call_GetLibrary:
             Anime_Database.ParseMultipleJson(ReplyData);
-            emit ChangeStatus("Completed");
+            emit ChangeStatus("Completed",StatusTimeout);
         break;
 
         case Call_UpdateLibrary:
-            emit ChangeStatus("Completed");
+            emit ChangeStatus("Completed",StatusTimeout);
         break;
     }
 

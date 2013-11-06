@@ -77,7 +77,7 @@ private:
     ApiReturnStatus ProcessReply(QNetworkReply *Reply, ApiCall Call);
 
 signals:
-    void ChangeStatus(QString String);
+    void ChangeStatus(QString String, int Timeout = 0);
 
 public slots:
 

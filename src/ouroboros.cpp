@@ -49,7 +49,8 @@ Ouroboros::Ouroboros(QWidget *parent) :
     RunTimer->start(600000);
 
     //Connect signals and slots
-    connect(&Api_Manager,SIGNAL(ChangeStatus(QString)),this,SLOT(ChangeStatus(QString)));
+    connect(RunTimer,SIGNAL(timeout()),&Queue_Manager,SLOT(StartRunning()));
+    connect(&Api_Manager,SIGNAL(ChangeStatus(QString,int)),this,SLOT(ChangeStatus(QString,int)));
 
     CurrentUser.SetUserDetails(TEST_USER,QByteArray(TEST_PASS).toBase64());
 
@@ -60,7 +61,6 @@ Ouroboros::Ouroboros(QWidget *parent) :
 
     Queue_Manager.AuthenticateUser();
     Queue_Manager.GetAnimeLibrary();
-
 
 }
 
@@ -153,9 +153,9 @@ QAction *Ouroboros::GetAction(Ouroboros::Actions Type)
 /**************************************************
  * Changes the status on the bottom of the screen
  **************************************************/
-void Ouroboros::ChangeStatus(QString Status)
+void Ouroboros::ChangeStatus(QString Status, int Timeout)
 {
-    ui->MainStatusBar->showMessage(Status);
+    ui->MainStatusBar->showMessage(Status,Timeout);
 }
 
 /****************** Action Triggers ********************************/

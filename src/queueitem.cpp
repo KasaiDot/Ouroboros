@@ -42,9 +42,11 @@ QueueItem::QueueItem(QObject *parent, QueueItem::ItemType Type, QString Data):
 /************************************
  * Sends Api call based on the item
  ************************************/
-int QueueItem::Run()
+void QueueItem::Run()
 {
     int ReturnCode;
+    Error = ItemReturn_Success;
+
     switch(Type)
     {
         case Item_Auth:
@@ -55,27 +57,27 @@ int QueueItem::Run()
             if(isDataSet())
                 ReturnCode = Api_Manager.GetLibrary(Data);
             else
-                return ItemReturn_NoData;
+                Error = ItemReturn_NoData;
         break;
 
         case Item_UpdateLibrary:
             if(isDataSet())
                 ReturnCode = Api_Manager.UpdateLibrary(Data);
             else
-                return ItemReturn_NoData;
+                Error = ItemReturn_NoData;
         break;
     }
 
     if(ReturnCode == Manager::ApiManager::Api_NotAuthed)
-        return ItemReturn_NotAuthed;
+        Error = ItemReturn_NotAuthed;
 
     if(ReturnCode == Manager::ApiManager::Api_InvalidCredentials)
-        return ItemReturn_AuthFail;
+        Error = ItemReturn_AuthFail;
 
-    if(ReturnCode == Manager::ApiManager::Api_Success)
-        return ItemReturn_Success;
+    if(ReturnCode == Manager::ApiManager::Api_Failure)
+        Error = ItemReturn_Fail;
 
-    return ItemReturn_Fail;
+    emit Finished(this);
 }
 
 /*************************************************

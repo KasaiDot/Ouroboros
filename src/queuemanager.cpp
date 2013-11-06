@@ -35,14 +35,14 @@ QueueManager::QueueManager(QObject *parent) :
     DelayTimer = new QTimer(this);
     DelayTimer->setSingleShot(true);
 
-    connect(DelayTimer,SIGNAL(timeout()),this,SLOT(Run()));
+    //Schedule run execution
+    connect(DelayTimer,&QTimer::timeout,[=]() { QMetaObject::invokeMethod( this, "Run", Qt::QueuedConnection );} );
+
     connect(this,SIGNAL(PopulateModel()),&GUI_Manager,SLOT(PopulateModel()));
 }
 
 QueueManager::~QueueManager()
 {
-    if(Worker)
-        Worker->deleteLater();
 }
 
 /*****************************************
@@ -95,7 +95,7 @@ void QueueManager::UpdateLibrary(QString Slug)
     //Check if we have updates pending for the same anime
     for(QList<QueueItem*>::const_iterator i = ItemQueue.begin(); i != ItemQueue.end(); ++i)
     {
-        if((*i)->GetData() == Slug)
+        if((*i)->GetData() == Slug && !Running)
             SlugFound = true;
     }
 
@@ -133,28 +133,41 @@ void QueueManager::StartRunning()
 void QueueManager::Run()
 {
     if(Running || ItemQueue.size() <= 0) return;
-
     Running = true;
-    QThread *Thread = Thread_Manager.GetThread();
-    Worker = new QueueWorker(ItemQueue);
-    Worker->moveToThread(Thread);
 
-    //Connect signals and slots
-    connect(Thread,SIGNAL(started()),Worker,SLOT(Run()));
-    connect(Worker.data(),SIGNAL(DeleteQueueItem(QueueItem*)),this,SLOT(DeleteItem(QueueItem*)));
-    connect(Worker.data(),SIGNAL(Finished()),Thread,SLOT(quit()));
-    connect(Worker.data(),SIGNAL(Finished()),Worker.data(),SLOT(deleteLater()));
-    connect(Worker.data(),SIGNAL(AuthUser()),this,SLOT(AuthenticateUser()));
+    ItemQueue.head()->Run();
+}
 
-    //Make sure not to manually delete the thread, instead send it to the thread manager to delete
-    connect(Thread,&QThread::finished,[=](){
-                                             Thread_Manager.DeleteThread(Thread);
-                                             Running = false;
-                                             emit PopulateModel();
-                                           });
-    Thread->start();
+/*****************************************************
+ * Catched signal sent by Queueitem when it finished
+ *****************************************************/
+void QueueManager::QueueItemFinished(QueueItem *Item)
+{
+    Running = false;
 
+    //Check for errors
+    if(Item->Error != QueueItem::ItemReturn_Success)
+    {
+        if(Item->Error == QueueItem::ItemReturn_NotAuthed)
+        {
+            AuthenticateUser();
+            return;
+        }
 
+        if(Item->Error == QueueItem::ItemReturn_AuthFail)
+        {
+            return;
+        }
+    }
+
+    //Delete item if it failed
+    if(Item->Error == QueueItem::ItemReturn_Fail || Item->Error == QueueItem::ItemReturn_NoData || Item->Error == QueueItem::ItemReturn_Success)
+    {
+        DeleteItem(Item);
+    }
+
+    //Run the next item
+    Run();
 }
 
 /***********************************************************
@@ -163,7 +176,12 @@ void QueueManager::Run()
 void QueueManager::AddItem(QueueItem *Item)
 {
     if(ItemQueue.contains(Item)) return;
-    ItemQueue.append(Item);
+
+    //Connect signal and slots
+    connect(Item,SIGNAL(Finished(QueueItem*)),this,SLOT(QueueItemFinished(QueueItem*)));
+
+    //Add the item
+    ItemQueue.enqueue(Item);
 }
 
 /*******************************************************

@@ -22,7 +22,6 @@ SOURCES += main.cpp\
     animedatabase.cpp \
     queuemanager.cpp \
     queueitem.cpp \
-    queueworker.cpp \
     settings.cpp \
     user.cpp \
     filemanager.cpp \
@@ -36,7 +35,6 @@ HEADERS  += ouroboros.h \
     animedatabase.h \
     queuemanager.h \
     queueitem.h \
-    queueworker.h \
     private.h \
     settings.h \
     user.h \

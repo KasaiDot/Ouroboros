@@ -44,7 +44,7 @@ public:
         ItemReturn_NoData,
         ItemReturn_AuthFail,
         ItemReturn_NotAuthed
-    };
+    } Error;
 
     //Constructor
     explicit QueueItem(QObject *parent, ItemType Type);
@@ -68,10 +68,10 @@ private:
     inline int RandomValue(int Min, int Max) { return qrand() % ((Max + 1) - Min) + Min; }
 
 signals:
+    void Finished(QueueItem *Item);
 
 public slots:
-
-    int Run();
+    void Run();
 
 };
 

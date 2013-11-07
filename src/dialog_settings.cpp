@@ -61,14 +61,15 @@ void Dialog_Settings::on_AccountTestButton_clicked()
     if(Code == Manager::ApiManager::Api_InvalidCredentials)
     {
         QMessageBox::critical(this,"Invalid Credentials","Please check that your username (not email) and password are correct",QMessageBox::Ok);
-    }
 
-    if(Code == Manager::ApiManager::Api_Success)
-    {
+    } else if(Code == Manager::ApiManager::Api_Success) {
+
         QMessageBox::information(this,"Correct Credentials","Successfully Authenticated",QMessageBox::Ok);
-    } else
-    {
+
+    } else {
+
         QMessageBox::critical(this,"Error Occured","Oops! An error occured, please try again later",QMessageBox::Ok);
+
     }
 
     //Replace previous details

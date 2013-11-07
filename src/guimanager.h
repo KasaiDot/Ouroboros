@@ -117,6 +117,13 @@ public:
         }
         CurrentValue = UserEpisodeCount;
 
+        //Fill in whole bar if unknown anime episode and completed
+        if(Index.data(ROLE_USER_STATUS).toString() == STATUS_COMPLETED)
+        {
+            if(AnimeEpisodeCount <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE)
+                MaxValue = UserEpisodeCount;
+        }
+
 
         QString UserEpisodeText = QString::number(UserEpisodeCount);
         QString ProgressText = UserEpisodeText + "/" + AnimeEpisodeText;

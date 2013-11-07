@@ -117,6 +117,7 @@ void GUIManager::AddAnime(Anime::AnimeEntity *Entity)
 
     //Set the slug, user episode count, etc
     Item_Name->setData(Entity->GetUserInfo()->GetStatus(),ROLE_USER_STATUS);
+    Item_Progress->setData(Entity->GetUserInfo()->GetStatus(),ROLE_USER_STATUS);
 
     Item_Progress->setData(Entity->GetAnimeEpisodeCount(),ROLE_ANIME_EPISODES);
     Item_Progress->setData(Entity->GetUserInfo()->GetEpisodesWatched(),ROLE_USER_EPISODES);
@@ -166,6 +167,7 @@ void GUIManager::UpdateAnime(QStandardItem *Item, Anime::AnimeEntity *Entity)
 
     //set data
     Item_Name->setData(Entity->GetUserInfo()->GetStatus(),ROLE_USER_STATUS);
+    Item_Progress->setData(Entity->GetUserInfo()->GetStatus(),ROLE_USER_STATUS);
 
     Item_Progress->setData(Entity->GetAnimeEpisodeCount(),ROLE_ANIME_EPISODES);
     Item_Progress->setData(Entity->GetUserInfo()->GetEpisodesWatched(),ROLE_USER_EPISODES);

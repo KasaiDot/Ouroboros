@@ -125,7 +125,7 @@ ApiManager::ApiReturnStatus ApiManager::ProcessReply(QNetworkReply *Reply, ApiMa
         return Reply_Timeout;
     }
 
-    if(Reply->error() != QNetworkReply::NoError)
+    if(Reply->error() != QNetworkReply::AuthenticationRequiredError && Reply->error() != QNetworkReply::NoError)
     {
         emit ChangeStatus("Authentication Error",StatusTimeout);
         Reply->deleteLater();
@@ -136,7 +136,7 @@ ApiManager::ApiReturnStatus ApiManager::ProcessReply(QNetworkReply *Reply, ApiMa
     QByteArray ReplyData = Reply->readAll();
 
     //Check if user is authenticated and has the right auth token
-    if(ReplyData.contains("Invalid credentials"))
+    if(ReplyData.contains("Invalid credentials") || Reply->error() == QNetworkReply::AuthenticationRequiredError)
     {
         emit ChangeStatus("Invalid Credentials",StatusTimeout);
         Reply->deleteLater();

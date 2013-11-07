@@ -4,6 +4,7 @@
 private.h
 *.user
 Resources/
+ServerInfo.h
 
 #################
 ## Eclipse

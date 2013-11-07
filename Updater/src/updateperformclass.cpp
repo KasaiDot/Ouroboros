@@ -18,6 +18,7 @@
 
 #include "updateperformclass.h"
 #include "Globals.h"
+#include "ServerInfo.h"
 
 #include <QDebug>
 
@@ -28,7 +29,9 @@ UpdatePerformClass::UpdatePerformClass(QObject *parent) :
     UpdateCount(0)
 {
 }
-
+/******************************
+ * Starts the update process
+ *****************************/
 void UpdatePerformClass::PerformUpdate()
 {
     //Get the App Version
@@ -50,7 +53,7 @@ void UpdatePerformClass::PerformUpdate()
             if(QString::number(UPDATER_VERSION) != QString::number(UpdaterVersion))
             {
                 UpdateCount += AppLinkList.size();
-                DownloadFiles(UpdaterLinkList,UpdaterDirectoryList);
+                DownloadFiles(UpdaterLinkList,UpdaterDirectoryList,false);
             }
         }
     }
@@ -59,6 +62,9 @@ void UpdatePerformClass::PerformUpdate()
         emit finished();
 }
 
+/**********************
+ * Gets the online xml
+ **********************/
 QNetworkReply* UpdatePerformClass::GetXML(QString Url)
 {
    QNetworkReply *Reply =  NetworkManager.get(QNetworkRequest(QUrl(Url)));
@@ -70,6 +76,9 @@ QNetworkReply* UpdatePerformClass::GetXML(QString Url)
    return Reply;
 }
 
+/******************************
+ * Gets the local app version
+ ******************************/
 bool UpdatePerformClass::GetAppVersion(QString AppXmlName)
 {
     QString Filename = QApplication::applicationDirPath() + QDir::separator() + AppXmlName;
@@ -113,6 +122,9 @@ bool UpdatePerformClass::GetAppVersion(QString AppXmlName)
     return true;
 }
 
+/*******************
+ * Downloads files
+ ******************/
 void UpdatePerformClass::DownloadFiles(QStringList &LinkList, QStringList &DirectoryList, bool Rename)
 {
     for(int i = 0; i < LinkList.size(); i++)
@@ -126,6 +138,9 @@ void UpdatePerformClass::DownloadFiles(QStringList &LinkList, QStringList &Direc
 
 }
 
+/**********************
+ * Sends a GET request
+ **********************/
 void UpdatePerformClass::startRequest(QUrl Url,QString Directory,bool Rename)
 {
     QFileInfo FileInfo(Url.path());
@@ -172,12 +187,18 @@ void UpdatePerformClass::RenameFile(QString Filename)
     }
 }
 
+/*************************
+ * Updates progress bar
+ *************************/
 void UpdatePerformClass::updateDataReadProgress(qint64 bytesRead, qint64 totalBytes)
 {
     emit SetProgressMax(totalBytes);
     emit SetProgressValue(bytesRead);
 }
 
+/*******************************
+ * Handles file once downloaded
+ *******************************/
 void UpdatePerformClass::ReplyFinished(QNetworkReply *Reply, QUrl Url, QString Directory, bool Rename)
 {
     UpdatesPerformed++;
@@ -186,16 +207,22 @@ void UpdatePerformClass::ReplyFinished(QNetworkReply *Reply, QUrl Url, QString D
     /* Start making the file */
     QFileInfo FileInfo(Url.path());
 
-    QString Filename = QApplication::applicationDirPath() + Directory + FileInfo.fileName() + ".upd";
+    QString Filepath = QApplication::applicationDirPath() + QDir::separator() + Directory;
+
+    //Make the path if it doesn't exist
+    if(!QDir(Filepath).exists())
+        QDir().mkpath(Filepath);
+
+    QString Filename = FileInfo.fileName() + ".upd";
 
     /* Check if file exists */
-    QFile Check(Filename);
+    QFile Check(Filepath.append(Filename));
     if(Check.exists())
     {
         Check.remove();
     }
 
-    QFile File(Filename);
+    QFile File(Filepath);
 
     if(!File.open(QIODevice::WriteOnly))
     {
@@ -210,7 +237,7 @@ void UpdatePerformClass::ReplyFinished(QNetworkReply *Reply, QUrl Url, QString D
     Reply->deleteLater();
 
     if(Rename)
-        RenameFile(Filename);
+        RenameFile(Filepath);
 
     if(UpdateCount <= UpdatesPerformed)
         emit finished();
@@ -234,7 +261,30 @@ bool UpdatePerformClass::ReadXML(QNetworkReply *Reply)
     QDomElement ApplicationElement = DocumentElement.elementsByTagName("Ouroboros").at(0).toElement();
     QDomElement UpdaterElement = DocumentElement.elementsByTagName("Updater").at(0).toElement();
 
-    //Read applicationd data
+    //Updater info
+    QDomNodeList VersionNode = UpdaterElement.elementsByTagName("Version");
+    QDomElement VersionElement = VersionNode.at(0).toElement();
+    UpdaterVersion = VersionElement.text().toFloat();
+
+    QDomNodeList UpdaterLinks = UpdaterElement.elementsByTagName("Link");
+    for(int i = 0; i < UpdaterLinks.size(); i++)
+    {
+        QDomElement Link = UpdaterLinks.at(i).toElement();
+
+        QString LinkString = Link.text();
+        UpdaterLinkList << LinkString;
+    }
+
+    QDomNodeList UpdaterDirectory = UpdaterElement.elementsByTagName("Directory");
+    for(int i = 0; i < UpdaterDirectory.size(); i++)
+    {
+        QDomElement Directory = UpdaterDirectory.at(i).toElement();
+
+        QString DirectoryString = Directory.text();
+        UpdaterDirectoryList << DirectoryString;
+    }
+
+    //Read application data
     QDomNodeList MajorNode = ApplicationElement.elementsByTagName("Major_Version");
     QDomElement MajorElement = MajorNode.at(0).toElement();
 
@@ -262,28 +312,6 @@ bool UpdatePerformClass::ReadXML(QNetworkReply *Reply)
         AppDirectoryList << DirectoryString;
     }
 
-    //Updater info
-    QDomNodeList VersionNode = UpdaterElement.elementsByTagName("Version");
-    QDomElement VersionElement = VersionNode.at(0).toElement();
-    UpdaterVersion = VersionElement.text().toFloat();
-
-    QDomNodeList UpdaterLinks = UpdaterElement.elementsByTagName("Link");
-    for(int i = 0; i < UpdaterLinks.size(); i++)
-    {
-        QDomElement Link = UpdaterLinks.at(i).toElement();
-
-        QString LinkString = Link.text();
-        UpdaterLinkList << LinkString;
-    }
-
-    QDomNodeList UpdaterDirectory = UpdaterElement.elementsByTagName("Directory");
-    for(int i = 0; i < UpdaterDirectory.size(); i++)
-    {
-        QDomElement Directory = UpdaterDirectory.at(i).toElement();
-
-        QString DirectoryString = Directory.text();
-        UpdaterDirectoryList << DirectoryString;
-    }
 
     return true;
 }

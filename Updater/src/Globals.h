@@ -23,11 +23,9 @@
 #define MAIN_APP_NAME "Ouroboros.exe"
 
 /* The Version XML File Link */
-
-#define SERVERXML <Server here>
 #define APP_LOCAL_VERSION_FILENAME "VersionInfo.xml"
 
 /* Updater Version */
-#define UPDATER_VERSION 0.1
+#define UPDATER_VERSION 0.2
 
 #endif // GLOBALS_H

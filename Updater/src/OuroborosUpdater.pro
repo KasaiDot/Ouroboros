@@ -27,7 +27,8 @@ SOURCES += main.cpp\
 HEADERS  += \
     mainupdatewindow.h \
     updateperformclass.h \
-    Globals.h
+    Globals.h \
+    ServerInfo.h
 
 FORMS    += \
     mainupdatewindow.ui

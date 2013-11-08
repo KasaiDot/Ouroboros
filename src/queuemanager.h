@@ -38,7 +38,7 @@ public:
     explicit QueueManager(QObject *parent = 0);
     ~QueueManager();
 
-    int GetQueueSize() const { return ItemQueue.size(); }
+    int GetQueueSize() const { return (ItemQueue.size() + FailedUpdates.size()); }
 
     //Json parsing
     QJsonDocument ConstructQueueJsonDocument();
@@ -48,6 +48,7 @@ private:
 
     //Main Queue
     QQueue<QueueItem*> ItemQueue;
+    QQueue<QueueItem*> FailedUpdates;
 
     bool Running;
 
@@ -69,6 +70,7 @@ public slots:
     void DeleteItem(QueueItem* Item);
     //Pushes the item to the back of the queue
     void RePushItem(QueueItem* Item);
+    void UpdateFailed(QueueItem* Item);
 
     //Api functions
     void AuthenticateUser();

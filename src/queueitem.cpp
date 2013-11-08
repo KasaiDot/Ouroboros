@@ -76,6 +76,9 @@ void QueueItem::Run()
         break;
     }
 
+    if(ReturnCode == Manager::ApiManager::Reply_UnknownError)
+        Error = ItemReturn_ReplyUnknownError;
+
     if(ReturnCode == Manager::ApiManager::Api_NotAuthed)
         Error = ItemReturn_NotAuthed;
 

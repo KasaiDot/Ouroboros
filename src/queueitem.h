@@ -45,7 +45,8 @@ public:
         ItemReturn_Fail,
         ItemReturn_NoData,
         ItemReturn_AuthFail,
-        ItemReturn_NotAuthed
+        ItemReturn_NotAuthed,
+        ItemReturn_ReplyUnknownError
     } Error;
 
     //Constructor

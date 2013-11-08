@@ -46,6 +46,7 @@ public:
     {
         Reply_Error,
         Reply_Timeout,
+        Reply_UnknownError,
         Api_Success,
         Api_Failure,
         Api_AlreadyAuth,

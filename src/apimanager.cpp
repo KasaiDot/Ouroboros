@@ -62,7 +62,6 @@ ApiManager::ApiReturnStatus ApiManager::Authenticate()
  *************************************/
 ApiManager::ApiReturnStatus ApiManager::GetLibrary(QString Status)
 {
-    if(!CurrentUser.isAuthenticated()) return Api_NotAuthed;
     emit ChangeStatus("Getting Library: " + Status);
 
     //create network manager
@@ -81,8 +80,6 @@ ApiManager::ApiReturnStatus ApiManager::GetLibrary(QString Status)
  *********************************************/
 ApiManager::ApiReturnStatus ApiManager::UpdateLibrary(QString Slug)
 {
-    if(!CurrentUser.isAuthenticated()) return Api_NotAuthed;
-
     QString Title = Anime_Database.GetAnime(Slug)->GetAnimeTitle();
     emit ChangeStatus("Updating: " + Title);
 
@@ -123,6 +120,13 @@ ApiManager::ApiReturnStatus ApiManager::ProcessReply(QNetworkReply *Reply, ApiMa
         emit ChangeStatus("Reply Timeout",StatusTimeout);
         Reply->deleteLater();
         return Reply_Timeout;
+    }
+
+    if(Reply->error() == QNetworkReply::UnknownNetworkError)
+    {
+        emit ChangeStatus("Unknown Reply Error",StatusTimeout);
+        Reply->deleteLater();
+        return Reply_UnknownError;
     }
 
     if(Reply->error() != QNetworkReply::AuthenticationRequiredError && Reply->error() != QNetworkReply::NoError)

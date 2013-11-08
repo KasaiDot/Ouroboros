@@ -22,7 +22,7 @@
 #define APP_DEBUG false
 
 #define APP_NAME "Ouroboros"
-#define APP_MINOR_VERSION 0.2
+#define APP_MINOR_VERSION 0.3
 #define APP_MAJOR_VERSION 0
 
 #define APP_LOCAL_VERSION_FILENAME "VersionInfo.xml"

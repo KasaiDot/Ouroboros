@@ -36,6 +36,15 @@ QueueManager::QueueManager(QObject *parent) :
     DelayTimer->setSingleShot(true);
 
     //Schedule run execution
+    connect(DelayTimer,&QTimer::timeout,[=]() {
+
+        //push the items from failed update to the queue
+        foreach(QueueItem *Item,FailedUpdates)
+        {
+            FailedUpdates.removeOne(Item);
+            AddItem(Item);
+        }
+    });
     connect(DelayTimer,&QTimer::timeout,[=]() { QMetaObject::invokeMethod( this, "Run", Qt::QueuedConnection );} );
 }
 
@@ -48,20 +57,26 @@ QueueManager::~QueueManager()
  *******************************************************/
 QJsonDocument QueueManager::ConstructQueueJsonDocument()
 {
-
     QJsonArray Array;
 
     foreach (QueueItem *Item, ItemQueue)
     {
         //if the item is of type update library, then we get the data from it which in this case is the slug
         if(Item->GetItemType() == QueueItem::Item_UpdateLibrary)
-            if(!Item->GetData().isEmpty())
+            if(!Item->GetData().isEmpty() && !Array.contains(Item->GetData()))
+                Array.append(Item->GetData());
+    }
+
+    foreach (QueueItem *Item, FailedUpdates)
+    {
+        //if the item is of type update library, then we get the data from it which in this case is the slug
+        if(Item->GetItemType() == QueueItem::Item_UpdateLibrary)
+            if(!Item->GetData().isEmpty() && !Array.contains(Item->GetData()))
                 Array.append(Item->GetData());
     }
 
     //Make the doc
     QJsonDocument Doc(Array);
-
     return Doc;
 
 }
@@ -176,6 +191,7 @@ void QueueManager::Run()
     Running = true;
 
     ItemQueue.head()->Run();
+
 }
 
 /*****************************************************
@@ -200,11 +216,14 @@ void QueueManager::QueueItemFinished(QueueItem *Item)
         }
     }
 
-    //If reply timed out or there was a reply error, push the item to the back of the queue
-    if(Item->Error == QueueItem::ItemReturn_Fail)
+    if(Item->Error == QueueItem::ItemReturn_ReplyUnknownError || Item->Error == QueueItem::ItemReturn_Fail)
     {
-
-        RePushItem(Item);
+        if(Item->GetItemType() == QueueItem::Item_UpdateLibrary)
+        {
+            UpdateFailed(Item);
+        } else {
+            DeleteItem(Item);
+        }
 
     }else if(Item->Error == QueueItem::ItemReturn_ApiFail || Item->Error == QueueItem::ItemReturn_NoData || Item->Error == QueueItem::ItemReturn_Success) {
 
@@ -251,4 +270,16 @@ void QueueManager::RePushItem(QueueItem *Item)
         ItemQueue.removeOne(Item);
 
     AddItem(Item);
+}
+
+/*************************************************************
+ * Adds failed updates to the FailedUpdates Queue
+ *************************************************************/
+void QueueManager::UpdateFailed(QueueItem *Item)
+{
+    if(ItemQueue.contains(Item))
+    {
+        ItemQueue.removeOne(Item);
+        FailedUpdates.append(Item);
+    }
 }

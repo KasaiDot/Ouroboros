@@ -320,7 +320,7 @@ bool FileManager::WriteDataToFile(QString Filepath, QString Filename, QByteArray
 
     QFile File(Filepath.append(Filename));
 
-    if(!File.open(QIODevice::WriteOnly)) return false;
+    if(!File.open(QIODevice::WriteOnly | QIODevice::Truncate)) return false;
 
     File.write(Data);
     File.close();

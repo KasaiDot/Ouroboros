@@ -71,7 +71,6 @@ QJsonDocument QueueManager::ConstructQueueJsonDocument()
  ***********************************************/
 void QueueManager::ParseQueueJson(QByteArray Data)
 {
-
     QJsonDocument Doc = QJsonDocument::fromJson(Data);
     QVariantList List = Doc.toVariant().toList();
 

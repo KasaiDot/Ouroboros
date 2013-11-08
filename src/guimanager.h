@@ -26,13 +26,6 @@
 #define ROLE_ANIME_EPISODES (ROLE_DEFAULT + 3)
 #define ROLE_USER_STATUS (ROLE_DEFAULT + 4)
 
-//all statuses
-#define STATUS_COMPLETED "completed"
-#define STATUS_CURRENTLY_WATCHING "currently-watching"
-#define STATUS_ON_HOLD "on-hold"
-#define STATUS_DROPPED "dropped"
-#define STATUS_PLAN_TO_WATCH "plan-to-watch"
-
 //Header column positions
 #define HEADER_NAME 0
 #define HEADER_PROGRESS 1
@@ -60,6 +53,7 @@
 
 #include "ouroboros.h"
 #include "settings.h"
+#include "globals.h"
 
 /********************************* Delegates *****************************************************/
 // A Delegate is basically a control which we can embed into a view, E.g, in a torrent application

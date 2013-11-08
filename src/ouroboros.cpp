@@ -68,6 +68,7 @@ Ouroboros::Ouroboros(QWidget *parent) :
     {
         Queue_Manager.AuthenticateUser();
         Queue_Manager.GetAnimeLibrary();
+        File_Manager.LoadQueue();
     }
 
 }
@@ -77,6 +78,7 @@ Ouroboros::~Ouroboros()
     //Save
     File_Manager.SaveUserInformation();
     File_Manager.SaveAnimeDatabase();
+    File_Manager.SaveQueue();
 
     delete ui;
 }

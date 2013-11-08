@@ -41,6 +41,7 @@ public:
     enum ItemReturn
     {
         ItemReturn_Success,
+        ItemReturn_ApiFail,
         ItemReturn_Fail,
         ItemReturn_NoData,
         ItemReturn_AuthFail,

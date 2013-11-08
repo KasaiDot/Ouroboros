@@ -23,6 +23,8 @@
 #include <QTimer>
 #include <QPointer>
 #include <QQueue>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 #include "queueitem.h"
 
@@ -36,6 +38,12 @@ public:
     explicit QueueManager(QObject *parent = 0);
     ~QueueManager();
 
+    int GetQueueSize() const { return ItemQueue.size(); }
+
+    //Json parsing
+    QJsonDocument ConstructQueueJsonDocument();
+    void ParseQueueJson(QByteArray Data);
+
 private:
 
     //Main Queue
@@ -45,6 +53,7 @@ private:
 
     //Used to delay the queue if a new item is added in
     QTimer *DelayTimer;
+
 
 signals:
 
@@ -58,6 +67,8 @@ public slots:
     //Basic list functions
     void AddItem(QueueItem* Item);
     void DeleteItem(QueueItem* Item);
+    //Pushes the item to the back of the queue
+    void RePushItem(QueueItem* Item);
 
     //Api functions
     void AuthenticateUser();

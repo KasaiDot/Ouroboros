@@ -83,6 +83,9 @@ void QueueItem::Run()
         Error = ItemReturn_AuthFail;
 
     if(ReturnCode == Manager::ApiManager::Api_Failure)
+        Error = ItemReturn_ApiFail;
+
+    if(ReturnCode == Manager::ApiManager::Reply_Error || ReturnCode == Manager::ApiManager::Reply_Timeout)
         Error = ItemReturn_Fail;
 
     emit Finished(this);

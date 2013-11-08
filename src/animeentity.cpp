@@ -83,7 +83,7 @@ bool AnimeEntity::operator ==(const AnimeEntity &Other)
 /*****************************************************************
  * These functions construct Json documents for the filemanager
  ****************************************************************/
-QJsonDocument AnimeEntity::BuildAnimeJsonDocument()
+QJsonDocument AnimeEntity::ConstructAnimeJsonDocument()
 {
     QJsonValue NullValue;
     //Values for the json doc
@@ -140,7 +140,7 @@ QJsonDocument AnimeEntity::BuildAnimeJsonDocument()
     return AnimeDoc;
 }
 
-QJsonDocument AnimeEntity::BuildUserJsonDocument()
+QJsonDocument AnimeEntity::ConstructUserJsonDocument()
 {
 
     QJsonValue NullValue;
@@ -193,7 +193,7 @@ QJsonDocument AnimeEntity::BuildUserJsonDocument()
 /****************************************
  * Builds JSON file for api update call
  ****************************************/
-QJsonObject AnimeEntity::BuildUpdateJsonObject()
+QJsonObject AnimeEntity::ConstructUpdateJsonObject()
 {
     QJsonValue NullValue;
     QJsonObject Object;

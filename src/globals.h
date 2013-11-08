@@ -19,7 +19,7 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#define APP_DEBUG false
+#define APP_DEBUG true
 
 #define APP_NAME "Ouroboros"
 #define APP_MINOR_VERSION 0.1
@@ -27,5 +27,12 @@
 
 #define APP_LOCAL_VERSION_FILENAME "VersionInfo.xml"
 #define APP_UPDATER "Updater.exe"
+
+//all statuses
+#define STATUS_COMPLETED "completed"
+#define STATUS_CURRENTLY_WATCHING "currently-watching"
+#define STATUS_ON_HOLD "on-hold"
+#define STATUS_DROPPED "dropped"
+#define STATUS_PLAN_TO_WATCH "plan-to-watch"
 
 #endif // GLOBALS_H

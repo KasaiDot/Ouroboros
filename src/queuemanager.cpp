@@ -43,6 +43,46 @@ QueueManager::~QueueManager()
 {
 }
 
+/*******************************************************
+ * Constructs a JSON doc of items of type UpdateLibrary
+ *******************************************************/
+QJsonDocument QueueManager::ConstructQueueJsonDocument()
+{
+
+    QJsonArray Array;
+
+    foreach (QueueItem *Item, ItemQueue)
+    {
+        //if the item is of type update library, then we get the data from it which in this case is the slug
+        if(Item->GetItemType() == QueueItem::Item_UpdateLibrary)
+            if(!Item->GetData().isEmpty())
+                Array.append(Item->GetData());
+    }
+
+    //Make the doc
+    QJsonDocument Doc(Array);
+
+    return Doc;
+
+}
+
+/***********************************************
+ * Adds queue items to the queue from JSON file
+ ***********************************************/
+void QueueManager::ParseQueueJson(QByteArray Data)
+{
+
+    QJsonDocument Doc = QJsonDocument::fromJson(Data);
+    QVariantList List = Doc.toVariant().toList();
+
+    foreach (QVariant Slug, List)
+    {
+        if(!Slug.toString().isEmpty() && !Slug.isNull())
+            UpdateLibrary(Slug.toString());
+    }
+
+}
+
 /*****************************************
  * Adds authenticate action to the queue
  *****************************************/
@@ -133,6 +173,7 @@ void QueueManager::StartRunning()
 void QueueManager::Run()
 {
     if(Running || ItemQueue.size() <= 0) return;
+
     Running = true;
 
     ItemQueue.head()->Run();
@@ -160,10 +201,16 @@ void QueueManager::QueueItemFinished(QueueItem *Item)
         }
     }
 
-    //Delete item if it failed
-    if(Item->Error == QueueItem::ItemReturn_Fail || Item->Error == QueueItem::ItemReturn_NoData || Item->Error == QueueItem::ItemReturn_Success)
+    //If reply timed out or there was a reply error, push the item to the back of the queue
+    if(Item->Error == QueueItem::ItemReturn_Fail)
     {
+
+        RePushItem(Item);
+
+    }else if(Item->Error == QueueItem::ItemReturn_ApiFail || Item->Error == QueueItem::ItemReturn_NoData || Item->Error == QueueItem::ItemReturn_Success) {
+
         DeleteItem(Item);
+
     }
 
     //Run the next item
@@ -194,4 +241,15 @@ void QueueManager::DeleteItem(QueueItem *Item)
         ItemQueue.removeOne(Item);
 
     Item->deleteLater();
+}
+
+/*********************************************
+ * Pushes the item to the back of the queue
+ ********************************************/
+void QueueManager::RePushItem(QueueItem *Item)
+{
+    if(ItemQueue.contains(Item))
+        ItemQueue.removeOne(Item);
+
+    AddItem(Item);
 }

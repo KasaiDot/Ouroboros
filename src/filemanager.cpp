@@ -29,6 +29,7 @@
 #include <QScopedPointer>
 
 #include "apimanager.h"
+#include "queuemanager.h"
 
 using namespace Manager;
 FileManager File_Manager;
@@ -37,6 +38,7 @@ FileManager::FileManager()
 {
     //Files
     FileManagerInfo.UserInfoFile = "UserInfo.json";
+    FileManagerInfo.UserQueueFile = "Queue.json";
 
     //Dirs
     FileManagerInfo.DataFolderPath = "/Data/";
@@ -55,6 +57,19 @@ void FileManager::CheckDir(QString Filepath)
 {
     if(!QDir(Filepath).exists())
         QDir().mkpath(Filepath);
+}
+
+/**************************
+ * Checks if a file exists
+ **************************/
+bool FileManager::FileExists(QString Filename)
+{
+    return QFile(Filename).exists();
+}
+
+bool FileManager::FileExists(QString Filepath, QString Filename)
+{
+   return FileExists(Filepath.append(Filename));
 }
 
 /********************************************************
@@ -81,57 +96,11 @@ bool FileManager::SaveUserInformation()
     QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.DataFolderPath ;
     QString Filename = FileManagerInfo.UserInfoFile;
 
-    //Make sure directory exists
-    CheckDir(Filepath);
-
-    QFile File(Filepath.append(Filename));
-    if(!File.open(QIODevice::WriteOnly))
-    {
-        return false;
-    }
-
-    //Write the json doc to file
-    File.write(JsonDoc.toJson());
-    File.close();
+    if(!WriteDataToFile(Filepath,Filename,JsonDoc.toJson())) return false;
 
     return true;
 }
 
-/*************************
- * Loads user information
- *************************/
-bool FileManager::LoadUserInformation()
-{
-    //Prepare file
-    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.DataFolderPath ;
-    QString Filename = FileManagerInfo.UserInfoFile;
-
-    CheckDir(Filepath);
-
-    QFile File(Filepath.append(Filename));
-
-    if(!File.exists()) return false;
-    if(!File.open(QIODevice::ReadOnly)) return false;
-
-    //Read data
-    QByteArray Data = File.readAll();
-
-    File.close();
-
-    QVariantMap UserMap = QJsonDocument::fromJson(Data).toVariant().toMap();
-    if(UserMap.size() <= 0) return false;
-
-    if(!(UserMap.contains("Username") || UserMap.contains("Password"))) return false;
-
-    QString Username = UserMap.value("Username").toString();
-    QByteArray Password = UserMap.value("Password").toByteArray();
-
-    CurrentUser.SetUserDetails(Username,Password);
-    CurrentUser.SetAuthenticated(false);
-    CurrentUser.SetAuthKey("");
-
-    return true;
-}
 /***********************************************
  * Cycles through every entity in the database
  * and calls SaveAnimeEntity
@@ -158,34 +127,20 @@ bool FileManager::SaveAnimeEntity(Anime::AnimeEntity *Entity, bool SaveUserInfo)
     if(SaveUserInfo)
     {
         if(!CurrentUser.isValid()) return false;
-        QJsonDocument UserJson = Entity->BuildUserJsonDocument();
+        QJsonDocument UserJson = Entity->ConstructUserJsonDocument();
 
         //prepare file
         QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.UserAnimePath;
         Filepath.replace(QString("<user>"),CurrentUser.GetUsername());
 
-        CheckDir(Filepath);
-
-        QFile UserFile(Filepath.append(Filename));
-        if(!UserFile.open(QIODevice::WriteOnly))
-            return false;
-
-        UserFile.write(UserJson.toJson());
-        UserFile.close();
+        if(!WriteDataToFile(Filepath,Filename,UserJson.toJson())) return false;
     }
 
     //AnimeInfo
-    QJsonDocument AnimeJson = Entity->BuildAnimeJsonDocument();
+    QJsonDocument AnimeJson = Entity->ConstructAnimeJsonDocument();
     QString AnimeFilepath = QApplication::applicationDirPath() + FileManagerInfo.DatabaseAnimePath;
 
-    CheckDir(AnimeFilepath);
-
-    QFile AnimeFile(AnimeFilepath.append(Filename));
-    if(!AnimeFile.open(QIODevice::WriteOnly))
-        return false;
-
-    AnimeFile.write(AnimeJson.toJson());
-    AnimeFile.close();
+    if(!WriteDataToFile(AnimeFilepath,Filename,AnimeJson.toJson())) return false;
 
     //Save the image
     SaveAnimeImage(Entity);
@@ -224,6 +179,50 @@ bool FileManager::SaveAnimeImage(Anime::AnimeEntity *Entity)
     return true;
 }
 
+/*******************************************************************
+ * Saves the slug of the queue item that is of type update library
+ ******************************************************************/
+bool FileManager::SaveQueue()
+{
+    if(Queue_Manager.GetQueueSize() <= 0) return false;
+
+    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.UserFolderPath ;
+    QString Filename = FileManagerInfo.UserQueueFile;
+
+    QByteArray Data = Queue_Manager.ConstructQueueJsonDocument().toJson();
+
+    if(!WriteDataToFile(Filepath,Filename,Data)) return false;
+
+    return true;
+}
+
+/*************************
+ * Loads user information
+ *************************/
+bool FileManager::LoadUserInformation()
+{
+    //Prepare file
+    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.DataFolderPath ;
+    QString Filename = FileManagerInfo.UserInfoFile;
+
+    QByteArray Data = ReadFile(Filepath,Filename);
+    if(Data.isNull() || Data.isEmpty()) return false;
+
+
+    QVariantMap UserMap = QJsonDocument::fromJson(Data).toVariant().toMap();
+    if(UserMap.size() <= 0) return false;
+
+    if(!(UserMap.contains("Username") || UserMap.contains("Password"))) return false;
+
+    QString Username = UserMap.value("Username").toString();
+    QByteArray Password = UserMap.value("Password").toByteArray();
+
+    CurrentUser.SetUserDetails(Username,Password);
+    CurrentUser.SetAuthenticated(false);
+    CurrentUser.SetAuthKey("");
+
+    return true;
+}
 
 /**************************************************************
  * Gets the list of all the anime in the /<user>/Anime folder
@@ -271,21 +270,16 @@ bool FileManager::LoadAnimeEntity(QString Slug)
 
     QString AnimeFilePath = QApplication::applicationDirPath() + FileManagerInfo.DatabaseAnimePath;
 
-    QFile UserFile(UserFilePath.append(Filename));
-    QFile AnimeFile(AnimeFilePath.append(Filename));
-
     //Check wether they exist
     //TODO: if anime file is not found, then get it via the api
-    if(!(UserFile.exists() || AnimeFile.exists())) return false;
+    if(!(FileExists(UserFilePath,Filename) || FileExists(AnimeFilePath,Filename))) return false;
 
     //Read files
-    if(!UserFile.open(QIODevice::ReadOnly)) return false;
-    QByteArray UserArray = UserFile.readAll();
-    UserFile.close();
+    QByteArray UserArray = ReadFile(UserFilePath,Filename);
+    if(UserArray.isNull() || UserArray.isEmpty()) return false;
 
-    if(!AnimeFile.open(QIODevice::ReadOnly)) return false;
-    QByteArray AnimeArray = AnimeFile.readAll();
-    AnimeFile.close();
+    QByteArray AnimeArray = ReadFile(AnimeFilePath,Filename);
+    if(AnimeArray.isNull() || AnimeArray.isEmpty()) return false;
 
     //We have to combine the arrays before parsing it
     QJsonObject UserObject(QJsonObject::fromVariantMap(QJsonDocument::fromJson(UserArray).toVariant().toMap()));
@@ -299,4 +293,59 @@ bool FileManager::LoadAnimeEntity(QString Slug)
     Anime_Database.ParseJson(Doc.toJson());
 
     return true;
+}
+
+/*********************************************************************
+ * Gets slugs from queue file and appends them to queue for updating
+ *********************************************************************/
+bool FileManager::LoadQueue()
+{
+    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.UserFolderPath ;
+    QString Filename = FileManagerInfo.UserQueueFile;
+
+    QByteArray Data = ReadFile(Filepath,Filename);
+    if(Data.isNull() || Data.isEmpty()) return false;
+
+    Queue_Manager.ParseQueueJson(Data);
+
+    return true;
+}
+
+/********************************
+ * Saves data to given filename
+ ********************************/
+bool FileManager::WriteDataToFile(QString Filepath, QString Filename, QByteArray Data)
+{
+    CheckDir(Filepath);
+
+    QFile File(Filepath.append(Filename));
+
+    if(!File.open(QIODevice::WriteOnly)) return false;
+
+    File.write(Data);
+    File.close();
+
+    return true;
+}
+
+/*************************************
+ * Reads and returns contents of file
+ *************************************/
+QByteArray FileManager::ReadFile(QString Filepath, QString Filename)
+{
+    QByteArray Data;
+
+    CheckDir(Filepath);
+
+    QFile File(Filepath.append(Filename));
+
+    if(!File.exists()) return Data;
+    if(!File.open(QIODevice::ReadOnly)) return Data;
+
+    //Read data
+    Data = File.readAll();
+
+    File.close();
+
+    return Data;
 }

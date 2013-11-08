@@ -91,7 +91,7 @@ ApiManager::ApiReturnStatus ApiManager::UpdateLibrary(QString Slug)
     Url.replace("<slug>",Slug);
 
     Anime::AnimeEntity *Entity = Anime_Database.GetAnime(Slug);
-    QJsonObject Object = Entity->BuildUpdateJsonObject();
+    QJsonObject Object = Entity->ConstructUpdateJsonObject();
     Object.insert("auth_token",CurrentUser.GetAuthKey());
 
     QJsonDocument Doc(Object);
@@ -127,7 +127,7 @@ ApiManager::ApiReturnStatus ApiManager::ProcessReply(QNetworkReply *Reply, ApiMa
 
     if(Reply->error() != QNetworkReply::AuthenticationRequiredError && Reply->error() != QNetworkReply::NoError)
     {
-        emit ChangeStatus("Authentication Error",StatusTimeout);
+        emit ChangeStatus("Reply Error",StatusTimeout);
         Reply->deleteLater();
         return Reply_Error;
     }
@@ -138,7 +138,7 @@ ApiManager::ApiReturnStatus ApiManager::ProcessReply(QNetworkReply *Reply, ApiMa
     //Check if user is authenticated and has the right auth token
     if(ReplyData.contains("Invalid credentials") || Reply->error() == QNetworkReply::AuthenticationRequiredError)
     {
-        emit ChangeStatus("Invalid Credentials",StatusTimeout);
+        emit ChangeStatus("Authentication error",StatusTimeout);
         Reply->deleteLater();
         return Api_InvalidCredentials;
     }

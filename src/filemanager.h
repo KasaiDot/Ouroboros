@@ -39,6 +39,7 @@ public:
     {
         //Files
         QString UserInfoFile;
+        QString UserQueueFile;
 
         //Dirs
         QString DataFolderPath;
@@ -51,6 +52,8 @@ public:
 
     //Checks if directory exists, if not then it creates one
     void CheckDir(QString Filepath);
+    bool FileExists(QString Filename);
+    bool FileExists(QString Filepath,QString Filename);
 
     /************************* Save Functions ******************************/
     bool SaveSettings();
@@ -63,11 +66,17 @@ public:
     bool SaveAnimeEntity(Anime::AnimeEntity *Entity, bool SaveUserInfo = true);
     bool SaveApiResponse(QString Response, QString Filename); //Used for saving anime lists
     bool SaveAnimeImage(Anime::AnimeEntity *Entity);
+    bool SaveQueue();
 
     bool LoadSettings();
     bool LoadUserInformation();
     bool LoadAnimeDatabase();
     bool LoadAnimeEntity(QString Slug);
+    bool LoadQueue();
+
+private:
+    bool WriteDataToFile(QString Filepath,QString Filename,QByteArray Data);
+    QByteArray ReadFile(QString Filepath,QString Filename);
 
 };
 

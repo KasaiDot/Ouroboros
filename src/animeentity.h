@@ -29,6 +29,8 @@
 #include <QMessageBox>
 #include <QApplication>
 
+#include "globals.h"
+
 namespace Anime
 {
 
@@ -49,14 +51,20 @@ public:
         if(UpdateWatched)
             UpdateLastWatched();
     }
+
     inline void IncrementEpisodeCount()
     {
         if(EpisodesWatched + 1 <= AnimeEpisodes || AnimeEpisodes <= 0)
         {
+            //if user is planing to watch and increments episode, then we move it to currently watching
+            if(GetStatus() == STATUS_PLAN_TO_WATCH)
+                SetStatus(STATUS_CURRENTLY_WATCHING);
+
             EpisodesWatched++;
             UpdateLastWatched();
         }
     }
+
     inline void DecrementEpisodeCount()
     {
         if(EpisodesWatched - 1 >= 0) EpisodesWatched--;
@@ -125,11 +133,11 @@ public:
     bool operator ==(const AnimeEntity &Other);
 
     //Constructs json documents for saving
-    QJsonDocument BuildAnimeJsonDocument();
-    QJsonDocument BuildUserJsonDocument();
+    QJsonDocument ConstructAnimeJsonDocument();
+    QJsonDocument ConstructUserJsonDocument();
 
     //constructs json for update
-    QJsonObject BuildUpdateJsonObject();
+    QJsonObject ConstructUpdateJsonObject();
 
     //****************************************** Setters and Getter methods *********************************************************************/
 

@@ -132,7 +132,7 @@ void AnimeDatabase::ParseJson(QByteArray Data)
 
     //User info
     UserAnimeInformation UserInfo;
-    UserInfo.SetEpisodesWatched(UserInfoMap.value("episodes_watched",0).toInt());
+    UserInfo.SetEpisodesWatched(UserInfoMap.value("episodes_watched",ANIMEENTITY_UNKNOWN_USER_EPISODE).toInt());
     UserInfo.SetLastWatched(QDateTime::fromString(UserInfoMap.value("last_watched",QDateTime::currentDateTime().toString("yyyy-dd-MMThh:mm:ssZ")).toString(),"yyyy-dd-MMThh:mm:ssZ"));
     UserInfo.SetRewatchedTimes(UserInfoMap.value("rewatched_times",0).toInt());
     UserInfo.SetNotes(UserInfoMap.value("notes","").toString());

@@ -145,6 +145,14 @@ void QueueManager::GetAnimeLibrary()
  *****************************************/
 void QueueManager::UpdateLibrary(QString Slug)
 {
+    //Don't update it if it's not in the database
+    if(!Anime_Database.Contains(Slug)) return;
+
+    Anime::AnimeEntity *Entity = Anime_Database.GetAnime(Slug);
+
+    //We don't want to sync if the episode count is -1
+    if(Entity->GetUserInfo()->GetEpisodesWatched() <= ANIMEENTITY_UNKNOWN_USER_EPISODE) return;
+
     bool SlugFound = false;
     //Check if we have updates pending for the same anime
     for(QList<QueueItem*>::const_iterator i = ItemQueue.begin(); i != ItemQueue.end(); ++i)

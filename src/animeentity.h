@@ -20,6 +20,7 @@
 #define ANIMEENTITY_H
 
 #define ANIMEENTITY_UNKNOWN_ANIME_EPISODE 0
+#define ANIMEENTITY_UNKNOWN_USER_EPISODE -1
 
 #include <QObject>
 #include <QStringList>

@@ -220,7 +220,7 @@ QJsonObject AnimeEntity::ConstructUpdateJsonObject()
 //******************************************************************************************************
 
 UserAnimeInformation::UserAnimeInformation():
-     EpisodesWatched(-1),
+     EpisodesWatched(ANIMEENTITY_UNKNOWN_USER_EPISODE),
      LastWatched(QDate::currentDate(),QTime::currentTime()),
      RewatchedTimes(-1),
      Notes(""),

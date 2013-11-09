@@ -565,7 +565,7 @@ bool GUIManager::EditUserEpisodes(Anime::AnimeEntity *Entity)
 {
     bool Ok;
     int MinVal = 0;
-    int MaxVal = (Entity->GetAnimeEpisodeCount() == ANIMEENTITY_UNKNOWN_ANIME_EPISODE) ? 999 : Entity->GetAnimeEpisodeCount();
+    int MaxVal = (Entity->GetAnimeEpisodeCount() <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE) ? 999 : Entity->GetAnimeEpisodeCount();
     int EpisodesWatched = QInputDialog::getInt(MainWindow,"Set episodes watched","Episodes: ",Entity->GetUserInfo()->GetEpisodesWatched(),MinVal,MaxVal,1,&Ok);
 
     if(!Ok) return false;

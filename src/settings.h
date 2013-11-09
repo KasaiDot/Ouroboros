@@ -36,7 +36,8 @@ public:
         QColor TextColor;
         QColor ProgressBarOutlineColor;
         QColor ProgressBarBackgroundColor;
-        QColor ProgressBarColor;
+        QColor ProgressBarColor_CurrentlyAiring;
+        QColor ProgressBarColor_FinishedAiring;
 
     } ProgressDelegate;
 

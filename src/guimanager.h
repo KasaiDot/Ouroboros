@@ -25,6 +25,7 @@
 #define ROLE_USER_EPISODES (ROLE_DEFAULT + 2)
 #define ROLE_ANIME_EPISODES (ROLE_DEFAULT + 3)
 #define ROLE_USER_STATUS (ROLE_DEFAULT + 4)
+#define ROLE_ANIME_STATUS (ROLE_DEFAULT + 5)
 
 //Header column positions
 #define HEADER_NAME 0
@@ -126,7 +127,7 @@ public:
         QColor TextColor = Settings.ProgressDelegate.TextColor;
         QColor ProgressBarOutlineColor = Settings.ProgressDelegate.ProgressBarOutlineColor;
         QColor ProgressBarBackgroundColor = Settings.ProgressDelegate.ProgressBarBackgroundColor ;
-        QColor ProgressBarColor = Settings.ProgressDelegate.ProgressBarColor;
+        QColor ProgressBarColor = (Index.data(ROLE_ANIME_STATUS) == ANIME_STATUS_CURRENTLY_AIRING) ? Settings.ProgressDelegate.ProgressBarColor_CurrentlyAiring : Settings.ProgressDelegate.ProgressBarColor_FinishedAiring;
 
         //create the text rect
         int MaxTextPixelSize = Option.fontMetrics.size(Qt::TextSingleLine,"999/999").width() + 8;

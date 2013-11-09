@@ -184,8 +184,6 @@ bool FileManager::SaveAnimeImage(Anime::AnimeEntity *Entity)
  ******************************************************************/
 bool FileManager::SaveQueue()
 {
-    if(Queue_Manager.GetQueueSize() <= 0) return false;
-
     QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.UserFolderPath ;
     QString Filename = FileManagerInfo.UserQueueFile;
 

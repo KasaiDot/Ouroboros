@@ -35,4 +35,7 @@
 #define STATUS_DROPPED "dropped"
 #define STATUS_PLAN_TO_WATCH "plan-to-watch"
 
+#define ANIME_STATUS_CURRENTLY_AIRING "Currently Airing"
+#define ANIME_STATUS_FINISHED_AIRING "Finished Airing"
+
 #endif // GLOBALS_H

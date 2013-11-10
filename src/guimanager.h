@@ -22,10 +22,10 @@
 //Roles
 #define ROLE_DEFAULT 0x0100 //Since we can't use Qt::UserRole in the macro, we have to manually assign it
 #define ROLE_ANIME_SLUG (ROLE_DEFAULT + 1)
-#define ROLE_USER_EPISODES (ROLE_DEFAULT + 2)
-#define ROLE_ANIME_EPISODES (ROLE_DEFAULT + 3)
-#define ROLE_USER_STATUS (ROLE_DEFAULT + 4)
-#define ROLE_ANIME_STATUS (ROLE_DEFAULT + 5)
+#define ROLE_ANIME_EPISODES (ROLE_DEFAULT + 2)
+#define ROLE_USER_STATUS (ROLE_DEFAULT + 3)
+#define ROLE_ANIME_STATUS (ROLE_DEFAULT + 4)
+#define ROLE_USER_EPISODES 0//Make this equal to the display role so we can sort the progress
 
 //Header column positions
 #define HEADER_NAME 0
@@ -279,12 +279,6 @@ public:
         return nullptr;
     }
 
-    //view info edit functions
-    bool EditUserEpisodes(Anime::AnimeEntity *Entity);
-
-    //push anime to the queue to update in the api
-    void UpdateHummingbirdAnime(QString AnimeSlug);
-
 signals:
 
 public slots:
@@ -304,6 +298,12 @@ public slots:
 
    //Context menus
    void ShowViewItemComtextMenu(const QPoint &Pos);
+
+    //view info edit functions
+    bool EditUserEpisodes(Anime::AnimeEntity *Entity);
+
+    //push anime to the queue to update in the api
+    void UpdateHummingbirdAnime(QString AnimeSlug);
 
 private:
     Ouroboros *MainWindow;

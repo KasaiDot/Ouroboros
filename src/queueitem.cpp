@@ -22,6 +22,7 @@
 
 #include "apimanager.h"
 #include "guimanager.h"
+#include "animedatabase.h"
 
 using namespace Queue;
 
@@ -66,7 +67,10 @@ void QueueItem::Run()
 
         case Item_UpdateLibrary:
             if(isDataSet())
-                ReturnCode = Api_Manager.UpdateLibrary(Data);
+            {
+                if(Anime_Database.GetAnime(Data)->GetUserInfo()->GetEpisodesWatched() > ANIMEENTITY_UNKNOWN_USER_EPISODE)
+                    ReturnCode = Api_Manager.UpdateLibrary(Data);
+            }
             else
                 Error = ItemReturn_NoData;
         break;

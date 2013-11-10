@@ -20,14 +20,33 @@
 #define SETTINGS_H
 
 #include <QColor>
+#include <QSettings>
 
 class OuroborosSettings
 {
 public:
     OuroborosSettings();
     //Basic functions
-    bool Load();
-    bool Save();
+    void Load();
+    void Save();
+
+    //Holds string eqiv values of the settings for saving and loading
+    struct SettingsNames
+    {
+        //progressbar
+        struct ProgressBarNames
+        {
+            QString GroupName;
+            QString TextColor;
+            QString OutlineColor;
+            QString BackgroundColor;
+            QString BarColor_CurrentlyAiring;
+            QString BarColor_FinishedAiring;
+
+        }ProgressBar;
+
+
+    }SettingsName;
 
     //Since we can't apply a stylesheet to the progress delegate,
     //we get the colors the user sets
@@ -41,7 +60,13 @@ public:
 
     } ProgressDelegate;
 
+
+private:
+    QString Filename;
 };
+
+
+
 
 extern OuroborosSettings Settings;
 

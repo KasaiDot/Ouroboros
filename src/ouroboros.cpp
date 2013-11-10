@@ -36,9 +36,13 @@ Ouroboros::Ouroboros(QWidget *parent) :
     ui->setupUi(this);
 
     QString Title = QString(APP_NAME) + " " + QString::number(APP_MAJOR_VERSION) + "." + QString::number(APP_MINOR_VERSION);
+    if(APP_DEBUG) Title.append(" Debug");
     this->setWindowTitle(Title);
 
     SetViewLayouts();
+
+    //Load settings
+    Settings.Load();
 
     //Set the ui for the manager
     GUI_Manager.SetMainWindow(this);
@@ -66,6 +70,7 @@ Ouroboros::Ouroboros(QWidget *parent) :
     //Sync anime
     if(CurrentUser.isValid())
     {
+        emit ChangeStatus("Syncing ...");
         Queue_Manager.AuthenticateUser();
         Queue_Manager.GetAnimeLibrary();
         File_Manager.LoadQueue();
@@ -75,6 +80,9 @@ Ouroboros::Ouroboros(QWidget *parent) :
 
 Ouroboros::~Ouroboros()
 {
+    //Save settings
+    Settings.Save();
+
     //Save
     File_Manager.SaveUserInformation();
     File_Manager.SaveAnimeDatabase();

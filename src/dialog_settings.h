@@ -20,6 +20,7 @@
 #define DIALOG_SETTINGS_H
 
 #include <QDialog>
+#include <QPushButton>
 
 #include "user.h"
 
@@ -39,12 +40,23 @@ private slots:
     //Test button clicked
     void on_AccountTestButton_clicked();
 
+    //Ok button pressed
     void on_buttonBox_accepted();
+
+    //Progress bar color buttons pressed
+    void on_ProgressBar_TextColorButton_clicked();
+    void on_ProgressBar_OutlineColorButton_clicked();
+    void on_ProgressBar_BackgroundColorButton_clicked();
+    void on_ProgressBar_CurrentlyAirButton_clicked();
+    void on_ProgressBar_FinishedAirColorButton_clicked();
 
 private:
     Ui::Dialog_Settings *ui;
-
     User CurrentUserCopy;
+
+    //Color options
+    void ChangeColor(QPushButton *ColorButton,QColor &ColorVar);
+    void SetColor(QPushButton *ColorButton, QColor &ColorVar);
 
 };
 

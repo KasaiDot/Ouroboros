@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>Resources/Icon.png</file>
+        <file>Resources/Settings-Icon.png</file>
+        <file>Resources/Sync-Icon.png</file>
     </qresource>
 </RCC>

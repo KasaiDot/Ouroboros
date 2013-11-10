@@ -20,10 +20,13 @@
 #include "ui_dialog_settings.h"
 
 #include <QMessageBox>
+#include <QPainter>
+#include <QColorDialog>
 
 #include "apimanager.h"
 #include "queuemanager.h"
 #include "filemanager.h"
+#include "settings.h"
 
 Dialog_Settings::Dialog_Settings(QWidget *parent) :
     QDialog(parent),
@@ -37,11 +40,42 @@ Dialog_Settings::Dialog_Settings(QWidget *parent) :
         ui->UsernameField->setText(CurrentUser.GetUsername());
         ui->PasswordField->setText(QString(QByteArray::fromBase64(CurrentUser.GetBase64Password())));
     }
+
+    //set progress button colors
+    SetColor(ui->ProgressBar_BackgroundColorButton,Settings.ProgressDelegate.ProgressBarBackgroundColor);
+    SetColor(ui->ProgressBar_CurrentlyAirButton,Settings.ProgressDelegate.ProgressBarColor_CurrentlyAiring);
+    SetColor(ui->ProgressBar_FinishedAirColorButton,Settings.ProgressDelegate.ProgressBarColor_FinishedAiring);
+    SetColor(ui->ProgressBar_OutlineColorButton,Settings.ProgressDelegate.ProgressBarOutlineColor);
+    SetColor(ui->ProgressBar_TextColorButton,Settings.ProgressDelegate.TextColor);
 }
 
 Dialog_Settings::~Dialog_Settings()
 {
     delete ui;
+}
+
+/*****************************************************************************
+ * Changes the color of the label and sets the setting according to the id
+ ****************************************************************************/
+void Dialog_Settings::ChangeColor(QPushButton *ColorButton, QColor &ColorVar)
+{
+    QColorDialog ColorDialog;
+
+    QColor SelectedColor = ColorDialog.getColor(ColorVar,this);
+    if(!SelectedColor.isValid()) return;
+
+    ColorVar = SelectedColor;
+    SetColor(ColorButton,ColorVar);
+}
+
+/***********************************************************
+ * Sets the color of the label
+ * where ColorVar is a variable that you set the color of
+ ***********************************************************/
+void Dialog_Settings::SetColor(QPushButton *ColorButton,QColor &ColorVar)
+{
+    //Draw border
+    ColorButton->setStyleSheet("border:1px solid #000000; background-color:" + ColorVar.name() + ";");
 }
 
 /************************
@@ -93,4 +127,13 @@ void Dialog_Settings::on_buttonBox_accepted()
         Queue_Manager.GetAnimeLibrary();
         File_Manager.SaveUserInformation();
     }
+
+    Settings.Save();
 }
+
+/************************** Progress bar color buttons clicked ************************************/
+void Dialog_Settings::on_ProgressBar_TextColorButton_clicked() { ChangeColor(ui->ProgressBar_TextColorButton,Settings.ProgressDelegate.TextColor); }
+void Dialog_Settings::on_ProgressBar_OutlineColorButton_clicked() { ChangeColor(ui->ProgressBar_OutlineColorButton,Settings.ProgressDelegate.ProgressBarOutlineColor); }
+void Dialog_Settings::on_ProgressBar_BackgroundColorButton_clicked() { ChangeColor(ui->ProgressBar_BackgroundColorButton,Settings.ProgressDelegate.ProgressBarBackgroundColor); }
+void Dialog_Settings::on_ProgressBar_CurrentlyAirButton_clicked() { ChangeColor(ui->ProgressBar_CurrentlyAirButton,Settings.ProgressDelegate.ProgressBarColor_CurrentlyAiring); }
+void Dialog_Settings::on_ProgressBar_FinishedAirColorButton_clicked() { ChangeColor(ui->ProgressBar_FinishedAirColorButton,Settings.ProgressDelegate.ProgressBarColor_FinishedAiring); }

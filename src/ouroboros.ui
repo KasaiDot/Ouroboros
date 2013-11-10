@@ -469,9 +469,15 @@
      <height>21</height>
     </rect>
    </property>
+   <property name="nativeMenuBar">
+    <bool>true</bool>
+   </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
+    </property>
+    <property name="toolTipsVisible">
+     <bool>true</bool>
     </property>
     <addaction name="Action_Synchronize_Anime"/>
     <addaction name="separator"/>
@@ -488,6 +494,12 @@
    </property>
    <property name="allowedAreas">
     <set>Qt::TopToolBarArea</set>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>24</width>
+     <height>24</height>
+    </size>
    </property>
    <property name="floatable">
     <bool>false</bool>
@@ -512,6 +524,11 @@
    </property>
   </action>
   <action name="Action_Synchronize_Anime">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Resources/Sync-Icon.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>Synchronize Anime</string>
    </property>
@@ -520,6 +537,10 @@
    </property>
   </action>
   <action name="Action_ChangeSettings">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Resources/Settings-Icon.png</normaloff>:/Resources/Settings-Icon.png</iconset>
+   </property>
    <property name="text">
     <string>Settings</string>
    </property>

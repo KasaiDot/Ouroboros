@@ -19,6 +19,9 @@
 #ifndef UPDATEPERFORMCLASS_H
 #define UPDATEPERFORMCLASS_H
 
+#define UPDATE_APPLICATION 0
+#define UPDATE_UPDATER 1
+
 #include <QObject>
 #include <QtNetwork>
 #include <QtXml>
@@ -46,6 +49,7 @@ public:
 
 public slots:
     void PerformUpdate();
+    void RunUpdate();
 
 private slots:
     void updateDataReadProgress(qint64 bytesRead, qint64 totalBytes);
@@ -81,6 +85,8 @@ private:
 
     int UpdatesPerformed;
     int UpdateCount;
+
+    QQueue<int> UpdateListQueue;
     
 };
 

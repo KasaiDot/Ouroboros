@@ -47,19 +47,49 @@ void UpdatePerformClass::PerformUpdate()
             if(LocalAppMajorVersion != AppMajorVersion || LocalAppMinorVersion != AppMinorVersion)
             {
                 UpdateCount += AppLinkList.size();
-                DownloadFiles(AppLinkList,AppDirectoryList);
+                UpdateListQueue.append(UPDATE_APPLICATION);
             }
 
             if(QString::number(UPDATER_VERSION) != QString::number(UpdaterVersion))
             {
-                UpdateCount += AppLinkList.size();
-                DownloadFiles(UpdaterLinkList,UpdaterDirectoryList,false);
+                UpdateCount += UpdaterLinkList.size();
+                UpdateListQueue.append(UPDATE_UPDATER);
             }
         }
     }
 
+    //no updates found
     if(UpdateCount == 0)
+    {
         emit finished();
+        return;
+    }
+
+    RunUpdate();
+}
+
+/********************************************
+ * Goes through each update and download it
+ ********************************************/
+void UpdatePerformClass::RunUpdate()
+{
+    if(UpdateListQueue.size() <= 0)
+    {
+        emit finished();
+        return;
+    }
+
+    int UpdateValue = UpdateListQueue.dequeue();
+    switch (UpdateValue)
+    {
+        case UPDATE_APPLICATION:
+            DownloadFiles(AppLinkList,AppDirectoryList);
+        break;
+
+        case UPDATE_UPDATER:
+            DownloadFiles(UpdaterLinkList,UpdaterDirectoryList,false);
+        break;
+    }
 }
 
 /**********************
@@ -239,8 +269,15 @@ void UpdatePerformClass::ReplyFinished(QNetworkReply *Reply, QUrl Url, QString D
     if(Rename)
         RenameFile(Filepath);
 
+
     if(UpdateCount <= UpdatesPerformed)
+    {
         emit finished();
+        return;
+    }
+
+    //Run the next update
+    RunUpdate();
 }
 
 /*******************************
@@ -311,7 +348,6 @@ bool UpdatePerformClass::ReadXML(QNetworkReply *Reply)
         QString DirectoryString = Directory.text();
         AppDirectoryList << DirectoryString;
     }
-
 
     return true;
 }

@@ -70,10 +70,8 @@ Ouroboros::Ouroboros(QWidget *parent) :
     //Sync anime
     if(CurrentUser.isValid())
     {
-        emit ChangeStatus("Syncing ...");
-        Queue_Manager.AuthenticateUser();
-        Queue_Manager.GetAnimeLibrary();
-        File_Manager.LoadQueue();
+        emit ChangeStatus("Syncing ...", 3000);
+        Queue_Manager.Sync(true);
     }
 
 }
@@ -179,8 +177,7 @@ void Ouroboros::ChangeStatus(QString Status, int Timeout)
 /****************** Action Triggers ********************************/
 void Ouroboros::on_Action_Synchronize_Anime_triggered()
 {
-    Queue_Manager.AuthenticateUser();
-    Queue_Manager.GetAnimeLibrary();
+    Queue_Manager.Sync();
 }
 
 /*********************************

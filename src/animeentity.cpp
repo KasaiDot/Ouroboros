@@ -57,6 +57,59 @@ AnimeEntity::AnimeEntity( AnimeEntity &Entity)
     SetUserInfo(*Info);
 }
 
+/**********************************
+ * Parses Json data to the entity
+ *********************************/
+bool AnimeEntity::ParseAnimeJson(QByteArray Data, bool ContainsUserInfo)
+{
+    QJsonDocument Doc = QJsonDocument::fromJson(Data);
+    QVariantMap UserInfoMap;
+    QVariantMap AnimeInfoMap;
+
+    //Set the info maps
+    if(ContainsUserInfo)
+    {
+        UserInfoMap = Doc.toVariant().toMap();
+        AnimeInfoMap = UserInfoMap.value("anime").toMap();
+    } else {
+        AnimeInfoMap = Doc.toVariant().toMap();
+    }
+
+    //no slug found, return
+    if(!AnimeInfoMap.contains("slug")) return false;
+
+    SetAnimeSlug(AnimeInfoMap.value("slug","").toString());
+    SetAnimeStatus(AnimeInfoMap.value("status","unknown").toString());
+    SetAnimeUrl(AnimeInfoMap.value("url","").toString());
+    SetAnimeTitle(AnimeInfoMap.value("title","").toString());
+    SetAnimeAlternateTitle(AnimeInfoMap.value("alternate_title","").toString());
+    SetAnimeEpisodeCount(AnimeInfoMap.value("episode_count",ANIMEENTITY_UNKNOWN_ANIME_EPISODE).toInt());
+    SetAnimeImage(AnimeInfoMap.value("cover_image","").toString());
+    SetAnimeSynopsis(AnimeInfoMap.value("synopsis","").toString());
+    SetAnimeShowType(AnimeInfoMap.value("show_type","").toString());
+
+
+    //Go through each genre
+    if(AnimeInfoMap.contains("genres"))
+    {
+        QVariantList GenreList = AnimeInfoMap.value("genres").toList();
+        foreach(QVariant Genre, GenreList)
+        {
+            QVariantMap GenreMap = Genre.toMap();
+            AddAnimeGenre(GenreMap.value("name").toString());
+        }
+    }
+
+    if(ContainsUserInfo)
+    {
+        UserAnimeInformation UserInfo;
+        UserInfo.ParseUserMap(UserInfoMap);
+        SetUserInfo(UserInfo);
+    }
+
+    return true;
+}
+
 /**************************************************************************
  * This function compares the titles and alternate titles of two entities
  **************************************************************************/
@@ -231,4 +284,21 @@ UserAnimeInformation::UserAnimeInformation():
      RatingType(""),
      RatingValue(0)
 {
+}
+
+/**********************************
+ * Parses user data to the class
+ *********************************/
+void UserAnimeInformation::ParseUserMap(QVariantMap UserInfoMap)
+{
+    SetEpisodesWatched(UserInfoMap.value("episodes_watched",ANIMEENTITY_UNKNOWN_USER_EPISODE).toInt());
+    SetLastWatched(QDateTime::fromString(UserInfoMap.value("last_watched",QDateTime::currentDateTime().toString("yyyy-dd-MMThh:mm:ssZ")).toString(),"yyyy-dd-MMThh:mm:ssZ"));
+    SetRewatchedTimes(UserInfoMap.value("rewatched_times",0).toInt());
+    SetNotes(UserInfoMap.value("notes","").toString());
+    SetNotePresent(UserInfoMap.value("notes_present",false).toBool());
+    SetStatus(UserInfoMap.value("status","unknown").toString());
+    SetPrivate(UserInfoMap.value("private",false).toBool());
+    SetRewatching(UserInfoMap.value("rewatching",false).toBool());
+    SetRatingType(UserInfoMap.value("rating").toMap().value("type","basic").toString());
+    SetRatingValue(UserInfoMap.value("rating").toMap().value("value",0).toFloat());
 }

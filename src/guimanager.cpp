@@ -86,6 +86,16 @@ void GUIManager::PopulateModel()
 
 }
 
+/******************************************
+ * Clears the model and deletes all items
+ ******************************************/
+void GUIManager::ClearModel()
+{
+    //We can directly clear the rows on the model, because of the way models work they will automatically
+    //delete all items that have been appended to it, so we don't need to worr about manually deleting them
+    DataModel->removeRows(0,DataModel->rowCount());
+}
+
 
 /************************************************************************
  * Add a single entity to the list
@@ -527,12 +537,13 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
 
     if(!Action) return;
 
-    //Action clicked
+    //Edit episode clicked
     if(Action->data().toString() == Data_EditEpisode)
     {
         EditUserEpisodes(Entity);
     }
 
+    //Change status clicked
     if(StatusGroup->checkedAction()->data().toString() != CurrentStatus)
     {
         //User changed status
@@ -542,6 +553,7 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
             UpdateAnime(Entity);
     }
 
+    //Changed rating clicked
     if(RatingGroup->checkedAction()->text() != QString::number(UserRating))
     {
         //we have to check the "-" selection aswell

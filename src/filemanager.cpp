@@ -184,7 +184,9 @@ bool FileManager::SaveAnimeImage(Anime::AnimeEntity *Entity)
  ******************************************************************/
 bool FileManager::SaveQueue()
 {
-    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.UserFolderPath ;
+    if(!CurrentUser.isValid()) return false;
+
+    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.UserFolderPath + CurrentUser.GetUsername() + "/";
     QString Filename = FileManagerInfo.UserQueueFile;
 
     QByteArray Data = Queue_Manager.ConstructQueueJsonDocument().toJson();
@@ -298,7 +300,9 @@ bool FileManager::LoadAnimeEntity(QString Slug)
  *********************************************************************/
 bool FileManager::LoadQueue()
 {
-    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.UserFolderPath ;
+    if(!CurrentUser.isValid()) return false;
+
+    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.UserFolderPath + CurrentUser.GetUsername() + "/";
     QString Filename = FileManagerInfo.UserQueueFile;
 
     QByteArray Data = ReadFile(Filepath,Filename);

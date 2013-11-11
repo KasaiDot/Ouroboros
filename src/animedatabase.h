@@ -38,11 +38,12 @@ public:
 
     //Basic database functions
     void AddAnime(AnimeEntity* Anime);
-    bool RemoveAnime(QString Slug);
-    bool RemoveAnime(AnimeEntity* Anime);
+    AnimeEntity* RemoveAnime(QString Slug, bool Delete = true);
+    bool RemoveAnime(AnimeEntity* Anime, bool Delete = true);
     AnimeEntity* GetAnime(QString Slug) const;
     inline int GetDatabaseSize() const { return Database.size(); }
     inline bool Contains(QString Slug) const { return Database.contains(Slug); }
+    void ClearDatabase();
 
     //Note: May take out and replace with more specific functions
     inline QMap<QString,AnimeEntity*> *GetDatabase() { return &Database; }

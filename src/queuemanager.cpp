@@ -22,6 +22,7 @@
 
 #include "threadmanager.h"
 #include "user.h"
+#include "filemanager.h"
 #include "guimanager.h"
 
 using namespace Queue;
@@ -30,7 +31,9 @@ QueueManager Queue_Manager;
 
 QueueManager::QueueManager(QObject *parent) :
     QObject(parent),
-    Running(false)
+    Running(false),
+    ClearQueueRequested(false),
+    ClearQueueSync(false)
 {
     DelayTimer = new QTimer(this);
     DelayTimer->setSingleShot(true);
@@ -95,6 +98,58 @@ void QueueManager::ParseQueueJson(QByteArray Data)
             UpdateLibrary(Slug.toString());
     }
 
+}
+
+/***************************
+ * Clears all queue items
+ **************************/
+void QueueManager::ClearQueue(bool PerformSync)
+{
+    if(DelayTimer->isActive())
+        DelayTimer->stop();
+
+    if(Running)
+    {
+        ClearQueueRequested = true;
+        ClearQueueSync = PerformSync;
+    }
+    else
+        ResetQueue(PerformSync);
+}
+
+/**************************************
+ * Clears the queue and resets timers
+ **************************************/
+void QueueManager::ResetQueue(bool PerformSync)
+{
+    foreach (QueueItem *Item, ItemQueue)
+    {
+        ItemQueue.removeOne(Item);
+        disconnect(Item,SIGNAL(Finished(QueueItem*)),this,SLOT(QueueItemFinished(QueueItem*)));
+        disconnect(Item,SIGNAL(PopulateModel()),&GUI_Manager,SLOT(PopulateModel()));
+        Item->deleteLater();
+    }
+
+    foreach (QueueItem *Item, FailedUpdates)
+    {
+        FailedUpdates.removeOne(Item);
+        disconnect(Item,SIGNAL(Finished(QueueItem*)),this,SLOT(QueueItemFinished(QueueItem*)));
+        disconnect(Item,SIGNAL(PopulateModel()),&GUI_Manager,SLOT(PopulateModel()));
+        Item->deleteLater();
+    }
+
+    Running = false;
+
+    if(DelayTimer->isActive())
+        DelayTimer->stop();
+
+    if(PerformSync)
+    {
+        Sync(true);
+    }
+
+    ClearQueueRequested = false;
+    ClearQueueSync = false;
 }
 
 /*****************************************
@@ -169,6 +224,17 @@ void QueueManager::UpdateLibrary(QString Slug)
     StartRunning();
 }
 
+/***************************************
+ * Starts syncing app with hummingbird
+ ***************************************/
+void QueueManager::Sync(bool LoadQueueFromFile)
+{
+    AuthenticateUser();
+    GetAnimeLibrary();
+    if(LoadQueueFromFile)
+        File_Manager.LoadQueue();
+}
+
 /*********************************************************
  * Starts a timer and if any other function calls
  * this function then a delay will be added to the timer
@@ -209,11 +275,19 @@ void QueueManager::QueueItemFinished(QueueItem *Item)
 {
     Running = false;
 
+    //Reset the queue and return
+    if(ClearQueueRequested)
+    {
+        ResetQueue(ClearQueueSync);
+        return;
+    }
+
     //Check for errors
     if(Item->Error != QueueItem::ItemReturn_Success)
     {
         if(Item->Error == QueueItem::ItemReturn_NotAuthed)
         {
+            CurrentUser.SetAuthenticated(false);
             AuthenticateUser();
             return;
         }

@@ -27,6 +27,8 @@
 #include "queuemanager.h"
 #include "filemanager.h"
 #include "settings.h"
+#include "animedatabase.h"
+#include "guimanager.h"
 
 Dialog_Settings::Dialog_Settings(QWidget *parent) :
     QDialog(parent),
@@ -117,15 +119,39 @@ void Dialog_Settings::on_AccountTestButton_clicked()
  ******************************/
 void Dialog_Settings::on_buttonBox_accepted()
 {
-    //Check if username and password fields are not empty and that the username and passwords are different from current user
+    //Check if username and password fields are not empty and that the username are different from current user
     QString Username = ui->UsernameField->text();
     QString Password = ui->PasswordField->text();
-    if(!(Username.isEmpty() && Password.isEmpty()) && (Username.toLower() != CurrentUser.GetUsername()) && (Password.toUtf8().toBase64() != CurrentUser.GetBase64Password()))
+    if(!(Username.isEmpty() && Password.isEmpty()) && ((Username.toLower() != CurrentUser.GetUsername()) || (Password.toUtf8().toBase64() != CurrentUser.GetBase64Password())))
     {
+        QString OldUsername = CurrentUser.GetUsername();
+
+        //Save old user anime files if different username
+        if(Username.toLower() != CurrentUser.GetUsername())
+        {
+            File_Manager.SaveUserInformation();
+            File_Manager.SaveAnimeDatabase();
+            File_Manager.SaveQueue();
+        }
+
+        //Set current user as the new user
         CurrentUser.SetUserDetails(ui->UsernameField->text(),ui->PasswordField->text().toUtf8().toBase64());
-        Queue_Manager.AuthenticateUser();
-        Queue_Manager.GetAnimeLibrary();
+
         File_Manager.SaveUserInformation();
+
+        //if it's a different username clear the database and the views
+        //Note: if changing username while another valid user is syncing, it can intefere and may cause the anime to mix up, Be warned
+        if(OldUsername != CurrentUser.GetUsername())
+        {
+            Anime_Database.ClearDatabase();
+            GUI_Manager.ClearModel();
+            File_Manager.LoadAnimeDatabase();
+            GUI_Manager.PopulateModel();
+            Queue_Manager.ClearQueue(true);
+        } else {
+            Queue_Manager.Sync(true);
+        }
+
     }
 
     Settings.Save();

@@ -41,6 +41,8 @@ class UserAnimeInformation
 public:
     UserAnimeInformation();
 
+    void ParseUserMap(QVariantMap UserInfoMap);
+
     //****************************************** Setters and Getter methods *********************************************************************/
     inline void UpdateLastWatched() { SetLastWatched(QDateTime(QDateTime::currentDateTime()));}
 
@@ -127,6 +129,9 @@ public:
     AnimeEntity();
     AnimeEntity(AnimeEntity &Entity);
 
+    //Parses anime json files
+    bool ParseAnimeJson(QByteArray Data,bool ContainsUserInfo = false);
+
     //Compares the titles of two entities, if they are the same it returns true
     bool CompareTitle(AnimeEntity &Entity);
 
@@ -146,11 +151,15 @@ public:
     inline void SetUserInfo(UserAnimeInformation &Info)
     {
         UserInfo = Info;
-        //Check that the current episode is less than the anime episodes
+        UserInfoSet = true;
+
+        //Set the anime episode count of the information
         if(GetAnimeEpisodeCount() <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE) return;
+        Info.SetAnimeEpisodes(GetAnimeEpisodeCount());
+
+        //Check that the current episode is less than the anime episodes
         if(UserInfo.GetEpisodesWatched() > GetAnimeEpisodeCount())
             UserInfo.SetEpisodesWatched(GetAnimeEpisodeCount());
-        Info.SetAnimeEpisodes(GetAnimeEpisodeCount());
     }
 
     QString GetAnimeSlug() const { return AnimeSlug; }
@@ -184,6 +193,8 @@ public:
     inline void SetAnimeGenres(QStringList Genres) { AnimeGenres = Genres; }
     inline void AddAnimeGenre(QString Genre) { if(!Genre.isEmpty()) AnimeGenres.append(Genre); }
 
+    bool isUserInfoSet() const { return UserInfoSet; }
+
 
 private:
 
@@ -200,6 +211,7 @@ private:
     QStringList AnimeGenres;
 
     UserAnimeInformation UserInfo;
+    bool UserInfoSet = false;
 
 };
 

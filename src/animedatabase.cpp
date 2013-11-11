@@ -35,11 +35,17 @@ AnimeDatabase::AnimeDatabase(QObject *parent) :
 AnimeDatabase::~AnimeDatabase()
 {
     //Delete the anime entires since they are not part of the Qt parent heirarchy
+    ClearDatabase();
+}
+
+/***************************************************
+ * Removes and deletes all anime from the database
+ **************************************************/
+void AnimeDatabase::ClearDatabase()
+{
     foreach(AnimeEntity *Anime, Database.values())
     {
-        QString Slug = Database.key(Anime);
-        Database.remove(Slug);
-        delete Anime;
+       RemoveAnime(Anime);
     }
 }
 
@@ -70,17 +76,24 @@ void AnimeDatabase::AddAnime(AnimeEntity *Anime)
  * Removes anime from the database
  * If databse doesn't contain the anime it will return false
  **************************************************************/
-bool AnimeDatabase::RemoveAnime(QString Slug)
+AnimeEntity* AnimeDatabase::RemoveAnime(QString Slug, bool Delete)
 {
-    if(!Database.contains(Slug)) return false;
-    Database.remove(Slug);
-    return true;
+    if(!Database.contains(Slug)) return nullptr;
+
+    AnimeEntity *Anime = GetAnime(Slug);
+    RemoveAnime(Anime,Delete);
+
+    if(Delete)
+        return nullptr;
+
+    return Anime;
 }
 
-bool AnimeDatabase::RemoveAnime(AnimeEntity *Anime)
+bool AnimeDatabase::RemoveAnime(AnimeEntity *Anime, bool Delete)
 {
     if(!Database.contains(Anime->GetAnimeSlug())) return false;
     Database.remove(Anime->GetAnimeSlug());
+    if(Delete) delete Anime;
     return true;
 }
 
@@ -96,6 +109,7 @@ AnimeEntity* AnimeDatabase::GetAnime(QString Slug) const
 
     return nullptr;
 }
+
 
 /*******************************************************
  * Retrieves anime from the database based on the title
@@ -122,52 +136,12 @@ QString AnimeDatabase::GetAnimeSlug(QString Title)
  *******************************************/
 void AnimeDatabase::ParseJson(QByteArray Data)
 {
-    QJsonDocument Doc = QJsonDocument::fromJson(Data);
-    QVariantMap UserInfoMap = Doc.toVariant().toMap();
-    QVariantMap AnimeInfoMap = UserInfoMap.value("anime").toMap();
-
-
-    //Check wether we have a slug value
-    if(!AnimeInfoMap.contains("slug")) return;
-
-    //User info
-    UserAnimeInformation UserInfo;
-    UserInfo.SetEpisodesWatched(UserInfoMap.value("episodes_watched",ANIMEENTITY_UNKNOWN_USER_EPISODE).toInt());
-    UserInfo.SetLastWatched(QDateTime::fromString(UserInfoMap.value("last_watched",QDateTime::currentDateTime().toString("yyyy-dd-MMThh:mm:ssZ")).toString(),"yyyy-dd-MMThh:mm:ssZ"));
-    UserInfo.SetRewatchedTimes(UserInfoMap.value("rewatched_times",0).toInt());
-    UserInfo.SetNotes(UserInfoMap.value("notes","").toString());
-    UserInfo.SetNotePresent(UserInfoMap.value("notes_present",false).toBool());
-    UserInfo.SetStatus(UserInfoMap.value("status","unknown").toString());
-    UserInfo.SetPrivate(UserInfoMap.value("private",false).toBool());
-    UserInfo.SetRewatching(UserInfoMap.value("rewatching",false).toBool());
-    UserInfo.SetRatingType(UserInfoMap.value("rating").toMap().value("type","basic").toString());
-    UserInfo.SetRatingValue(UserInfoMap.value("rating").toMap().value("value",0).toFloat());
-
-    //Anime info
     AnimeEntity *Entity = new AnimeEntity();
-    Entity->SetAnimeSlug(AnimeInfoMap.value("slug","").toString());
-    Entity->SetAnimeStatus(AnimeInfoMap.value("status","unknown").toString());
-    Entity->SetAnimeUrl(AnimeInfoMap.value("url","").toString());
-    Entity->SetAnimeTitle(AnimeInfoMap.value("title","").toString());
-    Entity->SetAnimeAlternateTitle(AnimeInfoMap.value("alternate_title","").toString());
-    Entity->SetAnimeEpisodeCount(AnimeInfoMap.value("episode_count",ANIMEENTITY_UNKNOWN_ANIME_EPISODE).toInt());
-    Entity->SetAnimeImage(AnimeInfoMap.value("cover_image","").toString());
-    Entity->SetAnimeSynopsis(AnimeInfoMap.value("synopsis","").toString());
-    Entity->SetAnimeShowType(AnimeInfoMap.value("show_type","").toString());
-
-
-    //Go through each genre
-    if(AnimeInfoMap.contains("genres"))
+    if(!Entity->ParseAnimeJson(Data,true))
     {
-        QVariantList GenreList = AnimeInfoMap.value("genres").toList();
-        foreach(QVariant Genre, GenreList)
-        {
-            QVariantMap GenreMap = Genre.toMap();
-            Entity->AddAnimeGenre(GenreMap.value("name").toString());
-        }
+        delete Entity;
+        return;
     }
-
-    Entity->SetUserInfo(UserInfo);
 
     //Now add it to the list
     AddAnime(Entity);

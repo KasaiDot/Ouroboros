@@ -284,6 +284,7 @@ signals:
 public slots:
     //Add entities to the model
     void PopulateModel();
+    void ClearModel();
     void AddAnime(Anime::AnimeEntity *Entity);
     void UpdateAnime(QStandardItem *Item,Anime::AnimeEntity *Entity);
     void UpdateAnime(QModelIndex Index,Anime::AnimeEntity *Entity);

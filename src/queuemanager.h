@@ -51,6 +51,8 @@ private:
     QQueue<QueueItem*> FailedUpdates;
 
     bool Running;
+    bool ClearQueueRequested;
+    bool ClearQueueSync;
 
     //Used to delay the queue if a new item is added in
     QTimer *DelayTimer;
@@ -59,6 +61,11 @@ private:
 signals:
 
 public slots:
+
+    //Clears the queue
+    void ClearQueue(bool PerformSync = false);
+    void ResetQueue(bool PerformSync = false);
+
     //Starts the queue timer
     void StartRunning();
 
@@ -76,6 +83,7 @@ public slots:
     void AuthenticateUser();
     void GetAnimeLibrary();
     void UpdateLibrary(QString Slug);
+    void Sync(bool LoadQueueFromFile = false);
 
 private slots:
     //Runs through the queue

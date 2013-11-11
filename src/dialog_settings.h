@@ -52,6 +52,8 @@ private slots:
 
 private:
     Ui::Dialog_Settings *ui;
+
+    //used for the test button
     User CurrentUserCopy;
 
     //Color options

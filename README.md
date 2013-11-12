@@ -28,6 +28,10 @@ Classes
 **ThreadManager** - Class which handles creation and deletion of threads within the application.  
 **User** - Class which holds user information such as username and password.
 
+## Dialogs  
+
+**Dialog_Settings** - Settings dialog
+
 ## Classes not included  
   
 **Private** - Header file which holds private information such as the Ma-shape key.  

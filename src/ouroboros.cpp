@@ -100,18 +100,21 @@ void Ouroboros::SetViewLayouts()
     ui->MainTabWidget->widget(TAB_DROPPED)->setLayout(ui->Layout_Dropped);
     ui->MainTabWidget->widget(TAB_ON_HOLD)->setLayout(ui->Layout_OnHold);
     ui->MainTabWidget->widget(TAB_PLAN_TO_WATCH)->setLayout(ui->Layout_PlanToWatch);
+    ui->MainTabWidget->widget(TAB_SEARCH)->setLayout(ui->Layout_Search);
 
     ui->View_Completed->header()->setSectionsMovable(false);
     ui->View_CurrentlyWatching->header()->setSectionsMovable(false);
     ui->View_Dropped->header()->setSectionsMovable(false);
     ui->View_OnHold->header()->setSectionsMovable(false);
     ui->View_PlanToWatch->header()->setSectionsMovable(false);
+    ui->View_Search->header()->setSectionsMovable(false);
 
     ui->View_Completed->sortByColumn(HEADER_NAME,Qt::AscendingOrder);
     ui->View_CurrentlyWatching->sortByColumn(HEADER_NAME,Qt::AscendingOrder);
     ui->View_Dropped->sortByColumn(HEADER_NAME,Qt::AscendingOrder);
     ui->View_OnHold->sortByColumn(HEADER_NAME,Qt::AscendingOrder);
     ui->View_PlanToWatch->sortByColumn(HEADER_NAME,Qt::AscendingOrder);
+    ui->View_Search->sortByColumn(HEADER_NAME,Qt::AscendingOrder);
 }
 
 /************************************ Getter functions ****************************************/
@@ -123,7 +126,7 @@ QTabWidget *Ouroboros::GetMainTabWidget()
 /*************************
  * Returns main views
  ************************/
-QTreeView *Ouroboros::GetView(Ouroboros::Views Type)
+QTreeView* Ouroboros::GetView(Ouroboros::Views Type)
 {
     switch(Type)
     {
@@ -146,6 +149,10 @@ QTreeView *Ouroboros::GetView(Ouroboros::Views Type)
         case Completed:
             return ui->View_Completed;
         break;
+
+        case Search:
+            return ui->View_Search;
+        break;
     }
 
     return  nullptr;
@@ -164,6 +171,14 @@ QAction *Ouroboros::GetAction(Ouroboros::Actions Type)
     }
 
     return nullptr;
+}
+
+/**************************
+ * returns main tool bar
+ *************************/
+QToolBar* Ouroboros::GetMainToolBar()
+{
+    return ui->MainToolBar;
 }
 
 /**************************************************

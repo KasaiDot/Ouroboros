@@ -47,7 +47,8 @@ public:
         OnHold,
         Dropped,
         Completed,
-        PlanToWatch
+        PlanToWatch,
+        Search
     };
 
     enum Actions
@@ -62,6 +63,7 @@ public:
     QTabWidget* GetMainTabWidget();
     QTreeView* GetView(Ouroboros::Views Type);
     QAction* GetAction(Ouroboros::Actions Type);
+    QToolBar* GetMainToolBar();
 
 private:
     Ui::Ouroboros *ui;

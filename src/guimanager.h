@@ -39,6 +39,7 @@
 #define TAB_ON_HOLD 2
 #define TAB_PLAN_TO_WATCH 3
 #define TAB_DROPPED 4
+#define TAB_SEARCH 5
 
 #include <QObject>
 #include <QApplication>
@@ -110,13 +111,17 @@ public:
         {
             UserEpisodeCount = MinValue;
         }
+
+        //Do this so we don't divide by zero
         CurrentValue = UserEpisodeCount;
+        if(CurrentValue == 0 && AnimeEpisodeCount <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE)
+            CurrentValue = 1;
 
         //Fill in whole bar if unknown anime episode and completed
         if(Index.data(ROLE_USER_STATUS).toString() == STATUS_COMPLETED)
         {
             if(AnimeEpisodeCount <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE)
-                MaxValue = UserEpisodeCount;
+                MaxValue = CurrentValue;
         }
 
 
@@ -263,6 +268,7 @@ public:
 
     //MUST SET MAIN WINDOW
     void SetMainWindow(Ouroboros *Main);
+    void SetUpSearchBox(QLineEdit *SearchBox);
 
     QStandardItemModel* GetDataModel() const { return DataModel; }
 
@@ -296,6 +302,8 @@ public slots:
 
    //Tab changed
    void TabChanged(int Tab);
+    //Changes tab
+   void ChangeTab(int Tab);
 
    //Context menus
    void ShowViewItemComtextMenu(const QPoint &Pos);
@@ -322,10 +330,15 @@ private:
     QSortFilterProxyModel *Filter_PlanToWatch;
     QSortFilterProxyModel *Filter_Search;
 
+    //Search box
+    QLineEdit *SearchBox;
+
     //Functions
     void SetModelHeaders();
     void SetUpFilters();
     void SetUpDelegates();
+
+signals:
 
 };
 

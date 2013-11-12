@@ -21,6 +21,7 @@
 #include <QHeaderView>
 #include <QMenu>
 #include <QInputDialog>
+#include <QToolBar>
 
 #include "animedatabase.h"
 #include "filemanager.h"
@@ -48,11 +49,13 @@ void GUIManager::SetMainWindow(Ouroboros *Main)
     //Connect signals and slots
     connect(MainWindow->GetMainTabWidget(),SIGNAL(currentChanged(int)),this,SLOT(TabChanged(int)));
 
+    //connect context menus
     connect(MainWindow->GetView(Ouroboros::CurrentlyWatching),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
     connect(MainWindow->GetView(Ouroboros::OnHold),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
     connect(MainWindow->GetView(Ouroboros::Completed),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
     connect(MainWindow->GetView(Ouroboros::PlanToWatch),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
     connect(MainWindow->GetView(Ouroboros::Dropped),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
+    connect(MainWindow->GetView(Ouroboros::Search),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
 
     //Set defaults
     TabChanged(MainWindow->GetMainTabWidget()->currentIndex());
@@ -60,6 +63,39 @@ void GUIManager::SetMainWindow(Ouroboros *Main)
     //Setup required items
     SetUpDelegates();
     SetUpFilters();
+    SetUpSearchBox(SearchBox);
+}
+
+/*********************************************************************
+ * Sets up the signals and slots of the search box and other things
+ ********************************************************************/
+void GUIManager::SetUpSearchBox(QLineEdit *SearchBox)
+{
+    //make the search box
+    SearchBox = new QLineEdit(MainWindow);
+    SearchBox->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+    SearchBox->setMinimumWidth(200);
+    SearchBox->setMaximumWidth(200);
+    SearchBox->setPlaceholderText("Search anime");
+    SearchBox->setContentsMargins(5,5,5,5);
+
+    //Add a spacer widget so the search box is at the end of the toolbar
+    QWidget *Spacer = new QWidget(MainWindow);
+    Spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    Spacer->setVisible(true);
+    MainWindow->GetMainToolBar()->addWidget(Spacer);
+
+    //add it to the toolbar
+    QAction *Action = MainWindow->GetMainToolBar()->addWidget(SearchBox);
+    MainWindow->GetMainToolBar()->insertSeparator(Action);
+
+    //Connect signals and slots
+    connect(SearchBox,SIGNAL(textChanged(QString)),Filter_Search,SLOT(setFilterFixedString(QString)));
+    connect(SearchBox,&QLineEdit::textChanged,[=](){
+        if(SearchBox->text().size() > 0)
+            ChangeTab(TAB_SEARCH);
+    });
+
 }
 
 /********************************************
@@ -276,7 +312,19 @@ void GUIManager::TabChanged(int Tab)
         case TAB_PLAN_TO_WATCH:
             CurrentView = MainWindow->GetView(Ouroboros::PlanToWatch);
         break;
+
+        case TAB_SEARCH:
+            CurrentView = MainWindow->GetView(Ouroboros::Search);
+        break;
     }
+}
+
+/***************************************
+ * Programatically changes current tab
+ ***************************************/
+void GUIManager::ChangeTab(int Tab)
+{
+    MainWindow->GetMainTabWidget()->setCurrentIndex(Tab);
 }
 
 /**********************************
@@ -315,6 +363,7 @@ void GUIManager::SetModelHeaders()
     SetViewHeaderSize(MainWindow->GetView(Ouroboros::PlanToWatch));
     SetViewHeaderSize(MainWindow->GetView(Ouroboros::Completed));
     SetViewHeaderSize(MainWindow->GetView(Ouroboros::Dropped));
+    SetViewHeaderSize(MainWindow->GetView(Ouroboros::Search));
 
 
 }
@@ -324,9 +373,6 @@ void GUIManager::SetModelHeaders()
  *********************************************/
 void GUIManager::SetUpFilters()
 {
-
-    //TODO: Link filters to view
-
     //Set up filters for the ui
     //Basically each view will be linked to the model, but we will filter it based on the user status
     //Filters will only get data from ROLE_USER_STATUS role
@@ -370,8 +416,10 @@ void GUIManager::SetUpFilters()
     //we filter the string
     Filter_Search = new QSortFilterProxyModel(this);
     Filter_Search->setSourceModel(DataModel);
+    Filter_Search->setFilterCaseSensitivity(Qt::CaseInsensitive);
     Filter_Search->sort(HEADER_NAME);
     Filter_Search->setFilterKeyColumn(HEADER_NAME); //We want to search the names of the anime
+    MainWindow->GetView(Ouroboros::Search)->setModel(Filter_Search);
 }
 
 /***********************************************
@@ -380,9 +428,6 @@ void GUIManager::SetUpFilters()
  ***********************************************/
 void GUIManager::SetUpDelegates()
 {
-
-    //TODO: Add delegate to the views
-
     //Progress bar
     ProgressDelegate *ProgressBar = new ProgressDelegate(this);
 
@@ -391,6 +436,7 @@ void GUIManager::SetUpDelegates()
     MainWindow->GetView(Ouroboros::Completed)->setItemDelegateForColumn(HEADER_PROGRESS,ProgressBar);
     MainWindow->GetView(Ouroboros::Dropped)->setItemDelegateForColumn(HEADER_PROGRESS,ProgressBar);
     MainWindow->GetView(Ouroboros::PlanToWatch)->setItemDelegateForColumn(HEADER_PROGRESS,ProgressBar);
+    MainWindow->GetView(Ouroboros::Search)->setItemDelegateForColumn(HEADER_PROGRESS,ProgressBar);
 
     //connect signals and slots
     connect(ProgressBar,SIGNAL(ButtonClicked(QString,ProgressDelegate::Button)),this,SLOT(ProgressBarButtonClicked(QString,ProgressDelegate::Button)));

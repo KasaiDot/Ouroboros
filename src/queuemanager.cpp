@@ -178,18 +178,38 @@ void QueueManager::AuthenticateUser()
  *************************************************/
 void QueueManager::GetAnimeLibrary()
 {
-    QueueItem *CurrentlyWatching = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_CURRENTLY_WATCHING);
-    QueueItem *OnHold = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_ON_HOLD);
-    QueueItem *PlanToWatch = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_PLAN_TO_WATCH);
-    QueueItem *Dropped = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_DROPPED);
-    QueueItem *Completed = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_COMPLETED);
-    QueueItem *PopulateModel = new QueueItem(this,QueueItem::Item_PopulateModel);
+    //Only add items if they don't exists in queue
+    if(!ItemContainsData(STATUS_CURRENTLY_WATCHING))
+    {
+        QueueItem *CurrentlyWatching = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_CURRENTLY_WATCHING);
+        AddItem(CurrentlyWatching);
+    }
 
-    AddItem(CurrentlyWatching);
-    AddItem(Completed);
-    AddItem(OnHold);
-    AddItem(PlanToWatch);
-    AddItem(Dropped);
+    if(!ItemContainsData(STATUS_COMPLETED))
+    {
+        QueueItem *Completed = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_COMPLETED);
+        AddItem(Completed);
+    }
+
+    if(!ItemContainsData(STATUS_ON_HOLD))
+    {
+        QueueItem *OnHold = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_ON_HOLD);
+        AddItem(OnHold);
+    }
+
+    if(!ItemContainsData(STATUS_PLAN_TO_WATCH))
+    {
+        QueueItem *PlanToWatch = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_PLAN_TO_WATCH);
+        AddItem(PlanToWatch);
+    }
+
+    if(!ItemContainsData(STATUS_DROPPED))
+    {
+        QueueItem *Dropped = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_DROPPED);
+        AddItem(Dropped);
+    }
+
+    QueueItem *PopulateModel = new QueueItem(this,QueueItem::Item_PopulateModel);
     AddItem(PopulateModel);
 
     StartRunning();
@@ -208,19 +228,20 @@ void QueueManager::UpdateLibrary(QString Slug)
     //We don't want to sync if the episode count is -1
     if(Entity->GetUserInfo()->GetEpisodesWatched() <= ANIMEENTITY_UNKNOWN_USER_EPISODE) return;
 
-    bool SlugFound = false;
     //Check if we have updates pending for the same anime
-    for(QList<QueueItem*>::const_iterator i = ItemQueue.begin(); i != ItemQueue.end(); ++i)
-    {
-        if((*i)->GetData() == Slug && !Running)
-            SlugFound = true;
-    }
-
-    if(!SlugFound)
+    bool QueueContainsItem = ItemContainsData(Slug);
+    if(!QueueContainsItem)
     {
         QueueItem *Item = new QueueItem(this,QueueItem::Item_UpdateLibrary,Slug);
         AddItem(Item);
+    } else {
+        if(Running)
+        {
+            QueueItem *Item = new QueueItem(this,QueueItem::Item_UpdateLibrary,Slug);
+            AddItem(Item);
+        }
     }
+
     StartRunning();
 }
 
@@ -229,6 +250,7 @@ void QueueManager::UpdateLibrary(QString Slug)
  ***************************************/
 void QueueManager::Sync(bool LoadQueueFromFile)
 {
+    if(Running) return;
     AuthenticateUser();
     GetAnimeLibrary();
     if(LoadQueueFromFile)
@@ -364,4 +386,25 @@ void QueueManager::UpdateFailed(QueueItem *Item)
         ItemQueue.removeOne(Item);
         FailedUpdates.append(Item);
     }
+}
+
+/***********************************************************************************
+ * Goes thorugh queue items and checks if the item's data equals to the data given
+ **********************************************************************************/
+bool QueueManager::ItemContainsData(QString Data)
+{
+    bool Found = false;
+    for(QList<QueueItem*>::const_iterator i = ItemQueue.begin(); i != ItemQueue.end(); ++i)
+    {
+        if((*i)->GetData() == Data)
+            Found = true;
+    }
+
+    for(QList<QueueItem*>::const_iterator i = FailedUpdates.begin(); i != FailedUpdates.end(); ++i)
+    {
+        if((*i)->GetData() == Data)
+            Found = true;
+    }
+
+    return Found;
 }

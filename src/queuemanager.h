@@ -79,6 +79,9 @@ public slots:
     void RePushItem(QueueItem* Item);
     void UpdateFailed(QueueItem* Item);
 
+    //checks whether an item in the queue contains given data
+    bool ItemContainsData(QString Data);
+
     //Api functions
     void AuthenticateUser();
     void GetAnimeLibrary();

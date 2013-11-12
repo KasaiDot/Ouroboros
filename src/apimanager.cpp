@@ -45,7 +45,7 @@ ApiManager::ApiReturnStatus ApiManager::Authenticate()
     emit ChangeStatus("Authenticating ...");
     if(CurrentUser.isAuthenticated())
     {
-        emit ChangeStatus("Already Authenticated");
+        emit ChangeStatus("Already Authenticated", 5000);
         return Api_AlreadyAuth;
     }
 

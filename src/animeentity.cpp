@@ -79,7 +79,7 @@ bool AnimeEntity::ParseAnimeJson(QByteArray Data, bool ContainsUserInfo)
     if(!AnimeInfoMap.contains("slug")) return false;
 
     SetAnimeSlug(AnimeInfoMap.value("slug","").toString());
-    SetAnimeStatus(AnimeInfoMap.value("status","unknown").toString());
+    SetAnimeStatus(AnimeInfoMap.value("status","").toString());
     SetAnimeUrl(AnimeInfoMap.value("url","").toString());
     SetAnimeTitle(AnimeInfoMap.value("title","").toString());
     SetAnimeAlternateTitle(AnimeInfoMap.value("alternate_title","").toString());
@@ -296,9 +296,9 @@ void UserAnimeInformation::ParseUserMap(QVariantMap UserInfoMap)
     SetRewatchedTimes(UserInfoMap.value("rewatched_times",0).toInt());
     SetNotes(UserInfoMap.value("notes","").toString());
     SetNotePresent(UserInfoMap.value("notes_present",false).toBool());
-    SetStatus(UserInfoMap.value("status","unknown").toString());
+    SetStatus(UserInfoMap.value("status","").toString());
     SetPrivate(UserInfoMap.value("private",false).toBool());
     SetRewatching(UserInfoMap.value("rewatching",false).toBool());
-    SetRatingType(UserInfoMap.value("rating").toMap().value("type","basic").toString());
+    SetRatingType(UserInfoMap.value("rating").toMap().value("type","simple").toString());
     SetRatingValue(UserInfoMap.value("rating").toMap().value("value",0).toFloat());
 }

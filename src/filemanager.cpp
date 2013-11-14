@@ -295,6 +295,28 @@ bool FileManager::LoadAnimeEntity(QString Slug)
     return true;
 }
 
+/************************************
+ * Gets the anime image from file
+ ***********************************/
+QByteArray FileManager::GetAnimeImage(QString Slug)
+{
+    QString ImageFilePath = QApplication::applicationDirPath() + FileManagerInfo.DatabaseImagePath;
+    QString ImageFileName = Slug + ".png";
+
+    CheckDir(ImageFilePath);
+
+    //Check if image exists, if not get it and save it
+    if(!QFile::exists(QString(ImageFilePath + ImageFileName)))
+    {
+        if(Anime_Database.Contains(Slug))
+            SaveAnimeImage(Anime_Database.GetAnime(Slug));
+    }
+
+    //Read the file and return the contents
+    return ReadFile(ImageFilePath,ImageFileName);
+
+}
+
 /*********************************************************************
  * Gets slugs from queue file and appends them to queue for updating
  *********************************************************************/

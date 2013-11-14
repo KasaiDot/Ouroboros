@@ -26,6 +26,7 @@
 #include "animedatabase.h"
 #include "filemanager.h"
 #include "queuemanager.h"
+#include "dialog_animeinformation.h"
 
 using namespace Manager;
 GUIManager GUI_Manager;
@@ -120,6 +121,9 @@ void GUIManager::PopulateModel()
             AddAnime(Entity);
     }
 
+    //Set the name of the tabs
+    RenameTabs();
+
 }
 
 /******************************************
@@ -130,6 +134,9 @@ void GUIManager::ClearModel()
     //We can directly clear the rows on the model, because of the way models work they will automatically
     //delete all items that have been appended to it, so we don't need to worr about manually deleting them
     DataModel->removeRows(0,DataModel->rowCount());
+
+    //Reset the tab names
+    RenameTabs();
 }
 
 
@@ -222,6 +229,9 @@ void GUIManager::UpdateAnime(QStandardItem *Item, Anime::AnimeEntity *Entity)
 
     //Save the anime
     File_Manager.SaveAnimeEntity(Entity,true);
+
+    //Change the item count of the tabs
+    RenameTabs();
 }
 
 void GUIManager::UpdateAnime(QModelIndex Index, Anime::AnimeEntity *Entity)
@@ -325,6 +335,24 @@ void GUIManager::TabChanged(int Tab)
 void GUIManager::ChangeTab(int Tab)
 {
     MainWindow->GetMainTabWidget()->setCurrentIndex(Tab);
+}
+
+/*******************************
+ * Adds item count to the tab
+ *******************************/
+void GUIManager::RenameTabs()
+{
+    RenameTab(TAB_CURRENTLY_WATCHING,TABNAME_CURRENTLY_WATCHING,Filter_CurrentlyWatching->rowCount());
+    RenameTab(TAB_COMPLETED,TABNAME_COMPLETED,Filter_Completed->rowCount());
+    RenameTab(TAB_ON_HOLD,TABNAME_ON_HOLD,Filter_OnHold->rowCount());
+    RenameTab(TAB_PLAN_TO_WATCH,TABNAME_PLAN_TO_WATCH,Filter_PlanToWatch->rowCount());
+    RenameTab(TAB_DROPPED,TABNAME_DROPPED,Filter_Dropped->rowCount());
+}
+
+void GUIManager::RenameTab(int TabIndex,QString TabName, int Count)
+{
+    QString NewName = QString(TabName + " (%1)").arg(QString::number(Count));
+    MainWindow->GetMainTabWidget()->tabBar()->setTabText(TabIndex,NewName);
 }
 
 /**********************************
@@ -471,9 +499,13 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
     EditMenu.setTitle("Edit");
 
     //Menu data
+    QString Data_Information = "Information";
     QString Data_EditEpisode = "Edit_Episodes";
 
     //*************Actions************************
+
+    //Information
+    Menu.addAction("Information")->setData(Data_Information);
 
     //***** Edit Menu
 
@@ -582,6 +614,14 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
     QAction *Action = Menu.exec(QCursor::pos());
 
     if(!Action) return;
+
+    //Information clicked
+    if(Action->data().toString() == Data_Information)
+    {
+        Dialog_AnimeInformation InfoDialog;
+        InfoDialog.ParseAnime(*Entity);
+        InfoDialog.exec();
+    }
 
     //Edit episode clicked
     if(Action->data().toString() == Data_EditEpisode)

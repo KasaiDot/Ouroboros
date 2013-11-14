@@ -72,6 +72,7 @@ public:
     bool LoadUserInformation();
     bool LoadAnimeDatabase();
     bool LoadAnimeEntity(QString Slug);
+    QByteArray GetAnimeImage(QString Slug);
     bool LoadQueue();
 
 private:

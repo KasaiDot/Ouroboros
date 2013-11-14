@@ -41,6 +41,14 @@
 #define TAB_DROPPED 4
 #define TAB_SEARCH 5
 
+//Tab names used when adding item count to the name
+#define TABNAME_CURRENTLY_WATCHING "Currently watching"
+#define TABNAME_COMPLETED "Completed"
+#define TABNAME_ON_HOLD "On hold"
+#define TABNAME_PLAN_TO_WATCH "Plan to watch"
+#define TABNAME_DROPPED "Dropped"
+
+
 #include <QObject>
 #include <QApplication>
 #include <QStyledItemDelegate>
@@ -186,7 +194,7 @@ public:
         if(isHovering)
         {
             //Global values
-           QColor BoxColor = QColor(96,96,96);
+            QColor BoxColor = QColor(96,96,96);
             //We draw the + and - boxes around the progress bar
             QStyleOptionGraphicsItem Minus;
             Minus.state = QStyle::State_Enabled;
@@ -298,15 +306,19 @@ public slots:
 
     //Slots for the progressbar delegate
     void ProgressBarButtonClicked(QString Slug,ProgressDelegate::Button Type);
-   void SelectRow(QModelIndex Index);
+    void SelectRow(QModelIndex Index);
 
-   //Tab changed
-   void TabChanged(int Tab);
+    //Tab changed
+    void TabChanged(int Tab);
     //Changes tab
-   void ChangeTab(int Tab);
+    void ChangeTab(int Tab);
 
-   //Context menus
-   void ShowViewItemComtextMenu(const QPoint &Pos);
+    //Adds item count to the tabs
+    void RenameTabs();
+    void RenameTab(int TabIndex, QString TabName, int Count);
+
+    //Context menus
+    void ShowViewItemComtextMenu(const QPoint &Pos);
 
     //view info edit functions
     bool EditUserEpisodes(Anime::AnimeEntity *Entity);

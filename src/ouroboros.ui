@@ -99,6 +99,9 @@
            <property name="indentation">
             <number>10</number>
            </property>
+           <property name="rootIsDecorated">
+            <bool>false</bool>
+           </property>
            <property name="uniformRowHeights">
             <bool>true</bool>
            </property>

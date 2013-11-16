@@ -30,7 +30,8 @@ Classes
 
 ## Dialogs  
 
-**Dialog_Settings** - Settings dialog
+**Dialog_Settings** - Settings dialog  
+**Dialog_AnimeInformation** - Displays anime information
 
 ## Classes not included  
   

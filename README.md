@@ -18,6 +18,7 @@ Classes
 **AnimeDatabase** - Main database which contains all functions to access single entities.  
 **AnimeEntity** - Hold all anime data and user data for a specific anime.  
 **ApiManager** - Class which links Ouroboros with the Hummingbird Api.  
+**CustomGui(Header)** - Contains all modified and custom gui elements, such as Textbox with clear button  
 **FileManager** - Class which handles all loading and saving in Ouroboros.  
 **Globals** - Holds global values which are tweakable.  
 **GUIManager** - Class which acts like an interface between the ui and the data.  
@@ -59,6 +60,7 @@ Here are the list of current namespaces:
 * Anime  
 * Queue  
 * Manager  
+* CustomGui
 * Ui - Default Qt namespace 
 
 You may also notice that sometimes objects are created (A *a = new A) but they aren't deleted.  

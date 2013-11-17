@@ -33,7 +33,8 @@ Ouroboros::Ouroboros(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Ouroboros)
 {
-    ui->setupUi(this);
+    ui->setupUi(this);\
+    setMouseTracking(true);
 
     QString Title = QString(APP_NAME) + " " + QString::number(APP_MAJOR_VERSION) + "." + QString::number(APP_MINOR_VERSION);
     if(APP_DEBUG) Title.append(" Debug");

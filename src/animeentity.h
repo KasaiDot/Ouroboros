@@ -211,7 +211,7 @@ private:
     QStringList AnimeGenres;
 
     UserAnimeInformation UserInfo;
-    bool UserInfoSet = false;
+    bool UserInfoSet;
 
 };
 

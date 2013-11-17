@@ -70,10 +70,10 @@ void GUIManager::SetMainWindow(Ouroboros *Main)
 /*********************************************************************
  * Sets up the signals and slots of the search box and other things
  ********************************************************************/
-void GUIManager::SetUpSearchBox(QLineEdit *SearchBox)
+void GUIManager::SetUpSearchBox(CustomGui::EraseableLineEdit *SearchBox)
 {
     //make the search box
-    SearchBox = new QLineEdit(MainWindow);
+    SearchBox = new CustomGui::EraseableLineEdit(MainWindow);
     SearchBox->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     SearchBox->setMinimumWidth(200);
     SearchBox->setMaximumWidth(200);
@@ -256,19 +256,19 @@ void GUIManager::UpdateAnime(Anime::AnimeEntity *Entity)
 /************************************************************************************************************
  * Handles the button click signal recieved from pressing either the "+" or "-" buttons on the progress bar
  ***********************************************************************************************************/
-void GUIManager::ProgressBarButtonClicked(QString Slug, ProgressDelegate::Button Type)
+void GUIManager::ProgressBarButtonClicked(QString Slug, CustomGui::ProgressDelegate::Button Type)
 {
     bool Update = false;
     Anime::AnimeEntity *Entity = Anime_Database.GetAnime(Slug);
 
-    if(Type == ProgressDelegate::Plus)
+    if(Type == CustomGui::ProgressDelegate::Plus)
     {
         if((Entity->GetUserInfo()->GetEpisodesWatched() + 1 <= Entity->GetAnimeEpisodeCount()) || Entity->GetAnimeEpisodeCount() <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE)
         {
             Entity->GetUserInfo()->IncrementEpisodeCount();
             Update = true;
         }
-    } else if(Type == ProgressDelegate::Minus)
+    } else if(Type == CustomGui::ProgressDelegate::Minus)
     {
         if(Entity->GetUserInfo()->GetEpisodesWatched() - 1 >= 0)
         {
@@ -457,7 +457,7 @@ void GUIManager::SetUpFilters()
 void GUIManager::SetUpDelegates()
 {
     //Progress bar
-    ProgressDelegate *ProgressBar = new ProgressDelegate(this);
+    CustomGui::ProgressDelegate *ProgressBar = new CustomGui::ProgressDelegate(this);
 
     MainWindow->GetView(Ouroboros::CurrentlyWatching)->setItemDelegateForColumn(HEADER_PROGRESS,ProgressBar);
     MainWindow->GetView(Ouroboros::OnHold)->setItemDelegateForColumn(HEADER_PROGRESS,ProgressBar);
@@ -467,7 +467,7 @@ void GUIManager::SetUpDelegates()
     MainWindow->GetView(Ouroboros::Search)->setItemDelegateForColumn(HEADER_PROGRESS,ProgressBar);
 
     //connect signals and slots
-    connect(ProgressBar,SIGNAL(ButtonClicked(QString,ProgressDelegate::Button)),this,SLOT(ProgressBarButtonClicked(QString,ProgressDelegate::Button)));
+    connect(ProgressBar,SIGNAL(ButtonClicked(QString,CustomGui::ProgressDelegate::Button)),this,SLOT(ProgressBarButtonClicked(QString,CustomGui::ProgressDelegate::Button)));
 
 }
 

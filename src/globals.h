@@ -19,16 +19,16 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#define APP_DEBUG false
+#define APP_DEBUG true
 
 #define APP_NAME "Ouroboros"
-#define APP_MINOR_VERSION 0.4
+#define APP_MINOR_VERSION 0.5
 #define APP_MAJOR_VERSION 0
 
 #define APP_LOCAL_VERSION_FILENAME "VersionInfo.xml"
 #define APP_UPDATER "Updater.exe"
 
-//all statuses
+//********************************************* All statuses ******************************************************
 #define STATUS_COMPLETED "completed"
 #define STATUS_CURRENTLY_WATCHING "currently-watching"
 #define STATUS_ON_HOLD "on-hold"
@@ -37,5 +37,13 @@
 
 #define ANIME_STATUS_CURRENTLY_AIRING "Currently Airing"
 #define ANIME_STATUS_FINISHED_AIRING "Finished Airing"
+
+//********************************************* Roles **************************************************************
+#define ROLE_DEFAULT 0x0100 //Since we can't use Qt::UserRole in the macro, we have to manually assign it
+#define ROLE_ANIME_SLUG (ROLE_DEFAULT + 1)
+#define ROLE_ANIME_EPISODES (ROLE_DEFAULT + 2)
+#define ROLE_USER_STATUS (ROLE_DEFAULT + 3)
+#define ROLE_ANIME_STATUS (ROLE_DEFAULT + 4)
+#define ROLE_USER_EPISODES 0//Make this equal to the display role so we can sort the progress
 
 #endif // GLOBALS_H

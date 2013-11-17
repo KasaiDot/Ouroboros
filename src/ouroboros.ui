@@ -614,9 +614,9 @@
   </action>
   <action name="Action_Synchronize_Anime">
    <property name="icon">
-    <iconset>
-     <normalon>:/Resources/Sync-Icon.png</normalon>
-    </iconset>
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Resources/Sync.png</normaloff>
+     <normalon>:/Resources/Sync-Icon.png</normalon>:/Resources/Sync.png</iconset>
    </property>
    <property name="text">
     <string>Synchronize Anime</string>
@@ -628,7 +628,7 @@
   <action name="Action_ChangeSettings">
    <property name="icon">
     <iconset resource="Resources.qrc">
-     <normaloff>:/Resources/Settings-Icon.png</normaloff>:/Resources/Settings-Icon.png</iconset>
+     <normaloff>:/Resources/Settings.png</normaloff>:/Resources/Settings.png</iconset>
    </property>
    <property name="text">
     <string>Settings</string>

@@ -48,7 +48,8 @@ HEADERS  += ouroboros.h \
     filemanager.h \
     guimanager.h \
     dialog_settings.h \
-    dialog_animeinformation.h
+    dialog_animeinformation.h \
+    customguielements.h
 
 FORMS    += ouroboros.ui \
     dialog_settings.ui \

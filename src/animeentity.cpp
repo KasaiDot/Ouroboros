@@ -34,7 +34,8 @@ AnimeEntity::AnimeEntity():
     AnimeImage(""),
     AnimeSynopsis(""),
     AnimeShowType(""),
-    UserInfo(UserAnimeInformation())
+    UserInfo(UserAnimeInformation()),
+    UserInfoSet(false)
 {
 }
 

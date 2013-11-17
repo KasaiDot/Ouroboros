@@ -276,9 +276,8 @@ void QueueManager::StartRunning()
 
 }
 
-/******************************************************
- * Creates a thread and makes a worker to asynchronously
- * run each item
+/*****************************************************
+ * Takes the first item of the queue and runs it
  *****************************************************/
 void QueueManager::Run()
 {

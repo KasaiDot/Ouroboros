@@ -35,13 +35,10 @@ QueueItem::QueueItem(QObject *parent, ItemType Type) :
     Id = RandomValue(0,9999);
 }
 
-QueueItem::QueueItem(QObject *parent, QueueItem::ItemType Type, QString Data):
-    QObject(parent),
-    Type(Type)
+QueueItem::QueueItem(QObject *parent, QueueItem::ItemType Type, QString Data)
 {
+    QueueItem(parent,Type);
     this->Data = Data;
-
-    Id = RandomValue(0,9999);
 }
 
 /************************************

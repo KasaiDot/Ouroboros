@@ -202,7 +202,7 @@ QJsonDocument AnimeEntity::ConstructUserJsonDocument()
     //Values
     QJsonValue Slug(GetAnimeSlug());
     QJsonValue EpisodesWatched(UserInfo.GetEpisodesWatched());
-    QJsonValue LastWatched(UserInfo.GetLastWatched().toString("yyyy-dd-MMThh:mm:ssZ"));
+    QJsonValue LastWatched(UserInfo.GetLastWatched().toString(ANIMEENTITY_DATE_FORMAT));
     QJsonValue RewatchedTimes(UserInfo.GetRewatchedTimes());
     QJsonValue Notes(UserInfo.GetNotes());
     QJsonValue NotesPresent(UserInfo.isNotePresent());
@@ -293,7 +293,7 @@ UserAnimeInformation::UserAnimeInformation():
 void UserAnimeInformation::ParseUserMap(QVariantMap UserInfoMap)
 {
     SetEpisodesWatched(UserInfoMap.value("episodes_watched",ANIMEENTITY_UNKNOWN_USER_EPISODE).toInt());
-    SetLastWatched(QDateTime::fromString(UserInfoMap.value("last_watched",QDateTime::currentDateTime().toString("yyyy-dd-MMThh:mm:ssZ")).toString(),"yyyy-dd-MMThh:mm:ssZ"));
+    SetLastWatched(QDateTime::fromString(UserInfoMap.value("last_watched",QDateTime::currentDateTime().toString(ANIMEENTITY_DATE_FORMAT)).toString(),ANIMEENTITY_DATE_FORMAT));
     SetRewatchedTimes(UserInfoMap.value("rewatched_times",0).toInt());
     SetNotes(UserInfoMap.value("notes","").toString());
     SetNotePresent(UserInfoMap.value("notes_present",false).toBool());

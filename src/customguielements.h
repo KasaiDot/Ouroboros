@@ -108,7 +108,14 @@ public:
         QColor TextColor = Settings.ProgressDelegate.TextColor;
         QColor ProgressBarOutlineColor = Settings.ProgressDelegate.ProgressBarOutlineColor;
         QColor ProgressBarBackgroundColor = Settings.ProgressDelegate.ProgressBarBackgroundColor ;
-        QColor ProgressBarColor = (Index.data(ROLE_ANIME_STATUS) == ANIME_STATUS_CURRENTLY_AIRING) ? Settings.ProgressDelegate.ProgressBarColor_CurrentlyAiring : Settings.ProgressDelegate.ProgressBarColor_FinishedAiring;
+
+        QColor ProgressBarColor = Qt::gray;
+        QString CurrentStatus = Index.data(ROLE_USER_STATUS).toString();
+        if(CurrentStatus == STATUS_CURRENTLY_WATCHING || STATUS_PLAN_TO_WATCH) ProgressBarColor = Settings.ProgressDelegate.ProgressBarColor_CurrentlyWatching;
+        if(CurrentStatus == STATUS_COMPLETED) ProgressBarColor = Settings.ProgressDelegate.ProgressBarColor_Completed;
+        if(CurrentStatus == STATUS_ON_HOLD) ProgressBarColor = Settings.ProgressDelegate.ProgressBarColor_OnHold;
+        if(CurrentStatus == STATUS_DROPPED) ProgressBarColor = Settings.ProgressDelegate.ProgressBarColor_Dropped;
+
 
         //create the text rect
         int MaxTextPixelSize = Option.fontMetrics.size(Qt::TextSingleLine,"999/999").width() + 8;
@@ -124,7 +131,7 @@ public:
 
         //Paint the progressbar outline
         //note if editing progressbaroutline then you have to update the one in editor events
-        QRect ProgressBarOutlineRect(Option.rect.left() + 3,Option.rect.top() + 3,Option.rect.width() - MaxTextPixelSize - 6,Option.rect.height() - 5);
+        QRect ProgressBarOutlineRect(Option.rect.left() + 3,Option.rect.top() + 4,Option.rect.width() - MaxTextPixelSize - 6,Option.rect.height() - 8);
         Painter->save();
         Painter->setRenderHint(QPainter::Antialiasing);
         Painter->setBrush(ProgressBarOutlineColor);
@@ -194,9 +201,10 @@ public:
     //Now to see if the user clicked a box, we have to check the editor events
     inline bool editorEvent(QEvent *Event, QAbstractItemModel *Model, const QStyleOptionViewItem &Option, const QModelIndex &Index)
     {
+
         //Make the the progressbar rect
         int MaxTextPixelSize = QApplication::fontMetrics().size(Qt::TextSingleLine,"999/999").width() + 8;
-        QRect ProgressBarOutlineRect(Option.rect.left() + 3,Option.rect.top() + 3,Option.rect.width() - MaxTextPixelSize - 6,Option.rect.height() - 5);
+        QRect ProgressBarOutlineRect(Option.rect.left() + 3,Option.rect.top() + 4,Option.rect.width() - MaxTextPixelSize - 6,Option.rect.height() - 8);
 
         //Make the hitboxes for the plus and minus buttons
         QRect Minus(ProgressBarOutlineRect);

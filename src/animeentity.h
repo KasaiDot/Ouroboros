@@ -21,6 +21,7 @@
 
 #define ANIMEENTITY_UNKNOWN_ANIME_EPISODE 0
 #define ANIMEENTITY_UNKNOWN_USER_EPISODE -1
+#define ANIMEENTITY_DATE_FORMAT "yyyy-MM-ddThh:mm:ssZ"
 
 #include <QObject>
 #include <QStringList>
@@ -49,7 +50,7 @@ public:
     int GetEpisodesWatched() const { return EpisodesWatched; }
     inline void SetEpisodesWatched(int EpisodeCount, bool UpdateWatched = false)
     {
-        if(((EpisodeCount <= AnimeEpisodes) && (EpisodeCount >= 0)) || (AnimeEpisodes <= 0))
+        if(((EpisodeCount <= AnimeEpisodes) && (EpisodeCount >= 0)) || (AnimeEpisodes <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE))
             EpisodesWatched = EpisodeCount;
         if(UpdateWatched)
             UpdateLastWatched();

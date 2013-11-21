@@ -189,6 +189,9 @@
            <property name="indentation">
             <number>10</number>
            </property>
+           <property name="rootIsDecorated">
+            <bool>false</bool>
+           </property>
            <property name="uniformRowHeights">
             <bool>true</bool>
            </property>
@@ -269,6 +272,9 @@
            </property>
            <property name="indentation">
             <number>0</number>
+           </property>
+           <property name="rootIsDecorated">
+            <bool>false</bool>
            </property>
            <property name="uniformRowHeights">
             <bool>true</bool>
@@ -354,6 +360,9 @@
            <property name="indentation">
             <number>10</number>
            </property>
+           <property name="rootIsDecorated">
+            <bool>false</bool>
+           </property>
            <property name="uniformRowHeights">
             <bool>true</bool>
            </property>
@@ -433,7 +442,10 @@
             <bool>true</bool>
            </property>
            <property name="indentation">
-            <number>15</number>
+            <number>10</number>
+           </property>
+           <property name="rootIsDecorated">
+            <bool>false</bool>
            </property>
            <property name="uniformRowHeights">
             <bool>true</bool>
@@ -514,7 +526,10 @@
             <bool>true</bool>
            </property>
            <property name="indentation">
-            <number>15</number>
+            <number>10</number>
+           </property>
+           <property name="rootIsDecorated">
+            <bool>false</bool>
            </property>
            <property name="uniformRowHeights">
             <bool>true</bool>

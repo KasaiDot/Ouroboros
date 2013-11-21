@@ -40,8 +40,10 @@ public:
             QString TextColor;
             QString OutlineColor;
             QString BackgroundColor;
-            QString BarColor_CurrentlyAiring;
-            QString BarColor_FinishedAiring;
+            QString BarColor_CurrentlyWatching;
+            QString BarColor_Completed;
+            QString BarColor_OnHold;
+            QString BarColor_Dropped;
 
         }ProgressBar;
 
@@ -55,8 +57,10 @@ public:
         QColor TextColor;
         QColor ProgressBarOutlineColor;
         QColor ProgressBarBackgroundColor;
-        QColor ProgressBarColor_CurrentlyAiring;
-        QColor ProgressBarColor_FinishedAiring;
+        QColor ProgressBarColor_CurrentlyWatching;
+        QColor ProgressBarColor_Completed;
+        QColor ProgressBarColor_OnHold;
+        QColor ProgressBarColor_Dropped;
 
     } ProgressDelegate;
 

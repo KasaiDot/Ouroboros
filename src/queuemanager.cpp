@@ -178,36 +178,22 @@ void QueueManager::AuthenticateUser()
  *************************************************/
 void QueueManager::GetAnimeLibrary()
 {
-    //Only add items if they don't exists in queue
-    if(!ItemContainsData(STATUS_CURRENTLY_WATCHING))
-    {
-        QueueItem *CurrentlyWatching = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_CURRENTLY_WATCHING);
-        AddItem(CurrentlyWatching);
-    }
+    QueueItem *CurrentlyWatching = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_CURRENTLY_WATCHING);
+    AddItem(CurrentlyWatching);
 
-    if(!ItemContainsData(STATUS_COMPLETED))
-    {
-        QueueItem *Completed = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_COMPLETED);
-        AddItem(Completed);
-    }
+    qDebug() << CurrentlyWatching->GetItemType();
 
-    if(!ItemContainsData(STATUS_ON_HOLD))
-    {
-        QueueItem *OnHold = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_ON_HOLD);
-        AddItem(OnHold);
-    }
+    QueueItem *Completed = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_COMPLETED);
+    AddItem(Completed);
 
-    if(!ItemContainsData(STATUS_PLAN_TO_WATCH))
-    {
-        QueueItem *PlanToWatch = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_PLAN_TO_WATCH);
-        AddItem(PlanToWatch);
-    }
+    QueueItem *OnHold = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_ON_HOLD);
+    AddItem(OnHold);
 
-    if(!ItemContainsData(STATUS_DROPPED))
-    {
-        QueueItem *Dropped = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_DROPPED);
-        AddItem(Dropped);
-    }
+    QueueItem *PlanToWatch = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_PLAN_TO_WATCH);
+    AddItem(PlanToWatch);
+
+    QueueItem *Dropped = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_DROPPED);
+    AddItem(Dropped);
 
     QueueItem *PopulateModel = new QueueItem(this,QueueItem::Item_PopulateModel);
     AddItem(PopulateModel);

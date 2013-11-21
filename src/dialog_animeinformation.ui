@@ -228,8 +228,14 @@
            <property name="text">
             <string>Title</string>
            </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -289,6 +295,9 @@
              </property>
              <property name="margin">
               <number>2</number>
+             </property>
+             <property name="textInteractionFlags">
+              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
              </property>
             </widget>
            </item>
@@ -599,6 +608,9 @@
              </property>
              <property name="openExternalLinks">
               <bool>false</bool>
+             </property>
+             <property name="textInteractionFlags">
+              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
              </property>
             </widget>
            </item>

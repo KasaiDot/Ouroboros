@@ -34,8 +34,10 @@ OuroborosSettings::OuroborosSettings()
     SettingsName.ProgressBar.TextColor = "TextColor";
     SettingsName.ProgressBar.OutlineColor = "OutlineColor";
     SettingsName.ProgressBar.BackgroundColor = "BackgroundColor";
-    SettingsName.ProgressBar.BarColor_CurrentlyAiring = "BarColor_CurrentlyAiring";
-    SettingsName.ProgressBar.BarColor_FinishedAiring = "BarColor_FinishedAiring";
+    SettingsName.ProgressBar.BarColor_CurrentlyWatching = "BarColor_CurrentlyWatching";
+    SettingsName.ProgressBar.BarColor_Completed = "BarColor_Completed";
+    SettingsName.ProgressBar.BarColor_OnHold = "BarColor_OnHold";
+    SettingsName.ProgressBar.BarColor_Dropped = "BarColor_Dropped";
 
 }
 
@@ -53,8 +55,10 @@ void OuroborosSettings::Load()
     ProgressDelegate.TextColor.setNamedColor(Settings.value(ProgressBarName.TextColor,QColor(Qt::black).name()).toString());
     ProgressDelegate.ProgressBarOutlineColor.setNamedColor(Settings.value(ProgressBarName.OutlineColor,QColor(160,160,160).name()).toString());
     ProgressDelegate.ProgressBarBackgroundColor.setNamedColor(Settings.value(ProgressBarName.BackgroundColor,QColor(250,250,250).name()).toString());
-    ProgressDelegate.ProgressBarColor_CurrentlyAiring.setNamedColor(Settings.value(ProgressBarName.BarColor_CurrentlyAiring,QColor(98,226,0).name()).toString());
-    ProgressDelegate.ProgressBarColor_FinishedAiring.setNamedColor(Settings.value(ProgressBarName.BarColor_FinishedAiring,QColor(51,153,255).name()).toString());
+    ProgressDelegate.ProgressBarColor_CurrentlyWatching.setNamedColor(Settings.value(ProgressBarName.BarColor_CurrentlyWatching,QColor(92,213,0).name()).toString());
+    ProgressDelegate.ProgressBarColor_Completed.setNamedColor(Settings.value(ProgressBarName.BarColor_Completed,QColor(51,153,255).name()).toString());
+    ProgressDelegate.ProgressBarColor_OnHold.setNamedColor(Settings.value(ProgressBarName.BarColor_OnHold,QColor(255,230,0).name()).toString());
+    ProgressDelegate.ProgressBarColor_Dropped.setNamedColor(Settings.value(ProgressBarName.BarColor_Dropped,QColor(255,86,60).name()).toString());
     Settings.endGroup();
 }
 
@@ -71,8 +75,10 @@ void OuroborosSettings::Save()
     Settings.setValue(ProgressBarName.TextColor,ProgressDelegate.TextColor.name());
     Settings.setValue(ProgressBarName.OutlineColor,ProgressDelegate.ProgressBarOutlineColor.name());
     Settings.setValue(ProgressBarName.BackgroundColor,ProgressDelegate.ProgressBarBackgroundColor.name());
-    Settings.setValue(ProgressBarName.BarColor_CurrentlyAiring,ProgressDelegate.ProgressBarColor_CurrentlyAiring.name());
-    Settings.setValue(ProgressBarName.BarColor_FinishedAiring,ProgressDelegate.ProgressBarColor_FinishedAiring.name());
+    Settings.setValue(ProgressBarName.BarColor_CurrentlyWatching,ProgressDelegate.ProgressBarColor_CurrentlyWatching.name());
+    Settings.setValue(ProgressBarName.BarColor_Completed,ProgressDelegate.ProgressBarColor_Completed.name());
+    Settings.setValue(ProgressBarName.BarColor_OnHold,ProgressDelegate.ProgressBarColor_OnHold.name());
+    Settings.setValue(ProgressBarName.BarColor_Dropped,ProgressDelegate.ProgressBarColor_Dropped.name());
     Settings.endGroup();
 
     Settings.sync();

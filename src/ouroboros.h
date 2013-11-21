@@ -68,6 +68,8 @@ public:
 private:
     Ui::Ouroboros *ui;
 
+protected:
+
 public slots:
     void ChangeStatus(QString Status, int Timeout = 0);
 private slots:

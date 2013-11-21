@@ -47,8 +47,10 @@ private slots:
     void on_ProgressBar_TextColorButton_clicked();
     void on_ProgressBar_OutlineColorButton_clicked();
     void on_ProgressBar_BackgroundColorButton_clicked();
-    void on_ProgressBar_CurrentlyAirButton_clicked();
-    void on_ProgressBar_FinishedAirColorButton_clicked();
+    void on_ProgressBar_CurrentlyWatchingColorButton_clicked();
+    void on_ProgressBar_CompletedColorButton_clicked();
+    void on_ProgressBar_OnHoldColorButton_clicked();
+    void on_ProgressBar_DroppedColorButton_clicked();
 
 private:
     Ui::Dialog_Settings *ui;

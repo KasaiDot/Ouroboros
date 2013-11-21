@@ -93,6 +93,13 @@ public slots:
     void UpdateAnime(QModelIndex Index,Anime::AnimeEntity *Entity);
     void UpdateAnime(Anime::AnimeEntity *Entity); //This function will get the top most found anime and update it, be careful
 
+    //Sets the data required for the item
+    void SetAnimeItemData(QStandardItem *Item_Name,
+                          QStandardItem *Item_Progress,
+                          QStandardItem *Item_Rating,
+                          QStandardItem *Item_Type,
+                          Anime::AnimeEntity *Entity);
+
     //Slots for the progressbar delegate
     void ProgressBarButtonClicked(QString Slug,CustomGui::ProgressDelegate::Button Type);
     void SelectRow(QModelIndex Index);
@@ -109,11 +116,16 @@ public slots:
     //Context menus
     void ShowViewItemComtextMenu(const QPoint &Pos);
 
-    //view info edit functions
+    //Menu functions
+    void ShowAnimeInformationDialog(Anime::AnimeEntity &Entity);
     bool EditUserEpisodes(Anime::AnimeEntity *Entity);
 
     //push anime to the queue to update in the api
     void UpdateHummingbirdAnime(QString AnimeSlug);
+
+    //connect double click signals
+    void ConnectDoubleClickSignal(QTreeView *View);
+    void HandleDoubleClickSignal(QModelIndex Index);
 
 private:
     Ouroboros *MainWindow;

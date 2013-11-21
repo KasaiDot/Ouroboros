@@ -4,5 +4,7 @@
         <file>Resources/Settings.png</file>
         <file>Resources/Sync.png</file>
         <file>Resources/cross.png</file>
+        <file>Resources/circle-blue.png</file>
+        <file>Resources/circle-green.png</file>
     </qresource>
 </RCC>

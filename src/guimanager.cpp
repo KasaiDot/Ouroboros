@@ -50,6 +50,14 @@ void GUIManager::SetMainWindow(Ouroboros *Main)
     //Connect signals and slots
     connect(MainWindow->GetMainTabWidget(),SIGNAL(currentChanged(int)),this,SLOT(TabChanged(int)));
 
+    //connects signal when user double clicks an item
+    ConnectDoubleClickSignal(MainWindow->GetView(Ouroboros::CurrentlyWatching));
+    ConnectDoubleClickSignal(MainWindow->GetView(Ouroboros::OnHold));
+    ConnectDoubleClickSignal(MainWindow->GetView(Ouroboros::Completed));
+    ConnectDoubleClickSignal(MainWindow->GetView(Ouroboros::PlanToWatch));
+    ConnectDoubleClickSignal(MainWindow->GetView(Ouroboros::Dropped));
+    ConnectDoubleClickSignal(MainWindow->GetView(Ouroboros::Search));
+
     //connect context menus
     connect(MainWindow->GetView(Ouroboros::CurrentlyWatching),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
     connect(MainWindow->GetView(Ouroboros::OnHold),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
@@ -148,36 +156,14 @@ void GUIManager::ClearModel()
 void GUIManager::AddAnime(Anime::AnimeEntity *Entity)
 {
     if(ModelContains(Entity->GetAnimeTitle())) return;
-    QString Slug = Entity->GetAnimeSlug();
     //We need to create 5 seperate items then add them to the Datamodel
-    QStandardItem *Item_Name = new QStandardItem(Entity->GetAnimeTitle());
+    QStandardItem *Item_Name = new QStandardItem();
     QStandardItem *Item_Progress = new QStandardItem();
     QStandardItem *Item_Rating = new QStandardItem();
-    QStandardItem *Item_Type = new QStandardItem(Entity->GetAnimeShowType());
+    QStandardItem *Item_Type = new QStandardItem();
 
-
-    float UserRating = Entity->GetUserInfo()->GetRatingValue();
-    if(UserRating <= 0)
-        Item_Rating->setText("-");
-    else
-        Item_Rating->setText(QString::number(UserRating));
-
-    //Set the anime slug data on each item
-    Item_Name->setData(Slug,ROLE_ANIME_SLUG);
-    Item_Progress->setData(Slug,ROLE_ANIME_SLUG);
-    Item_Rating->setData(Slug,ROLE_ANIME_SLUG);
-    Item_Type->setData(Slug,ROLE_ANIME_SLUG);
-
-    //Set the slug, user episode count, etc
-    Item_Name->setData(Entity->GetUserInfo()->GetStatus(),ROLE_USER_STATUS);
-    Item_Progress->setData(Entity->GetUserInfo()->GetStatus(),ROLE_USER_STATUS);
-    Item_Progress->setData(Entity->GetAnimeStatus(),ROLE_ANIME_STATUS);
-
-    Item_Progress->setData(Entity->GetAnimeEpisodeCount(),ROLE_ANIME_EPISODES);
-    Item_Progress->setData(Entity->GetUserInfo()->GetEpisodesWatched(),ROLE_USER_EPISODES);
-
-    Item_Rating->setTextAlignment(Qt::AlignHCenter);
-    Item_Type->setTextAlignment(Qt::AlignHCenter);
+    //set the data
+    SetAnimeItemData(Item_Name,Item_Progress,Item_Rating,Item_Type,Entity);
 
     //Add items to the model
     QList<QStandardItem *> ItemList;
@@ -195,37 +181,14 @@ void GUIManager::AddAnime(Anime::AnimeEntity *Entity)
  ***********************************************************************************/
 void GUIManager::UpdateAnime(QStandardItem *Item, Anime::AnimeEntity *Entity)
 {
-    QString Slug = Entity->GetAnimeSlug();
-
     //Since we don't know if the item is the one containing the title, we have to manually get it and the other items
     QStandardItem *Item_Name = DataModel->item(Item->row(),HEADER_NAME);
     QStandardItem *Item_Progress = DataModel->item(Item->row(),HEADER_PROGRESS);
     QStandardItem *Item_Rating = DataModel->item(Item->row(),HEADER_RATING);
     QStandardItem *Item_Type = DataModel->item(Item->row(),HEADER_SHOW_TYPE);
 
-    QString ItemRating = (Entity->GetUserInfo()->GetRatingValue() <= 0) ? "-" : QString::number(Entity->GetUserInfo()->GetRatingValue());
-
-    //set the text
-    Item_Name->setText(Entity->GetAnimeTitle());
-    Item_Rating->setText(ItemRating);
-    Item_Type->setText(Entity->GetAnimeShowType());
-
-    Item_Rating->setTextAlignment(Qt::AlignHCenter);
-    Item_Type->setTextAlignment(Qt::AlignHCenter);
-
-    //Set the anime slug data on each item
-    Item_Name->setData(Slug,ROLE_ANIME_SLUG);
-    Item_Progress->setData(Slug,ROLE_ANIME_SLUG);
-    Item_Rating->setData(Slug,ROLE_ANIME_SLUG);
-    Item_Type->setData(Slug,ROLE_ANIME_SLUG);
-
-    //set data
-    Item_Name->setData(Entity->GetUserInfo()->GetStatus(),ROLE_USER_STATUS);
-    Item_Progress->setData(Entity->GetUserInfo()->GetStatus(),ROLE_USER_STATUS);
-    Item_Progress->setData(Entity->GetAnimeStatus(),ROLE_ANIME_STATUS);
-
-    Item_Progress->setData(Entity->GetAnimeEpisodeCount(),ROLE_ANIME_EPISODES);
-    Item_Progress->setData(Entity->GetUserInfo()->GetEpisodesWatched(),ROLE_USER_EPISODES);
+    //Set the data
+    SetAnimeItemData(Item_Name,Item_Progress,Item_Rating,Item_Type,Entity);
 
     //Save the anime
     File_Manager.SaveAnimeEntity(Entity,true);
@@ -251,6 +214,41 @@ void GUIManager::UpdateAnime(Anime::AnimeEntity *Entity)
     QStandardItem *Item_Name = GetItem(Entity->GetAnimeTitle());
     UpdateAnime(Item_Name,Entity);
 
+}
+
+/************************************************
+ * Sets all anime data required for the views
+ ************************************************/
+void GUIManager::SetAnimeItemData(QStandardItem *Item_Name, QStandardItem *Item_Progress, QStandardItem *Item_Rating, QStandardItem *Item_Type, Anime::AnimeEntity *Entity)
+{
+    //create the icon and set it
+    QString IconLocation = (Entity->GetAnimeStatus() == ANIME_STATUS_CURRENTLY_AIRING) ? ":/Resources/circle-green.png" : ":/Resources/circle-blue.png";
+    QIcon AnimeIcon(IconLocation);
+    Item_Name->setData(AnimeIcon,Qt::DecorationRole);
+
+    //Set the anime slug data on each item
+    QString Slug = Entity->GetAnimeSlug();
+    Item_Name->setData(Slug,ROLE_ANIME_SLUG);
+    Item_Progress->setData(Slug,ROLE_ANIME_SLUG);
+    Item_Rating->setData(Slug,ROLE_ANIME_SLUG);
+    Item_Type->setData(Slug,ROLE_ANIME_SLUG);
+
+    //Set the slug, user episode count, etc
+    Item_Name->setData(Entity->GetUserInfo()->GetStatus(),ROLE_USER_STATUS);
+    Item_Progress->setData(Entity->GetUserInfo()->GetStatus(),ROLE_USER_STATUS);
+
+    Item_Progress->setData(Entity->GetAnimeEpisodeCount(),ROLE_ANIME_EPISODES);
+    Item_Progress->setData(Entity->GetUserInfo()->GetEpisodesWatched(),ROLE_USER_EPISODES);
+
+    //set the displa text
+    QString ItemRating = (Entity->GetUserInfo()->GetRatingValue() <= 0) ? "-" : QString::number(Entity->GetUserInfo()->GetRatingValue());
+
+    Item_Name->setText(Entity->GetAnimeTitle());
+    Item_Rating->setText(ItemRating);
+    Item_Type->setText(Entity->GetAnimeShowType());
+
+    Item_Rating->setTextAlignment(Qt::AlignHCenter);
+    Item_Type->setTextAlignment(Qt::AlignHCenter);
 }
 
 /************************************************************************************************************
@@ -479,6 +477,31 @@ void GUIManager::UpdateHummingbirdAnime(QString AnimeSlug)
     Queue_Manager.UpdateLibrary(AnimeSlug);
 }
 
+/*************************************************************************
+ * Connects the double click signals of the view to the handle function
+ *************************************************************************/
+void GUIManager::ConnectDoubleClickSignal(QTreeView *View)
+{
+    connect(View,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(HandleDoubleClickSignal(QModelIndex)));
+}
+
+/*********************************************
+ * Handles double click signal
+ * Currently just displays anime information
+ *********************************************/
+void GUIManager::HandleDoubleClickSignal(QModelIndex Index)
+{
+    if(Index.row() < 0) return;
+    QString Slug = Index.data(ROLE_ANIME_SLUG).toString();
+
+    if(!Anime_Database.Contains(Slug)) return;
+
+    Anime::AnimeEntity *Entity = Anime_Database.GetAnime(Slug);
+
+    //show anime information
+    ShowAnimeInformationDialog(*Entity);
+}
+
 /************************************************** Context Menus************************************************************************/
 
 /**********************************************************
@@ -618,9 +641,7 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
     //Information clicked
     if(Action->data().toString() == Data_Information)
     {
-        Dialog_AnimeInformation InfoDialog;
-        InfoDialog.ParseAnime(*Entity);
-        InfoDialog.exec();
+        ShowAnimeInformationDialog(*Entity);
     }
 
     //Edit episode clicked
@@ -655,6 +676,13 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
 }
 
 /************************************************* View info edit functions ******************************************/
+
+void GUIManager::ShowAnimeInformationDialog(Anime::AnimeEntity &Entity)
+{
+    Dialog_AnimeInformation InfoDialog;
+    InfoDialog.ParseAnime(Entity);
+    InfoDialog.exec();
+}
 
 /*************************************************
  * Creates a input box for user to type episodes

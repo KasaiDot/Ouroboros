@@ -62,7 +62,9 @@ void AnimeDatabase::AddAnime(AnimeEntity *Anime)
     {
         //get the old anime from the database since we haven't replaced it
         AnimeEntity *OldAnime = GetAnime(Anime->GetAnimeSlug());
-        if(OldAnime->GetUserInfo()->GetLastWatched().toUTC() > Anime->GetUserInfo()->GetLastWatched().toUTC())
+
+        //check if the old informations' last watched was later than the last watched returned by the api
+        if(OldAnime->GetUserInfo()->LastWatchedLaterThan(Anime->GetUserInfo()->GetLastWatched()))
         {
             //Move the userinfo of the old anime to the new one, incase the anime information (not user information) has been updated
             UserAnimeInformation *OldInfo = OldAnime->GetUserInfo();

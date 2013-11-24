@@ -49,6 +49,18 @@ private:
 
     //local copy of stack
     QStack<Manager::HistoryItem> HistoryStack;
+
+    //menu click actions states
+    enum MenuActionState
+    {
+        NONE,
+        REMOVE,
+        CLEAR
+    };
+
+public slots:
+    void ShowCustomContextMenu(const QPoint &Pos);
+
 };
 
 #endif // DIALOG_HISTORY_H

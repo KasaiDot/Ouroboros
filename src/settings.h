@@ -29,6 +29,7 @@ public:
     //Basic functions
     void Load();
     void Save();
+    void ResetSettings();
 
     //Holds string eqiv values of the settings for saving and loading
     struct SettingsNames
@@ -40,10 +41,10 @@ public:
             QString TextColor;
             QString OutlineColor;
             QString BackgroundColor;
-            QString BarColor_CurrentlyWatching;
-            QString BarColor_Completed;
-            QString BarColor_OnHold;
-            QString BarColor_Dropped;
+            QString CurrentlyWatching;
+            QString Completed;
+            QString OnHold;
+            QString Dropped;
 
         }ProgressBar;
 
@@ -55,15 +56,20 @@ public:
     struct ProgressDelegateSettings
     {
         QColor TextColor;
-        QColor ProgressBarOutlineColor;
-        QColor ProgressBarBackgroundColor;
-        QColor ProgressBarColor_CurrentlyWatching;
-        QColor ProgressBarColor_Completed;
-        QColor ProgressBarColor_OnHold;
-        QColor ProgressBarColor_Dropped;
+        QColor Outline;
+        QColor Background;
+        QColor CurrentlyWatching;
+        QColor Completed;
+        QColor OnHold;
+        QColor Dropped;
 
     } ProgressDelegate;
 
+    //Default settings
+    struct DefaultSettings
+    {
+        ProgressDelegateSettings DefaultProgressDelegate;
+    }Default;
 
 private:
     QString Filename;

@@ -43,19 +43,29 @@ Dialog_Settings::Dialog_Settings(QWidget *parent) :
         ui->PasswordField->setText(QString(QByteArray::fromBase64(CurrentUser.GetBase64Password())));
     }
 
-    //set progress button colors
-    SetColor(ui->ProgressBar_BackgroundColorButton,Settings.ProgressDelegate.ProgressBarBackgroundColor);
-    SetColor(ui->ProgressBar_OutlineColorButton,Settings.ProgressDelegate.ProgressBarOutlineColor);
-    SetColor(ui->ProgressBar_TextColorButton,Settings.ProgressDelegate.TextColor);
-    SetColor(ui->ProgressBar_CurrentlyWatchingColorButton,Settings.ProgressDelegate.ProgressBarColor_CurrentlyWatching);
-    SetColor(ui->ProgressBar_CompletedColorButton,Settings.ProgressDelegate.ProgressBarColor_Completed);
-    SetColor(ui->ProgressBar_OnHoldColorButton,Settings.ProgressDelegate.ProgressBarColor_OnHold);
-    SetColor(ui->ProgressBar_DroppedColorButton,Settings.ProgressDelegate.ProgressBarColor_Dropped);
+    SetSettings();
 }
 
 Dialog_Settings::~Dialog_Settings()
 {
     delete ui;
+}
+
+/***********************************
+ * Sets all the settings in the ui
+ ***********************************/
+void Dialog_Settings::SetSettings()
+{
+
+    //set progress button colors
+    SetColor(ui->ProgressBar_BackgroundColorButton,Settings.ProgressDelegate.Background);
+    SetColor(ui->ProgressBar_OutlineColorButton,Settings.ProgressDelegate.Outline);
+    SetColor(ui->ProgressBar_TextColorButton,Settings.ProgressDelegate.TextColor);
+    SetColor(ui->ProgressBar_CurrentlyWatchingColorButton,Settings.ProgressDelegate.CurrentlyWatching);
+    SetColor(ui->ProgressBar_CompletedColorButton,Settings.ProgressDelegate.Completed);
+    SetColor(ui->ProgressBar_OnHoldColorButton,Settings.ProgressDelegate.OnHold);
+    SetColor(ui->ProgressBar_DroppedColorButton,Settings.ProgressDelegate.Dropped);
+
 }
 
 /*****************************************************************************
@@ -159,11 +169,25 @@ void Dialog_Settings::on_buttonBox_accepted()
     Settings.Save();
 }
 
+/***********************************
+ * Default settings button clicked
+ **********************************/
+void Dialog_Settings::on_DefaultSettingsButton_clicked()
+{
+    bool Allowed = (QMessageBox::warning(this,"Restore default settings","Are you sure you want to restore default settings?",QMessageBox::Yes,QMessageBox::No) == QMessageBox::Yes);
+
+    if(Allowed)
+    {
+        Settings.ResetSettings();
+        SetSettings();
+    }
+}
+
 /************************** Progress bar color buttons clicked ************************************/
 void Dialog_Settings::on_ProgressBar_TextColorButton_clicked() { ChangeColor(ui->ProgressBar_TextColorButton,Settings.ProgressDelegate.TextColor); }
-void Dialog_Settings::on_ProgressBar_OutlineColorButton_clicked() { ChangeColor(ui->ProgressBar_OutlineColorButton,Settings.ProgressDelegate.ProgressBarOutlineColor); }
-void Dialog_Settings::on_ProgressBar_BackgroundColorButton_clicked() { ChangeColor(ui->ProgressBar_BackgroundColorButton,Settings.ProgressDelegate.ProgressBarBackgroundColor); }
-void Dialog_Settings::on_ProgressBar_CurrentlyWatchingColorButton_clicked() { ChangeColor(ui->ProgressBar_CurrentlyWatchingColorButton,Settings.ProgressDelegate.ProgressBarColor_CurrentlyWatching); }
-void Dialog_Settings::on_ProgressBar_CompletedColorButton_clicked() { ChangeColor(ui->ProgressBar_CompletedColorButton,Settings.ProgressDelegate.ProgressBarColor_Completed); }
-void Dialog_Settings::on_ProgressBar_OnHoldColorButton_clicked() { ChangeColor(ui->ProgressBar_OnHoldColorButton,Settings.ProgressDelegate.ProgressBarColor_OnHold); }
-void Dialog_Settings::on_ProgressBar_DroppedColorButton_clicked() { ChangeColor(ui->ProgressBar_DroppedColorButton,Settings.ProgressDelegate.ProgressBarColor_Dropped); }
+void Dialog_Settings::on_ProgressBar_OutlineColorButton_clicked() { ChangeColor(ui->ProgressBar_OutlineColorButton,Settings.ProgressDelegate.Outline); }
+void Dialog_Settings::on_ProgressBar_BackgroundColorButton_clicked() { ChangeColor(ui->ProgressBar_BackgroundColorButton,Settings.ProgressDelegate.Background); }
+void Dialog_Settings::on_ProgressBar_CurrentlyWatchingColorButton_clicked() { ChangeColor(ui->ProgressBar_CurrentlyWatchingColorButton,Settings.ProgressDelegate.CurrentlyWatching); }
+void Dialog_Settings::on_ProgressBar_CompletedColorButton_clicked() { ChangeColor(ui->ProgressBar_CompletedColorButton,Settings.ProgressDelegate.Completed); }
+void Dialog_Settings::on_ProgressBar_OnHoldColorButton_clicked() { ChangeColor(ui->ProgressBar_OnHoldColorButton,Settings.ProgressDelegate.OnHold); }
+void Dialog_Settings::on_ProgressBar_DroppedColorButton_clicked() { ChangeColor(ui->ProgressBar_DroppedColorButton,Settings.ProgressDelegate.Dropped); }

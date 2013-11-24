@@ -106,15 +106,15 @@ public:
 
         //Colors
         QColor TextColor = Settings.ProgressDelegate.TextColor;
-        QColor ProgressBarOutlineColor = Settings.ProgressDelegate.ProgressBarOutlineColor;
-        QColor ProgressBarBackgroundColor = Settings.ProgressDelegate.ProgressBarBackgroundColor ;
+        QColor ProgressBarOutlineColor = Settings.ProgressDelegate.Outline;
+        QColor ProgressBarBackgroundColor = Settings.ProgressDelegate.Background ;
 
         QColor ProgressBarColor = Qt::gray;
         QString CurrentStatus = Index.data(ROLE_USER_STATUS).toString();
-        if(CurrentStatus == STATUS_CURRENTLY_WATCHING || STATUS_PLAN_TO_WATCH) ProgressBarColor = Settings.ProgressDelegate.ProgressBarColor_CurrentlyWatching;
-        if(CurrentStatus == STATUS_COMPLETED) ProgressBarColor = Settings.ProgressDelegate.ProgressBarColor_Completed;
-        if(CurrentStatus == STATUS_ON_HOLD) ProgressBarColor = Settings.ProgressDelegate.ProgressBarColor_OnHold;
-        if(CurrentStatus == STATUS_DROPPED) ProgressBarColor = Settings.ProgressDelegate.ProgressBarColor_Dropped;
+        if(CurrentStatus == STATUS_CURRENTLY_WATCHING || STATUS_PLAN_TO_WATCH) ProgressBarColor = Settings.ProgressDelegate.CurrentlyWatching;
+        if(CurrentStatus == STATUS_COMPLETED) ProgressBarColor = Settings.ProgressDelegate.Completed;
+        if(CurrentStatus == STATUS_ON_HOLD) ProgressBarColor = Settings.ProgressDelegate.OnHold;
+        if(CurrentStatus == STATUS_DROPPED) ProgressBarColor = Settings.ProgressDelegate.Dropped;
 
 
         //create the text rect

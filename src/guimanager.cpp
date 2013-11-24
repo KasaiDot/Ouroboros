@@ -638,6 +638,7 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
     //Add edit menu
     Menu.addMenu(&EditMenu);
 
+    /******************************************** Show Menu and handle actions *****************************************************/
     QAction *Action = Menu.exec(QCursor::pos());
 
     if(!Action) return;

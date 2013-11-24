@@ -36,6 +36,8 @@ public:
     explicit Dialog_Settings(QWidget *parent = 0);
     ~Dialog_Settings();
 
+    void SetSettings();
+
 private slots:
     //Test button clicked
     void on_AccountTestButton_clicked();
@@ -51,6 +53,8 @@ private slots:
     void on_ProgressBar_CompletedColorButton_clicked();
     void on_ProgressBar_OnHoldColorButton_clicked();
     void on_ProgressBar_DroppedColorButton_clicked();
+
+    void on_DefaultSettingsButton_clicked();
 
 private:
     Ui::Dialog_Settings *ui;

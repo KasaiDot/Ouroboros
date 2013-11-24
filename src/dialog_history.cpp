@@ -19,6 +19,8 @@
 #include "dialog_history.h"
 #include "ui_dialog_history.h"
 
+#include <QMenu>
+
 Dialog_History::Dialog_History(QStack<Manager::HistoryItem> &HistoryStack) :
     ui(new Ui::Dialog_History),
     HistoryStack(HistoryStack)
@@ -26,6 +28,9 @@ Dialog_History::Dialog_History(QStack<Manager::HistoryItem> &HistoryStack) :
     ui->setupUi(this);
     SetupTreeWidget();
     PopulateWidget();
+
+    //connect signals and slots
+    connect(ui->HistoryTreeWidget,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowCustomContextMenu(QPoint)));
 }
 
 Dialog_History::~Dialog_History()
@@ -53,6 +58,9 @@ void Dialog_History::SetupTreeWidget()
  ************************************/
 void Dialog_History::PopulateWidget()
 {
+    //clear current items
+    ui->HistoryTreeWidget->clear();
+
     QList<Manager::HistoryItem> ItemList = HistoryStack.toList();
     QList<Manager::HistoryItem>::const_iterator ItemIterator;
 
@@ -67,6 +75,45 @@ void Dialog_History::PopulateWidget()
         //add the item to the end of the list
         QTreeWidgetItem *TreeItem = new QTreeWidgetItem(DataList);
         ui->HistoryTreeWidget->insertTopLevelItem(ui->HistoryTreeWidget->topLevelItemCount(),TreeItem);
+    }
+
+}
+
+/************************************************
+ * Shows the context menu when item is clicked
+ ************************************************/
+void Dialog_History::ShowCustomContextMenu(const QPoint &Pos)
+{
+    QModelIndex Index = ui->HistoryTreeWidget->indexAt(Pos);
+    if(Index.row() < 0) return;
+
+    QMenu Menu;
+
+    //Add the items
+    Menu.addAction("Remove item")->setData(REMOVE);
+    Menu.addSeparator();
+    Menu.addAction("Clear history")->setData(CLEAR);
+
+    /**************************** Show menu ****************************/
+    QAction *Action = Menu.exec(QCursor::pos());
+
+    if(!Action) return;
+
+    int ActionValue = Action->data().toInt();
+
+    switch (ActionValue)
+    {
+        case REMOVE:
+            History_Manager.RemoveHistoryItem(Index.row());
+            delete ui->HistoryTreeWidget->takeTopLevelItem(Index.row());
+        break;
+
+        case CLEAR:
+            History_Manager.ClearHistory();
+            ui->HistoryTreeWidget->clear();
+        break;
+    default:
+        break;
     }
 
 }

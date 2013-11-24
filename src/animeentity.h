@@ -45,7 +45,7 @@ public:
     void ParseUserMap(QVariantMap UserInfoMap);
 
     //****************************************** Setters and Getter methods *********************************************************************/
-    inline void UpdateLastWatched() { SetLastWatched(QDateTime(QDateTime::currentDateTimeUtc()));}
+    inline void UpdateLastWatched() { SetLastWatched(QDateTime::currentDateTimeUtc());}
 
     int GetEpisodesWatched() const { return EpisodesWatched; }
     inline void SetEpisodesWatched(int EpisodeCount, bool UpdateWatched = false)
@@ -58,7 +58,7 @@ public:
 
     inline void IncrementEpisodeCount()
     {
-        if(EpisodesWatched + 1 <= AnimeEpisodes || AnimeEpisodes <= 0)
+        if(EpisodesWatched + 1 <= AnimeEpisodes || AnimeEpisodes <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE)
         {
             //if user is planing to watch and increments episode, then we move it to currently watching
             if(GetStatus() == STATUS_PLAN_TO_WATCH)
@@ -77,6 +77,20 @@ public:
 
     QDateTime GetLastWatched() const { return LastWatched; }
     inline void SetLastWatched(QDateTime Time) { LastWatched = Time; }
+
+    //qt's datetime > operator is not very accurate, hence we create our own function
+    inline bool LastWatchedLaterThan(QDateTime Time)
+    {
+        QDate CurDate = GetLastWatched().date();
+        QDate ArgDate = Time.date();
+        QTime CurTime = GetLastWatched().time();
+        QTime ArgTime = Time.time();
+
+        bool DateGreater = (CurDate >= ArgDate);
+        bool TimeGreater = ((CurTime.hour() >= ArgTime.hour()) && (CurTime.minute() >= ArgTime.minute()) && (CurTime.second() > ArgTime.second()));
+
+        return (DateGreater && TimeGreater);
+    }
 
     int GetRewatchedTimes() const { return RewatchedTimes; }
     inline void SetRewatchedTimes(int Amount) { RewatchedTimes = Amount;}

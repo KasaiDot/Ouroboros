@@ -19,6 +19,11 @@
 #include "historymanager.h"
 #include "dialog_history.h"
 
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonValue>
+#include <QVariant>
+
 using namespace Manager;
 HistoryManager History_Manager;
 
@@ -30,18 +35,19 @@ HistoryManager::HistoryManager(QObject *parent) :
 /******************************
  * Adds an item to the stack
  ******************************/
-void HistoryManager::AddHistoryItem(HistoryItem &Item)
+void HistoryManager::AddHistoryItem(HistoryItem &Item, bool PushFront)
 {
     if(HistoryStack.size() + 1 > HISTORY_MAXSIZE)
         HistoryStack.pop_back(); //remove the last item
 
-    HistoryStack.push_front(Item); //push the item to the front of the history stack
+    if(PushFront) HistoryStack.push_front(Item); //push the item to the front of the history stack
+    else HistoryStack.push_back(Item);
 }
 
-void HistoryManager::AddHistoryItem(QString AnimeTitle, QString Action, QString DateAndTime)
+void HistoryManager::AddHistoryItem(QString AnimeTitle, QString Action, QString DateAndTime, bool PushFront)
 {
     HistoryItem Item = {AnimeTitle,Action,DateAndTime};
-    AddHistoryItem(Item);
+    AddHistoryItem(Item, PushFront);
 }
 
 /**************************************************
@@ -78,7 +84,37 @@ void HistoryManager::ShowHistoryDialog()
  *****************************************************/
 QJsonDocument HistoryManager::ConstructHistoryJsonDocument()
 {
+    //the document will be in this format
+    /*
+     *[
+     *  {
+     *      title:
+     *      action:
+     *      time:
+     *  }
+     *]
+     */
+    QJsonArray MainArray;
 
+    foreach (HistoryItem Item, HistoryStack)
+    {
+        QJsonObject ItemObject;
+
+        //values
+        QJsonValue Title(Item.AnimeTitle);
+        QJsonValue Action(Item.Action);
+        QJsonValue Time(Item.DateAndTime);
+
+        //add values to the object
+        ItemObject.insert("title",Title);
+        ItemObject.insert("action",Action);
+        ItemObject.insert("time",Time);
+
+        //add object to array
+        MainArray.append(ItemObject);
+    }
+
+    return QJsonDocument(MainArray);
 }
 
 /***************************************************************
@@ -91,4 +127,20 @@ void HistoryManager::ParseHistoryJson(QByteArray &Data)
     //Clear the history first
     ClearHistory();
 
+    QJsonDocument Doc = QJsonDocument::fromJson(Data);
+    QVariantList MainArray = Doc.toVariant().toList();
+
+    foreach (QVariant Variant, MainArray)
+    {
+        QVariantMap ItemMap = Variant.toMap();
+
+        //Read the values
+        QString Title = ItemMap.value("title").toString();
+        QString Action = ItemMap.value("action").toString();
+        QString Time = ItemMap.value("time").toString();
+
+        //append the history item to the back of the queue since the most recent
+        //history items will be at the top
+        AddHistoryItem(Title,Action,Time, false);
+    }
 }

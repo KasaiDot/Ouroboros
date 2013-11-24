@@ -30,6 +30,7 @@
 
 #include "apimanager.h"
 #include "queuemanager.h"
+#include "historymanager.h"
 
 using namespace Manager;
 FileManager File_Manager;
@@ -39,6 +40,7 @@ FileManager::FileManager()
     //Files
     FileManagerInfo.UserInfoFile = "UserInfo.json";
     FileManagerInfo.UserQueueFile = "Queue.json";
+    FileManagerInfo.UserHistoryFile = "History.json";
 
     //Dirs
     FileManagerInfo.DataFolderPath = "/Data/";
@@ -196,6 +198,23 @@ bool FileManager::SaveQueue()
     return true;
 }
 
+/**********************
+ * Saves user history
+ **********************/
+bool FileManager::SaveHistory()
+{
+    if(!CurrentUser.isValid()) return false;
+
+    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.UserFolderPath + CurrentUser.GetUsername() + "/";
+    QString Filename = FileManagerInfo.UserHistoryFile;
+
+    QByteArray Data = History_Manager.ConstructHistoryJsonDocument().toJson();
+
+    if(!WriteDataToFile(Filepath,Filename,Data)) return false;
+
+    return true;
+}
+
 /*************************
  * Loads user information
  *************************/
@@ -331,6 +350,24 @@ bool FileManager::LoadQueue()
     if(Data.isNull() || Data.isEmpty()) return false;
 
     Queue_Manager.ParseQueueJson(Data);
+
+    return true;
+}
+
+/***************************************************
+ * Loads all history item from the user directory
+ ***************************************************/
+bool FileManager::LoadHistory()
+{
+    if(!CurrentUser.isValid()) return false;
+
+    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.UserFolderPath + CurrentUser.GetUsername() + "/";
+    QString Filename = FileManagerInfo.UserHistoryFile;
+
+    QByteArray Data = ReadFile(Filepath,Filename);
+    if(Data.isNull() || Data.isEmpty()) return false;
+
+    History_Manager.ParseHistoryJson(Data);
 
     return true;
 }

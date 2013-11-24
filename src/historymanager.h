@@ -50,8 +50,8 @@ private:
 
 public slots:
     //Stack functions
-    void AddHistoryItem(HistoryItem &Item);
-    void AddHistoryItem(QString AnimeTitle,QString Action, QString DateAndTime);
+    void AddHistoryItem(HistoryItem &Item, bool PushFront = true);
+    void AddHistoryItem(QString AnimeTitle,QString Action, QString DateAndTime, bool PushFront = true);
     void RemoveHistoryItem(int Index);
     void ClearHistory();
 

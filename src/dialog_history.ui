@@ -10,6 +10,12 @@
     <height>714</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>842</width>
+    <height>714</height>
+   </size>
+  </property>
   <property name="contextMenuPolicy">
    <enum>Qt::PreventContextMenu</enum>
   </property>

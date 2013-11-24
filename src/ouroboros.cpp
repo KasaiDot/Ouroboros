@@ -37,6 +37,7 @@ Ouroboros::Ouroboros(QWidget *parent) :
     ui->setupUi(this);\
     setMouseTracking(true);
 
+    //setup main window
     QString Title = QString(APP_NAME) + " " + QString::number(APP_MAJOR_VERSION) + "." + QString::number(APP_MINOR_VERSION);
     if(APP_DEBUG) Title.append(" Debug");
     this->setWindowTitle(Title);
@@ -53,10 +54,10 @@ Ouroboros::Ouroboros(QWidget *parent) :
     QTime CurrentTime = QTime::currentTime();
     qsrand((uint)CurrentTime.msec());
 
-    //Setup a timer to run the queue every 10 minutes
+    //Setup a timer to run the queue every 5 minutes
     QTimer *RunTimer = new QTimer(this);
     connect(RunTimer,SIGNAL(timeout()),&Queue_Manager,SLOT(Run()));
-    RunTimer->start(600000);
+    RunTimer->start(300000);
 
     //Connect signals and slots
     connect(RunTimer,SIGNAL(timeout()),&Queue_Manager,SLOT(StartRunning()));
@@ -64,6 +65,9 @@ Ouroboros::Ouroboros(QWidget *parent) :
 
     //Load user info
     File_Manager.LoadUserInformation();
+
+    //Load history
+    File_Manager.LoadHistory();
 
     //Load local database
     File_Manager.LoadAnimeDatabase();
@@ -86,6 +90,7 @@ Ouroboros::~Ouroboros()
     File_Manager.SaveUserInformation();
     File_Manager.SaveAnimeDatabase();
     File_Manager.SaveQueue();
+    File_Manager.SaveHistory();
 
     delete ui;
 }

@@ -40,6 +40,7 @@ public:
         //Files
         QString UserInfoFile;
         QString UserQueueFile;
+        QString UserHistoryFile;
 
         //Dirs
         QString DataFolderPath;
@@ -67,6 +68,7 @@ public:
     bool SaveApiResponse(QString Response, QString Filename); //Used for saving anime lists
     bool SaveAnimeImage(Anime::AnimeEntity *Entity);
     bool SaveQueue();
+    bool SaveHistory();
 
     bool LoadSettings();
     bool LoadUserInformation();
@@ -74,6 +76,7 @@ public:
     bool LoadAnimeEntity(QString Slug);
     QByteArray GetAnimeImage(QString Slug);
     bool LoadQueue();
+    bool LoadHistory();
 
 private:
     bool WriteDataToFile(QString Filepath,QString Filename,QByteArray Data);

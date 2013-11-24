@@ -28,6 +28,7 @@
 #include "filemanager.h"
 #include "queuemanager.h"
 #include "guimanager.h"
+#include "historymanager.h"
 
 Ouroboros::Ouroboros(QWidget *parent) :
     QMainWindow(parent),
@@ -74,7 +75,6 @@ Ouroboros::Ouroboros(QWidget *parent) :
         emit ChangeStatus("Syncing ...", 3000);
         Queue_Manager.Sync(true);
     }
-
 }
 
 Ouroboros::~Ouroboros()
@@ -205,4 +205,12 @@ void Ouroboros::on_Action_ChangeSettings_triggered()
     SettingsDialog.setModal(true);
 
     SettingsDialog.exec();
+}
+
+/**************************
+ * Displays history dialog
+ *************************/
+void Ouroboros::on_Action_ViewHistory_triggered()
+{
+    History_Manager.ShowHistoryDialog();
 }

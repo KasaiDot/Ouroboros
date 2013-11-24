@@ -45,7 +45,7 @@ public:
     void ParseUserMap(QVariantMap UserInfoMap);
 
     //****************************************** Setters and Getter methods *********************************************************************/
-    inline void UpdateLastWatched() { SetLastWatched(QDateTime(QDateTime::currentDateTime()));}
+    inline void UpdateLastWatched() { SetLastWatched(QDateTime(QDateTime::currentDateTimeUtc()));}
 
     int GetEpisodesWatched() const { return EpisodesWatched; }
     inline void SetEpisodesWatched(int EpisodeCount, bool UpdateWatched = false)

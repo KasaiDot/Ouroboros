@@ -181,8 +181,6 @@ void QueueManager::GetAnimeLibrary()
     QueueItem *CurrentlyWatching = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_CURRENTLY_WATCHING);
     AddItem(CurrentlyWatching);
 
-    qDebug() << CurrentlyWatching->GetItemType();
-
     QueueItem *Completed = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_COMPLETED);
     AddItem(Completed);
 

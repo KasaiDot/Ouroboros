@@ -113,8 +113,6 @@ QNetworkReply *ApiManager::GetAnimeImage(QNetworkAccessManager *NetworkManager, 
 ApiManager::ApiReturnStatus ApiManager::ProcessReply(QNetworkReply *Reply, ApiManager::ApiCall Call)
 {
     int StatusTimeout = 5000;
-    qDebug() << Reply->error();
-    qDebug() << Reply->errorString();
 
     //Check for timeout or errors
     if(Reply->property("Timeout").toBool())

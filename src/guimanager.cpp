@@ -27,6 +27,7 @@
 #include "filemanager.h"
 #include "queuemanager.h"
 #include "dialog_animeinformation.h"
+#include "historymanager.h"
 
 using namespace Manager;
 GUIManager GUI_Manager;
@@ -281,6 +282,9 @@ void GUIManager::ProgressBarButtonClicked(QString Slug, CustomGui::ProgressDeleg
     //Update hummingbird anime only when needed, to reduce api calls
     if(Update)
         UpdateHummingbirdAnime(Slug);
+
+    QString Action = "Watched Episode: %1";
+    History_Manager.AddHistoryItem(Entity->GetAnimeTitle(),Action.arg(QString::number(Entity->GetUserInfo()->GetEpisodesWatched())),QDateTime::currentDateTime().toString(HISTORY_DATEFORMAT));
 
 }
 
@@ -658,6 +662,9 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
 
         if(ModelContains(Entity->GetAnimeTitle()))
             UpdateAnime(Entity);
+
+        QString Action = "Changed Status: %1";
+        History_Manager.AddHistoryItem(Entity->GetAnimeTitle(),Action.arg(Entity->GetUserInfo()->GetStatus()),QDateTime::currentDateTime().toString(HISTORY_DATEFORMAT));
     }
 
     //Changed rating clicked
@@ -670,6 +677,9 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
 
         if(ModelContains(Entity->GetAnimeTitle()))
             UpdateAnime(Entity);
+
+        QString Action = "Rating Changed: %1";
+        History_Manager.AddHistoryItem(Entity->GetAnimeTitle(),Action.arg(QString::number(Entity->GetUserInfo()->GetRatingValue())),QDateTime::currentDateTime().toString(HISTORY_DATEFORMAT));
     }
 
     UpdateHummingbirdAnime(Slug);
@@ -695,11 +705,15 @@ bool GUIManager::EditUserEpisodes(Anime::AnimeEntity *Entity)
     int EpisodesWatched = QInputDialog::getInt(MainWindow,"Set episodes watched","Episodes: ",Entity->GetUserInfo()->GetEpisodesWatched(),MinVal,MaxVal,1,&Ok);
 
     if(!Ok) return false;
+    if(EpisodesWatched == Entity->GetUserInfo()->GetEpisodesWatched()) return false;
 
     Entity->GetUserInfo()->SetEpisodesWatched(EpisodesWatched,true);
 
     if(ModelContains(Entity->GetAnimeTitle()))
         UpdateAnime(Entity);
+
+    QString Action = "Watched Episode: %1";
+    History_Manager.AddHistoryItem(Entity->GetAnimeTitle(),Action.arg(QString::number(Entity->GetUserInfo()->GetEpisodesWatched())),QDateTime::currentDateTime().toString(HISTORY_DATEFORMAT));
 
     return true;
 }

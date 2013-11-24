@@ -584,10 +584,17 @@
      <bool>true</bool>
     </property>
     <addaction name="Action_Synchronize_Anime"/>
-    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
     <addaction name="Action_ChangeSettings"/>
+    <addaction name="separator"/>
+    <addaction name="Action_ViewHistory"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuView"/>
   </widget>
   <widget class="QToolBar" name="MainToolBar">
    <property name="contextMenuPolicy">
@@ -650,6 +657,11 @@
    </property>
    <property name="toolTip">
     <string>Change settings</string>
+   </property>
+  </action>
+  <action name="Action_ViewHistory">
+   <property name="text">
+    <string>History</string>
    </property>
   </action>
  </widget>

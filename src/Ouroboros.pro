@@ -32,7 +32,9 @@ SOURCES += main.cpp\
     filemanager.cpp \
     guimanager.cpp \
     dialog_settings.cpp \
-    dialog_animeinformation.cpp
+    dialog_animeinformation.cpp \
+    historymanager.cpp \
+    dialog_history.cpp
 
 HEADERS  += ouroboros.h \
     threadmanager.h \
@@ -49,11 +51,14 @@ HEADERS  += ouroboros.h \
     guimanager.h \
     dialog_settings.h \
     dialog_animeinformation.h \
-    customguielements.h
+    customguielements.h \
+    historymanager.h \
+    dialog_history.h
 
 FORMS    += ouroboros.ui \
     dialog_settings.ui \
-    dialog_animeinformation.ui
+    dialog_animeinformation.ui \
+    dialog_history.ui
 
 RESOURCES += \
     Resources.qrc

@@ -75,6 +75,7 @@ public slots:
 private slots:
     void on_Action_Synchronize_Anime_triggered();
     void on_Action_ChangeSettings_triggered();
+    void on_Action_ViewHistory_triggered();
 };
 
 #endif // OUROBOROS_H

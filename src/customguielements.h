@@ -201,7 +201,6 @@ public:
     //Now to see if the user clicked a box, we have to check the editor events
     inline bool editorEvent(QEvent *Event, QAbstractItemModel *Model, const QStyleOptionViewItem &Option, const QModelIndex &Index)
     {
-
         //Make the the progressbar rect
         int MaxTextPixelSize = QApplication::fontMetrics().size(Qt::TextSingleLine,"999/999").width() + 8;
         QRect ProgressBarOutlineRect(Option.rect.left() + 3,Option.rect.top() + 4,Option.rect.width() - MaxTextPixelSize - 6,Option.rect.height() - 8);

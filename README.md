@@ -22,6 +22,7 @@ Classes
 **FileManager** - Class which handles all loading and saving in Ouroboros.  
 **Globals** - Holds global values which are tweakable.  
 **GUIManager** - Class which acts like an interface between the ui and the data.  
+**HistoryManager** - Manages user anime history, and passes it to Dialog_History  
 **Ouroboros** - Main entry point into the program.  
 **QueueItem** - Single queue entity which is used by QueueManager.  
 **QueueManager** - Class that handles queueing of user actions such as authenticating user, getting library etc...  
@@ -32,7 +33,8 @@ Classes
 ## Dialogs  
 
 **Dialog_Settings** - Settings dialog  
-**Dialog_AnimeInformation** - Displays anime information
+**Dialog_AnimeInformation** - Displays anime information  
+**Dialog_History** - Displays user anime history  
 
 ## Classes not included  
   
@@ -51,7 +53,9 @@ Here is the list of classes that are global and their equivilent variable:
 * **ThreadManager** - Thread_Manager  
 * **FileManager** - File_Manager
 * **User** - CurrentUser  
-* **GUIManager** - GUI_Manager
+* **GUIManager** - GUI_Manager  
+* **HistoryManager** - History_Manager
+* **OuroborosSettings** - Settings  
   
 You may also notice that classes have been put into namespaces. This is used to group classes based on what they are part of or what they do, E.g apimanager is part of managers  
   

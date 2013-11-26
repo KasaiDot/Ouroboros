@@ -50,12 +50,12 @@ private:
     //local copy of stack
     QStack<Manager::HistoryItem> HistoryStack;
 
-    //menu click actions states
-    enum MenuActionState
+    //menu click actions
+    enum HistoryMenuAction
     {
-        NONE,
-        REMOVE,
-        CLEAR
+        HISTORYMENU_NONE,
+        HISTORYMENU_REMOVE,
+        HISTORYMENU_CLEAR
     };
 
 public slots:

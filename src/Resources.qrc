@@ -6,5 +6,9 @@
         <file>Resources/cross.png</file>
         <file>Resources/circle-blue.png</file>
         <file>Resources/circle-green.png</file>
+        <file>Resources/tag-green.png</file>
+        <file>Resources/tag-red.png</file>
+        <file>Resources/History.png</file>
+        <file>Resources/Search.png</file>
     </qresource>
 </RCC>

@@ -51,6 +51,17 @@ public:
     //used for stopping dialog closing when enter is pressed
     bool eventFilter(QObject *Object, QEvent *Event);
 
+    //Menu actions
+    enum SearchMenuActions
+    {
+        SEARCHMENUACTION_CURRENTLYWATCHING,
+        SEARCHMENUACTION_COMPLETED,
+        SEARCHMENUACTION_DROPPED,
+        SEARCHMENUACTION_PLANTOWATCH,
+        SEARCHMENUACTION_ONHOLD,
+        SEARCHMENUACTION_VIEWINFORMATION
+    };
+
 private:
     Ui::Dialog_Search *ui;
 
@@ -59,10 +70,12 @@ private:
     bool Searching;
 
     //Temporary Hash to store anime
-    QList<Anime::AnimeEntity> AnimeList;
+    QHash<QString,Anime::AnimeEntity> AnimeList;
 
 public slots:
     void SearchAnime();
+    void ShowCustomContextMenu(const QPoint &Pos);
+    void HandleDoubleClick(QModelIndex Index);
 
 };
 

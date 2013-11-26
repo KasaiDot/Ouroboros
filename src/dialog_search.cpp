@@ -20,8 +20,12 @@
 #include "ui_dialog_search.h"
 
 #include <QDebug>
+#include <QMenu>
 
 #include "user.h"
+#include "guimanager.h"
+#include "animedatabase.h"
+#include "queuemanager.h"
 
 Dialog_Search::Dialog_Search(QWidget *parent) :
     QDialog(parent),
@@ -34,6 +38,8 @@ Dialog_Search::Dialog_Search(QWidget *parent) :
     SetupSearchBox();
 
     //connect signals and slots
+    connect(ui->SearchTreeWidget,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(HandleDoubleClick(QModelIndex)));
+    connect(ui->SearchTreeWidget,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowCustomContextMenu(QPoint)));
     connect(ui->SearchButton,SIGNAL(clicked()),this,SLOT(SearchAnime()));
     connect(SearchBox,SIGNAL(returnPressed()),this,SLOT(SearchAnime()));
 }
@@ -94,7 +100,7 @@ void Dialog_Search::ParseAnime(QByteArray &Data)
        Entity.ParseAnimeJson(Doc.toJson());
        if(Entity.GetAnimeSlug().isEmpty() || Entity.GetAnimeSlug().isNull()) continue; //go to next iteration
 
-        AnimeList.append(Entity);
+        AnimeList.insert(Entity.GetAnimeSlug(),Entity);
     }
 
     PopulateWidget();
@@ -111,12 +117,12 @@ void Dialog_Search::PopulateWidget()
     if(AnimeList.isEmpty()) return;
 
     //iterate through anime and add it to the widget
-    foreach(Anime::AnimeEntity Entity,AnimeList)
+    foreach(Anime::AnimeEntity Entity,AnimeList.values())
     {
         //if anime is in our list then we apply the green icon to it
         bool AlreadyInList = Anime_Database.Contains(Entity.GetAnimeSlug());
 
-        QString IconLocation = (AlreadyInList) ? ":/Resources/circle-green.png" : ":/Resources/circle-blue.png";
+        QString IconLocation = (AlreadyInList) ? ":/Resources/tag-green.png" : ":/Resources/tag-red.png";
         QIcon ListIcon(IconLocation);
 
         QString EpisodeCount = (Entity.GetAnimeEpisodeCount() <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE) ? "-" : QString::number(Entity.GetAnimeEpisodeCount());
@@ -128,6 +134,7 @@ void Dialog_Search::PopulateWidget()
 
         QTreeWidgetItem *Item = new QTreeWidgetItem(ItemStrings);
         Item->setData(SEARCH_HEADER_TITLE,Qt::DecorationRole,ListIcon);
+        Item->setData(SEARCH_HEADER_TITLE,ROLE_ANIME_SLUG,Entity.GetAnimeSlug());
         Item->setTextAlignment(SEARCH_HEADER_EPISODE,Qt::AlignCenter);
         Item->setTextAlignment(SEARCH_HEADER_TYPE,Qt::AlignCenter);
 
@@ -165,6 +172,100 @@ void Dialog_Search::SearchAnime()
      ui->SearchButton->setEnabled(true);
      Searching = false;
 
+}
+
+/*********************
+ * Right click menu
+ *********************/
+void Dialog_Search::ShowCustomContextMenu(const QPoint &Pos)
+{
+    QModelIndex Index = ui->SearchTreeWidget->indexAt(Pos);
+    if(Index.row() < 0) return;
+
+    //get the anime
+    QString Slug = ui->SearchTreeWidget->topLevelItem(Index.row())->data(SEARCH_HEADER_TITLE,ROLE_ANIME_SLUG).toString();
+    if(!AnimeList.contains(Slug)) return;
+    Anime::AnimeEntity Entity = AnimeList.value(Slug);
+
+    QMenu Menu;
+
+    //Add the items
+    Menu.addAction("View Information")->setData(SEARCHMENUACTION_VIEWINFORMATION);
+    Menu.addSeparator();
+
+    //add to list menu
+    QMenu AddToListMenu("Add to list");
+    AddToListMenu.addAction("Currently watching")->setData(SEARCHMENUACTION_CURRENTLYWATCHING);
+    AddToListMenu.addAction("Completed")->setData(SEARCHMENUACTION_COMPLETED);
+    AddToListMenu.addAction("On hold")->setData(SEARCHMENUACTION_ONHOLD);
+    AddToListMenu.addAction("Plan to watch")->setData(SEARCHMENUACTION_PLANTOWATCH);
+    AddToListMenu.addAction("Dropped")->setData(SEARCHMENUACTION_DROPPED);
+
+    //disable the menu if we have the anime
+    if(Anime_Database.Contains(Slug))
+        AddToListMenu.setEnabled(false);
+
+    Menu.addMenu(&AddToListMenu);
+
+
+    /**************************** Show menu ****************************/
+    QAction *Action = Menu.exec(QCursor::pos());
+
+    if(!Action) return;
+
+    int ActionValue = Action->data().toInt();
+
+    if(ActionValue == SEARCHMENUACTION_VIEWINFORMATION)
+    {
+        GUI_Manager.ShowAnimeInformationDialog(Entity);
+    } else {
+
+        //get the status
+        QString Status;
+        switch(ActionValue)
+        {
+            case SEARCHMENUACTION_CURRENTLYWATCHING:
+                Status = STATUS_CURRENTLY_WATCHING;
+            break;
+
+            case SEARCHMENUACTION_COMPLETED:
+                Status = STATUS_COMPLETED;
+            break;
+
+            case SEARCHMENUACTION_ONHOLD:
+                Status = STATUS_ON_HOLD;
+            break;
+
+            case SEARCHMENUACTION_PLANTOWATCH:
+                Status = STATUS_PLAN_TO_WATCH;
+            break;
+
+            case SEARCHMENUACTION_DROPPED:
+                Status = STATUS_DROPPED;
+            break;
+        }
+
+        //make the anime entity and pass it to database
+        Anime::AnimeEntity *PointerEntity = new Anime::AnimeEntity(Entity);
+        Anime_Database.NewAnime(PointerEntity,Status);
+        GUI_Manager.PopulateModel();
+        Queue_Manager.UpdateLibrary(Slug);
+    }
+
+    PopulateWidget();
+}
+
+/*********************************
+ * Handles double clicks on items
+ *********************************/
+void Dialog_Search::HandleDoubleClick(QModelIndex Index)
+{
+    //get the anime
+    QString Slug = ui->SearchTreeWidget->topLevelItem(Index.row())->data(SEARCH_HEADER_TITLE,ROLE_ANIME_SLUG).toString();
+    if(!AnimeList.contains(Slug)) return;
+    Anime::AnimeEntity Entity = AnimeList.value(Slug);
+
+    GUI_Manager.ShowAnimeInformationDialog(Entity);
 }
 
 /***************************************************

@@ -624,6 +624,9 @@
    </attribute>
    <addaction name="Action_Synchronize_Anime"/>
    <addaction name="separator"/>
+   <addaction name="Action_ViewHistory"/>
+   <addaction name="Action_ViewSearch"/>
+   <addaction name="separator"/>
    <addaction name="Action_ChangeSettings"/>
   </widget>
   <widget class="QStatusBar" name="MainStatusBar"/>
@@ -661,11 +664,19 @@
    </property>
   </action>
   <action name="Action_ViewHistory">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Resources/History.png</normaloff>:/Resources/History.png</iconset>
+   </property>
    <property name="text">
     <string>History</string>
    </property>
   </action>
   <action name="Action_ViewSearch">
+   <property name="icon">
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Resources/Search.png</normaloff>:/Resources/Search.png</iconset>
+   </property>
    <property name="text">
     <string>Search</string>
    </property>

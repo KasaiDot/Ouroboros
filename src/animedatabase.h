@@ -38,6 +38,7 @@ public:
 
     //Basic database functions
     void AddAnime(AnimeEntity* Anime);
+    void NewAnime(AnimeEntity* Anime, QString UserStatus);
     AnimeEntity* RemoveAnime(QString Slug, bool Delete = true);
     bool RemoveAnime(AnimeEntity* Anime, bool Delete = true);
     AnimeEntity* GetAnime(QString Slug) const;

@@ -39,6 +39,9 @@ Dialog_AnimeInformation::~Dialog_AnimeInformation()
  ********************************************************/
 void Dialog_AnimeInformation::ParseAnime(Anime::AnimeEntity &Entity)
 {
+    //download the image if not availiable
+    File_Manager.SaveAnimeImage(&Entity);
+
     QString Slug = Entity.GetAnimeSlug();
     QByteArray ImageData = File_Manager.GetAnimeImage(Slug);
     int ImageWidth = 200;
@@ -89,5 +92,6 @@ void Dialog_AnimeInformation::ParseAnime(Anime::AnimeEntity &Entity)
 
         this->ui->Genres->setText(GenreList);
     }
+
 
 }

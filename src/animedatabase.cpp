@@ -22,6 +22,8 @@
 #include <QVariantMap>
 #include <QVariantList>
 
+#include "filemanager.h"
+
 using namespace Anime;
 
 //Make class global
@@ -74,6 +76,24 @@ void AnimeDatabase::AddAnime(AnimeEntity *Anime)
 
     //replace the old anime
     Database.insert(Anime->GetAnimeSlug(),Anime);
+}
+
+/*******************************************************
+ * Adds anime to database with custom user information
+ *******************************************************/
+void AnimeDatabase::NewAnime(AnimeEntity *Anime, QString UserStatus)
+{
+    UserAnimeInformation Info;
+    Info.SetEpisodesWatched(0,true);
+    Info.SetStatus(UserStatus);
+    Info.SetRewatchedTimes(0);
+    Info.SetRatingType("advanced"); //default is advanced
+
+    if(UserStatus == STATUS_COMPLETED && Anime->GetAnimeEpisodeCount() > ANIMEENTITY_UNKNOWN_ANIME_EPISODE)
+        Info.SetEpisodesWatched(Anime->GetAnimeEpisodeCount());
+
+    Anime->SetUserInfo(Info);
+    AddAnime(Anime);
 }
 
 /**************************************************************

@@ -1,7 +1,7 @@
 Ouroboros
 =========
 
-Hummingbird.me Desktop App
+Hummingbird.me anime tracker
 
 Index
 ==========================
@@ -91,7 +91,11 @@ Secondly, you can build using the static version of the Qt Library.
 It is reccommended to build Qt static in another directory than the default Qt one.
 E.G: Qt-[version]-static folder
 
-The Ouroboros source was built using the static libraries of Qt.
+The Ouroboros source was built using the static libraries of Qt.  
+
+Make sure you change the <code>QMAKE_LFLAGS</code> (found in [path to qt folder]/qtbase/mkspecs/[your compiler]/qmake.conf) so that it compiles the libraries required.  
+E.g for gcc, you go into [path to qt folder]/qtbase/mkcspecs/win32-gcc++/qmake.conf and in <code>QMAKE_LFLAGS</code> add <code>-static -static-libgcc </code>.  
+
 
 The build configuration was as follows for Windows 7:
 

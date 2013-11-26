@@ -43,9 +43,9 @@ Classes
 Notes  
 ===========================
 
-Ouroboros uses extern classes, meaning that some classes are global such as the apimanager and they won't need to be initialised manually.  
+Ouroboros uses extern classes, meaning that some classes are global such as the api manager and they won't need to be initialised manually.  
   
-Here is the list of classes that are global and their equivilent variable:  
+Here is the list of classes that are global and their equivalent variable:  
   
 * **AnimeDatabase** - Anime_Database  
 * **ApiManager** - Api_Manager  
@@ -57,7 +57,7 @@ Here is the list of classes that are global and their equivilent variable:
 * **HistoryManager** - History_Manager
 * **OuroborosSettings** - Settings  
   
-You may also notice that classes have been put into namespaces. This is used to group classes based on what they are part of or what they do, E.g apimanager is part of managers  
+You may also notice that classes have been put into namespaces. This is used to group classes based on what they are part of or what they do, E.g ApiManager is part of managers  
   
 Here are the list of current namespaces:  
 
@@ -68,7 +68,7 @@ Here are the list of current namespaces:
 * Ui - Default Qt namespace 
 
 You may also notice that sometimes objects are created (A *a = new A) but they aren't deleted.  
-The reason is because Qt uses a parent-child heirarchy whereby if an object (must be derived from QObject) has a parent, that object will automatically be deleted upon deletion of the parent object.  
+The reason is because Qt uses a parent-child hierarchy whereby if an object (must be derived from QObject) has a parent, that object will automatically be deleted upon deletion of the parent object.  
 Any objects that don't have a parent or those which do not derive from QObject must be manually deleted.  
 
 Src Requirements
@@ -88,13 +88,13 @@ If you would like to build a custom version of Ouroboros you can do it two ways.
 Firstly, you can use the default Qt build which builds using shared libraries, or
 Secondly, you can build using the static version of the Qt Library.
 
-It is reccommended to build Qt static in another directory than the default Qt one.
+It is recommended to build Qt static in another directory than the default Qt one.
 E.G: Qt-[version]-static folder
 
 The Ouroboros source was built using the static libraries of Qt.  
 
 Make sure you change the <code>QMAKE_LFLAGS</code> (found in [path to qt folder]/qtbase/mkspecs/[your compiler]/qmake.conf) so that it compiles the libraries required.  
-E.g for gcc, you go into [path to qt folder]/qtbase/mkcspecs/win32-gcc++/qmake.conf and in <code>QMAKE_LFLAGS</code> add <code>-static -static-libgcc </code>.  
+E.g for gcc, you go into [path to qt folder]/qtbase/mkspecs/win32-gcc++/qmake.conf and in <code>QMAKE_LFLAGS</code> add <code>-static -static-libgcc </code>.  
 
 
 The build configuration was as follows for Windows 7:
@@ -107,7 +107,7 @@ This configuration will allow you to statically build release versions of Ourobo
 Arguments such as the nomake ones are optional.
 
 The -opengl argument is also optional.
-The platfrom argument varies depending on the platform and the compiler.
+The platform argument varies depending on the platform and the compiler.
 
 OpenSSL Libraries must be downloaded (get it from https://www.openssl.org/).  
 **Note:** The libeay33 and the ssleay32 dlls will need to be copied to the application folder
@@ -122,4 +122,3 @@ Copyright (C) 2010-2013 Mikunj Varsani
 Ouroboros is free software. This means that the source code is available to public, 
 anyone is welcome to research how the application works, participate in its development, 
 freely distribute the application and spread the word!
-

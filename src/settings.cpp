@@ -23,7 +23,6 @@
 
 OuroborosSettings Settings;
 
-
 OuroborosSettings::OuroborosSettings()
 {
     Filename = "Settings.ini";

@@ -219,3 +219,11 @@ void Ouroboros::on_Action_ViewHistory_triggered()
 {
     History_Manager.ShowHistoryDialog();
 }
+
+/****************************
+ * Displays search dialog
+ ***************************/
+void Ouroboros::on_Action_ViewSearch_triggered()
+{
+    GUI_Manager.ShowSearchDialog();
+}

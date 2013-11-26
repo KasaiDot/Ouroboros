@@ -24,6 +24,7 @@
 #define API_URL_GETLIBRARY "https://hummingbirdv1.p.mashape.com/users/<username>/library?status=<status>&auth_token=<key>"
 #define API_URL_GETANIME "https://hummingbirdv1.p.mashape.com/anime/<slug>"
 #define API_URL_UPDATELIBRARY "https://hummingbirdv1.p.mashape.com/libraries/<slug>"
+#define API_URL_SEARCH "https://hummingbirdv1.p.mashape.com/search/anime?query=<searchtext>&auth_token=<key>"
 
 #include <QObject>
 #include <QScopedPointer>
@@ -59,6 +60,7 @@ public:
     ApiReturnStatus GetLibrary(QString Status);
     ApiReturnStatus GetAnime(QString Slug);
     ApiReturnStatus UpdateLibrary(QString Slug);
+    QByteArray Search(QString String);
 
     QNetworkReply* GetAnimeImage(QNetworkAccessManager *NetworkManager, QUrl const &Url);
 

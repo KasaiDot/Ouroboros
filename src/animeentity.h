@@ -143,6 +143,7 @@ class AnimeEntity
 public:
     AnimeEntity();
     AnimeEntity(AnimeEntity &Entity);
+    AnimeEntity(const AnimeEntity &Entity);
 
     //Parses anime json files
     bool ParseAnimeJson(QByteArray Data,bool ContainsUserInfo = false);
@@ -163,19 +164,21 @@ public:
     //****************************************** Setters and Getter methods *********************************************************************/
 
     UserAnimeInformation *GetUserInfo() { return &UserInfo; } //Return a pointer as to not make a copy of the information
-    inline void SetUserInfo(UserAnimeInformation &Info)
+    const UserAnimeInformation *GetConstUserInfo() const { return &UserInfo; }
+    inline void SetUserInfo(UserAnimeInformation const &Info)
     {
         UserInfo = Info;
         UserInfoSet = true;
 
         //Set the anime episode count of the information
         if(GetAnimeEpisodeCount() <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE) return;
-        Info.SetAnimeEpisodes(GetAnimeEpisodeCount());
+        UserInfo.SetAnimeEpisodes(GetAnimeEpisodeCount());
 
         //Check that the current episode is less than the anime episodes
         if(UserInfo.GetEpisodesWatched() > GetAnimeEpisodeCount())
             UserInfo.SetEpisodesWatched(GetAnimeEpisodeCount());
     }
+
 
     QString GetAnimeSlug() const { return AnimeSlug; }
     inline void SetAnimeSlug(QString Slug) { AnimeSlug = Slug; }

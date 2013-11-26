@@ -42,7 +42,7 @@ AnimeEntity::AnimeEntity():
 /***************************************************************************
  * This functions copies values from the entity provided to the new entity
  ***************************************************************************/
-AnimeEntity::AnimeEntity( AnimeEntity &Entity)
+AnimeEntity::AnimeEntity(AnimeEntity &Entity)
 {
     SetAnimeAlternateTitle(Entity.GetAnimeAlternateTitle());
     SetAnimeEpisodeCount(Entity.GetAnimeEpisodeCount());
@@ -56,6 +56,21 @@ AnimeEntity::AnimeEntity( AnimeEntity &Entity)
     SetAnimeUrl(Entity.GetAnimeUrl());
     UserAnimeInformation *Info = Entity.GetUserInfo();
     SetUserInfo(*Info);
+}
+
+AnimeEntity::AnimeEntity(const AnimeEntity &Entity)
+{
+    SetAnimeAlternateTitle(Entity.GetAnimeAlternateTitle());
+    SetAnimeEpisodeCount(Entity.GetAnimeEpisodeCount());
+    SetAnimeGenres(Entity.GetAnimeGenres());
+    SetAnimeImage(Entity.GetAnimeImage());
+    SetAnimeShowType(Entity.GetAnimeShowType());
+    SetAnimeSlug(Entity.GetAnimeSlug());
+    SetAnimeStatus(Entity.GetAnimeStatus());
+    SetAnimeSynopsis(Entity.GetAnimeSynopsis());
+    SetAnimeTitle(Entity.GetAnimeTitle());
+    SetAnimeUrl(Entity.GetAnimeUrl());
+    SetUserInfo(*Entity.GetConstUserInfo());
 }
 
 /**********************************

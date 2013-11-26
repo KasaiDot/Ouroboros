@@ -158,7 +158,6 @@ void AnimeDatabase::ParseJson(QByteArray Data)
  *************************************************/
 void AnimeDatabase::ParseMultipleJson(QByteArray Data)
 {
-
     QJsonDocument MainDoc = QJsonDocument::fromJson(Data);
     QVariantList AnimeList = MainDoc.toVariant().toList();
 
@@ -167,5 +166,4 @@ void AnimeDatabase::ParseMultipleJson(QByteArray Data)
        QJsonDocument Doc = QJsonDocument::fromVariant(Variant);
        ParseJson(Doc.toJson());
     }
-
 }

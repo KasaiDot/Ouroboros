@@ -23,6 +23,7 @@
 #include <QInputDialog>
 #include <QToolBar>
 
+#include "dialog_search.h"
 #include "animedatabase.h"
 #include "filemanager.h"
 #include "queuemanager.h"
@@ -104,6 +105,11 @@ void GUIManager::SetUpSearchBox(CustomGui::EraseableLineEdit *SearchBox)
     connect(SearchBox,&QLineEdit::textChanged,[=](){
         if(SearchBox->text().size() > 0)
             ChangeTab(TAB_SEARCH);
+    });
+
+    //show search dialog when enter is pressed
+    connect(SearchBox,&QLineEdit::returnPressed,[=]() {
+        ShowSearchDialog(SearchBox->text());
     });
 
 }
@@ -688,12 +694,26 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
 
 /************************************************* View info edit functions ******************************************/
 
+/**************************************
+ * Shows the anime information dialog
+ *************************************/
 void GUIManager::ShowAnimeInformationDialog(Anime::AnimeEntity &Entity)
 {
     Dialog_AnimeInformation InfoDialog;
     InfoDialog.ParseAnime(Entity);
     InfoDialog.exec();
 }
+
+/***************************************************************
+ * Shows the search dialog with given text as the search text
+ ***************************************************************/
+void GUIManager::ShowSearchDialog(QString Text)
+{
+    Dialog_Search SearchDialog;
+    if(!Text.isEmpty()) SearchDialog.SetSearchString(Text);
+    SearchDialog.exec();
+}
+
 
 /*************************************************
  * Creates a input box for user to type episodes

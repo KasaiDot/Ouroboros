@@ -592,6 +592,7 @@
     <addaction name="Action_ChangeSettings"/>
     <addaction name="separator"/>
     <addaction name="Action_ViewHistory"/>
+    <addaction name="Action_ViewSearch"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -662,6 +663,14 @@
   <action name="Action_ViewHistory">
    <property name="text">
     <string>History</string>
+   </property>
+  </action>
+  <action name="Action_ViewSearch">
+   <property name="text">
+    <string>Search</string>
+   </property>
+   <property name="toolTip">
+    <string>Search anime online</string>
    </property>
   </action>
  </widget>

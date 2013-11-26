@@ -99,6 +99,44 @@ ApiManager::ApiReturnStatus ApiManager::UpdateLibrary(QString Slug)
 
 }
 
+/********************************************************************
+ * Searches for given string on hummingbird and return the result
+ ********************************************************************/
+QByteArray ApiManager::Search(QString String)
+{
+    QByteArray Empty("");
+
+    if(!CurrentUser.isAuthenticated()) return Empty;
+
+    QScopedPointer<QNetworkAccessManager> NetworkManager(new QNetworkAccessManager);
+    QString Url = API_URL_SEARCH;
+    Url.replace("<searchtext>",String);
+    Url.replace("<key>",CurrentUser.GetAuthKey());
+
+    QNetworkReply *Reply = DoHttpGet(NetworkManager.data(),QUrl(Url));
+
+    //Check reply for any errors
+    if(Reply->error() == QNetworkReply::NoError)
+    {
+        QByteArray ReplyData = Reply->readAll();
+        //Check for other errors
+        if(ReplyData.isEmpty()
+                || ReplyData.contains("Invalid JSON Object")
+                || ReplyData.contains("\"error\":"))
+        {
+            Reply->deleteLater();
+            return Empty;
+        }
+
+        Reply->deleteLater();
+        return ReplyData;
+    }
+
+    Reply->deleteLater();
+    return Empty;
+
+}
+
 /******************************
  * Gets anime image file
  ******************************/

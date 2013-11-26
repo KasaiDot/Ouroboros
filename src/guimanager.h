@@ -118,6 +118,7 @@ public slots:
 
     //Menu functions
     void ShowAnimeInformationDialog(Anime::AnimeEntity &Entity);
+    void ShowSearchDialog(QString Text = "");
     bool EditUserEpisodes(Anime::AnimeEntity *Entity);
 
     //push anime to the queue to update in the api

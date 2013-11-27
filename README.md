@@ -35,6 +35,7 @@ Classes
 **Dialog_Settings** - Settings dialog  
 **Dialog_AnimeInformation** - Displays anime information  
 **Dialog_History** - Displays user anime history  
+**Dialog_Search** - Searches and displays anime from hummingbird  
 
 ## Classes not included  
   

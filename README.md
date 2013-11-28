@@ -27,6 +27,7 @@ Classes
 **QueueItem** - Single queue entity which is used by QueueManager.  
 **QueueManager** - Class that handles queueing of user actions such as authenticating user, getting library etc...  
 **Settings** - Holds all settings of Ouroboros.  
+**SingleApplication** - Class derived from QApplication that handles application instances.  
 **ThreadManager** - Class which handles creation and deletion of threads within the application.  
 **User** - Class which holds user information such as username and password.
 

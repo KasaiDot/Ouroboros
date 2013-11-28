@@ -21,6 +21,8 @@
 #include <QApplication>
 #include <QDebug>
 
+#include "globals.h"
+
 OuroborosSettings Settings;
 
 OuroborosSettings::OuroborosSettings()
@@ -28,6 +30,11 @@ OuroborosSettings::OuroborosSettings()
     Filename = "Settings.ini";
 
     //**************Set the names of the setting values*****************************************
+
+    //Application
+    SettingsName.Application.GroupName = "Application";
+    SettingsName.Application.CloseToTray = "CloseToTray";
+    SettingsName.Application.MinimizeToTray = "MinimizeToTray";
 
     //Progress bar
     SettingsName.ProgressBar.GroupName = "Progress_Bar";
@@ -41,14 +48,18 @@ OuroborosSettings::OuroborosSettings()
 
     //*********************** Set the default values ******************************************//
 
+    //Application
+    Default.Application.CloseToTray = true;
+    Default.Application.MinimizeToTray = true;
+
     //Progress bar
-    Default.DefaultProgressDelegate.TextColor = Qt::black;
-    Default.DefaultProgressDelegate.Outline = QColor(160,160,160);
-    Default.DefaultProgressDelegate.Background = QColor(250,250,250);
-    Default.DefaultProgressDelegate.CurrentlyWatching = QColor(92,213,0);
-    Default.DefaultProgressDelegate.Completed = QColor(51,153,255);
-    Default.DefaultProgressDelegate.OnHold = QColor(255,230,0);
-    Default.DefaultProgressDelegate.Dropped = QColor(255,86,60);
+    Default.ProgressDelegate.TextColor = Qt::black;
+    Default.ProgressDelegate.Outline = QColor(160,160,160);
+    Default.ProgressDelegate.Background = QColor(250,250,250);
+    Default.ProgressDelegate.CurrentlyWatching = QColor(92,213,0);
+    Default.ProgressDelegate.Completed = QColor(51,153,255);
+    Default.ProgressDelegate.OnHold = QColor(255,230,0);
+    Default.ProgressDelegate.Dropped = QColor(255,86,60);
 
 }
 
@@ -59,17 +70,25 @@ void OuroborosSettings::Load()
 {
     QString Filepath = QApplication::applicationDirPath() + "/" + Filename;
     QSettings Settings(Filepath,QSettings::IniFormat);
+
+    SettingsNames::ApplicationNames ApplicationName = SettingsName.Application;
     SettingsNames::ProgressBarNames ProgressBarName = SettingsName.ProgressBar;
+
+    //Application settings
+    Settings.beginGroup(ApplicationName.GroupName);
+    Application.CloseToTray = Settings.value(ApplicationName.CloseToTray,Default.Application.CloseToTray).toBool();
+    Application.MinimizeToTray = Settings.value(ApplicationName.MinimizeToTray,Default.Application.MinimizeToTray).toBool();
+    Settings.endGroup();
 
     //Progressbar colors
     Settings.beginGroup(ProgressBarName.GroupName);
-    ProgressDelegate.TextColor.setNamedColor(Settings.value(ProgressBarName.TextColor,Default.DefaultProgressDelegate.TextColor.name()).toString());
-    ProgressDelegate.Outline.setNamedColor(Settings.value(ProgressBarName.OutlineColor,Default.DefaultProgressDelegate.Outline.name()).toString());
-    ProgressDelegate.Background.setNamedColor(Settings.value(ProgressBarName.BackgroundColor,Default.DefaultProgressDelegate.Background.name()).toString());
-    ProgressDelegate.CurrentlyWatching.setNamedColor(Settings.value(ProgressBarName.CurrentlyWatching,Default.DefaultProgressDelegate.CurrentlyWatching.name()).toString());
-    ProgressDelegate.Completed.setNamedColor(Settings.value(ProgressBarName.Completed,Default.DefaultProgressDelegate.Completed.name()).toString());
-    ProgressDelegate.OnHold.setNamedColor(Settings.value(ProgressBarName.OnHold,Default.DefaultProgressDelegate.OnHold.name()).toString());
-    ProgressDelegate.Dropped.setNamedColor(Settings.value(ProgressBarName.Dropped,Default.DefaultProgressDelegate.Dropped.name()).toString());
+    ProgressDelegate.TextColor.setNamedColor(Settings.value(ProgressBarName.TextColor,Default.ProgressDelegate.TextColor.name()).toString());
+    ProgressDelegate.Outline.setNamedColor(Settings.value(ProgressBarName.OutlineColor,Default.ProgressDelegate.Outline.name()).toString());
+    ProgressDelegate.Background.setNamedColor(Settings.value(ProgressBarName.BackgroundColor,Default.ProgressDelegate.Background.name()).toString());
+    ProgressDelegate.CurrentlyWatching.setNamedColor(Settings.value(ProgressBarName.CurrentlyWatching,Default.ProgressDelegate.CurrentlyWatching.name()).toString());
+    ProgressDelegate.Completed.setNamedColor(Settings.value(ProgressBarName.Completed,Default.ProgressDelegate.Completed.name()).toString());
+    ProgressDelegate.OnHold.setNamedColor(Settings.value(ProgressBarName.OnHold,Default.ProgressDelegate.OnHold.name()).toString());
+    ProgressDelegate.Dropped.setNamedColor(Settings.value(ProgressBarName.Dropped,Default.ProgressDelegate.Dropped.name()).toString());
     Settings.endGroup();
 }
 
@@ -80,8 +99,17 @@ void OuroborosSettings::Save()
 {
     QString Filepath = QApplication::applicationDirPath() + "/" + Filename;
     QSettings Settings(Filepath,QSettings::IniFormat);
+
+    SettingsNames::ApplicationNames ApplicationName = SettingsName.Application;
     SettingsNames::ProgressBarNames ProgressBarName = SettingsName.ProgressBar;
 
+    //Application
+    Settings.beginGroup(ApplicationName.GroupName);
+    Settings.setValue(ApplicationName.CloseToTray,Application.CloseToTray);
+    Settings.setValue(ApplicationName.MinimizeToTray,Application.MinimizeToTray);
+    Settings.endGroup();
+
+    //Progress bar
     Settings.beginGroup(ProgressBarName.GroupName);
     Settings.setValue(ProgressBarName.TextColor,ProgressDelegate.TextColor.name());
     Settings.setValue(ProgressBarName.OutlineColor,ProgressDelegate.Outline.name());
@@ -101,5 +129,5 @@ void OuroborosSettings::Save()
 void OuroborosSettings::ResetSettings()
 {
     //progressbar
-    ProgressDelegate = Default.DefaultProgressDelegate;
+    ProgressDelegate = Default.ProgressDelegate;
 }

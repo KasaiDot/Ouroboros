@@ -41,8 +41,10 @@ Ouroboros::Ouroboros(QWidget *parent) :
     QString Title = QString(APP_NAME) + " " + QString::number(APP_MAJOR_VERSION) + "." + QString::number(APP_MINOR_VERSION);
     if(APP_DEBUG) Title.append(" Debug");
     this->setWindowTitle(Title);
-
     SetViewLayouts();
+
+    //setup tray icon
+    SetupTrayIcon();
 
     //Load settings
     Settings.Load();
@@ -123,8 +125,147 @@ void Ouroboros::SetViewLayouts()
     ui->View_Search->sortByColumn(HEADER_NAME,Qt::AscendingOrder);
 }
 
+/*************************
+ * Creates a tray icon
+ ************************/
+void Ouroboros::SetupTrayIcon()
+{
+    TrayIcon = new QSystemTrayIcon(QIcon(":/Resources/Icon.png"),this);
+    QString ToolTip = QString("%1 %2.%3").arg(APP_NAME).arg(QString::number(APP_MAJOR_VERSION)).arg(QString::number(APP_MINOR_VERSION));
+    TrayIcon->setToolTip(ToolTip);
+
+    //create the menu
+    TrayMenu = new QMenu(this);
+    TrayMenu->addAction("Show Ouroboros")->setData(Tray_ShowOuroboros);
+    TrayMenu->addSeparator();
+    TrayMenu->addAction("Sync anime")->setData(Tray_Sync);
+    TrayMenu->addAction("Settings")->setData(Tray_Settings);
+    TrayMenu->addSeparator();
+    TrayMenu->addAction("Exit")->setData(Tray_Exit);
+
+    TrayIcon->setContextMenu(TrayMenu);
+
+    //connect signals and slots
+    connect(TrayMenu,SIGNAL(triggered(QAction*)),this,SLOT(TrayMenuItemClicked(QAction*)));
+    connect(TrayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(TrayIconTriggered(QSystemTrayIcon::ActivationReason)));
+
+    TrayIcon->show();
+}
+
+/********************************************************************
+ * Handles main tray interaction such as double click, right click
+ ********************************************************************/
+void Ouroboros::TrayIconTriggered(QSystemTrayIcon::ActivationReason Reason)
+{
+    switch(Reason)
+    {
+        case QSystemTrayIcon::DoubleClick:
+        case QSystemTrayIcon::Trigger:
+            if(this->isHidden())
+            {
+                this->showNormal();
+                this->setFocus();
+            }
+        break;
+
+        default:
+        break;
+    }
+}
+
+/*********************************
+ * Handles tray menu clicks
+ ********************************/
+void Ouroboros::TrayMenuItemClicked(QAction *Action)
+{
+    int ActionNumber = Action->data().toInt();
+
+    switch (ActionNumber)
+    {
+        case Tray_ShowOuroboros:
+        if(this->isHidden())
+        {
+                this->showNormal();
+                this->setFocus();
+        }
+        break;
+
+        case Tray_Exit:
+            QApplication::instance()->exit();
+        break;
+
+        case Tray_Sync:
+            Queue_Manager.Sync();
+            ShowTrayMessage("Ouroboros Syncing","Syncing anime list ...");
+        break;
+
+        case Tray_Settings:
+            //show settings dialog
+            on_Action_ChangeSettings_triggered();
+
+        break;
+
+        default:
+        break;
+    }
+}
+
+/***************************
+ * Displays a tray message
+ **************************/
+void Ouroboros::ShowTrayMessage(QString Title, QString Message, int msecs)
+{
+    TrayIcon->showMessage(Title,Message,QSystemTrayIcon::Information,msecs);
+}
+
+/************************************
+ * Custom application event handlers
+ ***********************************/
+void Ouroboros::closeEvent(QCloseEvent *Event)
+{
+    if(Settings.Application.CloseToTray)
+    {
+        this->hide();
+        ShowTrayMessage("Ouroboros minimised to tray","Ouroboros has been minimised to tray, you can show it again by right clicking the tray icon");
+        Event->ignore();
+    } else {
+        Event->accept();
+    }
+}
+
+void Ouroboros::changeEvent(QEvent *Event)
+{
+    if(Event->type() == QEvent::WindowStateChange)
+    {
+        if(isMinimized() && Settings.Application.MinimizeToTray)
+        {
+            this->hide();
+            Event->ignore();
+        }
+    }
+    QMainWindow::changeEvent(Event);
+}
+
+/**************************************************
+ * Handles message recieving from other instances
+ **************************************************/
+void Ouroboros::RecievedMessageFromInstance(QStringList Messages)
+{
+    foreach (QString Message, Messages)
+    {
+        //Show app
+        if(Message == QString(APP_MESSAGE_SHOWAPP))
+        {
+            this->showNormal();
+            this->activateWindow();
+            this->setFocus();
+        }
+
+    }
+}
+
 /************************************ Getter functions ****************************************/
-QTabWidget *Ouroboros::GetMainTabWidget()
+QTabWidget* Ouroboros::GetMainTabWidget()
 {
     return ui->MainTabWidget;
 }
@@ -180,12 +321,13 @@ QAction *Ouroboros::GetAction(Ouroboros::Actions Type)
 }
 
 /**************************
- * returns main tool bar
+ * Returns main tool bar
  *************************/
 QToolBar* Ouroboros::GetMainToolBar()
 {
     return ui->MainToolBar;
 }
+
 
 /**************************************************
  * Changes the status on the bottom of the screen
@@ -194,6 +336,7 @@ void Ouroboros::ChangeStatus(QString Status, int Timeout)
 {
     ui->MainStatusBar->showMessage(Status,Timeout);
 }
+
 
 /****************** Action Triggers ********************************/
 void Ouroboros::on_Action_Synchronize_Anime_triggered()
@@ -227,3 +370,5 @@ void Ouroboros::on_Action_ViewSearch_triggered()
 {
     GUI_Manager.ShowSearchDialog();
 }
+
+

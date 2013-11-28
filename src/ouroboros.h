@@ -22,6 +22,7 @@
 #include <QMainWindow>
 #include <QTabWidget>
 #include <QTreeView>
+#include <QSystemTrayIcon>
 
 #include "threadmanager.h"
 #include "animedatabase.h"
@@ -56,8 +57,20 @@ public:
         EditUserEpisodes
     };
 
+    //tray
+    enum TrayActions
+    {
+        Tray_ShowOuroboros,
+        Tray_Sync,
+        Tray_Settings,
+        Tray_Exit
+    };
+
     //Fills the tabs with the view
     void SetViewLayouts();
+
+    //Creates tray icon
+    void SetupTrayIcon();
 
     //Get Functions
     QTabWidget* GetMainTabWidget();
@@ -68,15 +81,31 @@ public:
 private:
     Ui::Ouroboros *ui;
 
+    //System tray
+    QSystemTrayIcon *TrayIcon;
+    QMenu *TrayMenu;
+
 protected:
+
+    //application events
+    void closeEvent(QCloseEvent *Event);
+    void changeEvent(QEvent *Event);
+
 
 public slots:
     void ChangeStatus(QString Status, int Timeout = 0);
+    void RecievedMessageFromInstance(QStringList Messages);
 private slots:
     void on_Action_Synchronize_Anime_triggered();
     void on_Action_ChangeSettings_triggered();
     void on_Action_ViewHistory_triggered();
     void on_Action_ViewSearch_triggered();
+
+    //Tray
+    void TrayIconTriggered(QSystemTrayIcon::ActivationReason Reason);
+    void TrayMenuItemClicked(QAction *Action);
+    void ShowTrayMessage(QString Title, QString Message, int msecs = 10000);
+
 };
 
 #endif // OUROBOROS_H

@@ -78,6 +78,8 @@ public:
     bool LoadQueue();
     bool LoadHistory();
 
+    void DeleteDirectory(QString Path);
+
 private:
     bool WriteDataToFile(QString Filepath,QString Filename,QByteArray Data);
     QByteArray ReadFile(QString Filepath,QString Filename);

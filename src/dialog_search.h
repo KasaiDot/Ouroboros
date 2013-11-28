@@ -54,12 +54,12 @@ public:
     //Menu actions
     enum SearchMenuActions
     {
-        SEARCHMENUACTION_CURRENTLYWATCHING,
-        SEARCHMENUACTION_COMPLETED,
-        SEARCHMENUACTION_DROPPED,
-        SEARCHMENUACTION_PLANTOWATCH,
-        SEARCHMENUACTION_ONHOLD,
-        SEARCHMENUACTION_VIEWINFORMATION
+        SearchMenuAction_CurrentlyWatching,
+        SearchMenuAction_Completed,
+        SearchMenuAction_Dropped,
+        SearchMenuAction_PlanToWatch,
+        SearchMenuAction_OnHold,
+        SearchMenuAction_ViewInformation
     };
 
 private:

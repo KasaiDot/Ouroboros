@@ -34,6 +34,14 @@ public:
     //Holds string eqiv values of the settings for saving and loading
     struct SettingsNames
     {
+        //Application
+        struct ApplicationNames
+        {
+            QString GroupName;
+            QString CloseToTray;
+            QString MinimizeToTray;
+        }Application;
+
         //progressbar
         struct ProgressBarNames
         {
@@ -50,6 +58,14 @@ public:
 
 
     }SettingsName;
+
+
+    //Application settings
+    struct ApplicationSettings
+    {
+        bool CloseToTray;
+        bool MinimizeToTray;
+    }Application;
 
     //Since we can't apply a stylesheet to the progress delegate,
     //we get the colors the user sets
@@ -68,15 +84,13 @@ public:
     //Default settings
     struct DefaultSettings
     {
-        ProgressDelegateSettings DefaultProgressDelegate;
+        ApplicationSettings Application;
+        ProgressDelegateSettings ProgressDelegate;
     }Default;
 
 private:
     QString Filename;
 };
-
-
-
 
 extern OuroborosSettings Settings;
 

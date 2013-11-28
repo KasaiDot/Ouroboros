@@ -18,12 +18,15 @@
 
 #include "ouroboros.h"
 #include "globals.h"
+#include "singleapplication.h"
 
 #include <QApplication>
 #include <QDebug>
 #include <QProcess>
 #include <QtXml>
 #include <QMessageBox>
+
+#define UNIQUE_ID "Ouroboros_Hummingbird"
 
 /***********************************
  * Writes application version info
@@ -105,7 +108,14 @@ void CheckUpdaterFiles(QString UpdaterFilename)
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    SingleApplication App(argc, argv,UNIQUE_ID);
+    //check if there is another process running
+    if(App.AlreadyExists())
+    {
+        App.SendInstanceMessage(QString(APP_MESSAGE_SHOWAPP));
+        return 0;
+    }
+
     WriteAppInfo(APP_LOCAL_VERSION_FILENAME,QString::number(APP_MAJOR_VERSION),QString::number(APP_MINOR_VERSION));
     CheckUpdaterFiles(APP_UPDATER);
 
@@ -136,7 +146,8 @@ int main(int argc, char *argv[])
         Window.show();
         Window.raise();
         Window.activateWindow();
-        return a.exec();
+        App.connect(&App,SIGNAL(MessageAvailable(QStringList)),&Window,SLOT(RecievedMessageFromInstance(QStringList)));
+        return App.exec();
     }
 
     return 0;

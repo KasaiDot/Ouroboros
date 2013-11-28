@@ -22,11 +22,14 @@
 #define APP_DEBUG true
 
 #define APP_NAME "Ouroboros"
-#define APP_MINOR_VERSION 0.5
+#define APP_MINOR_VERSION 0.6
 #define APP_MAJOR_VERSION 0
 
 #define APP_LOCAL_VERSION_FILENAME "VersionInfo.xml"
 #define APP_UPDATER "Updater.exe"
+
+//********************************************** Messages ***************************************************
+#define APP_MESSAGE_SHOWAPP "ShowApp"
 
 //********************************************* All statuses ******************************************************
 #define STATUS_COMPLETED "completed"

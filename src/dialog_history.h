@@ -53,9 +53,9 @@ private:
     //menu click actions
     enum HistoryMenuAction
     {
-        HISTORYMENU_NONE,
-        HISTORYMENU_REMOVE,
-        HISTORYMENU_CLEAR
+        HistoryMenu_None,
+        HistoryMenu_Remove,
+        HistoryMenu_Clear
     };
 
 public slots:

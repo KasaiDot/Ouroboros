@@ -90,9 +90,9 @@ void Dialog_History::ShowCustomContextMenu(const QPoint &Pos)
     QMenu Menu;
 
     //Add the items
-    Menu.addAction("Remove item")->setData(HISTORYMENU_REMOVE);
+    Menu.addAction("Remove item")->setData(HistoryMenu_Remove);
     Menu.addSeparator();
-    Menu.addAction("Clear history")->setData(HISTORYMENU_CLEAR);
+    Menu.addAction("Clear history")->setData(HistoryMenu_Clear);
 
     /**************************** Show menu ****************************/
     QAction *Action = Menu.exec(QCursor::pos());
@@ -103,12 +103,12 @@ void Dialog_History::ShowCustomContextMenu(const QPoint &Pos)
 
     switch (ActionValue)
     {
-        case HISTORYMENU_REMOVE:
+        case HistoryMenu_Remove:
             History_Manager.RemoveHistoryItem(Index.row());
             delete ui->HistoryTreeWidget->takeTopLevelItem(Index.row());
         break;
 
-        case HISTORYMENU_CLEAR:
+        case HistoryMenu_Clear:
             History_Manager.ClearHistory();
             ui->HistoryTreeWidget->clear();
         break;

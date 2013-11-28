@@ -372,6 +372,15 @@ bool FileManager::LoadHistory()
     return true;
 }
 
+/********************************************
+ * Deletes a directory and all of its files
+ *******************************************/
+void FileManager::DeleteDirectory(QString Path)
+{
+    if(!QDir(Path).exists()) return;
+    QDir(Path).removeRecursively();
+}
+
 /********************************
  * Saves data to given filename
  ********************************/

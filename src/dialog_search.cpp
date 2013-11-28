@@ -190,16 +190,16 @@ void Dialog_Search::ShowCustomContextMenu(const QPoint &Pos)
     QMenu Menu;
 
     //Add the items
-    Menu.addAction("View Information")->setData(SEARCHMENUACTION_VIEWINFORMATION);
+    Menu.addAction("View Information")->setData(SearchMenuAction_ViewInformation);
     Menu.addSeparator();
 
     //add to list menu
     QMenu AddToListMenu("Add to list");
-    AddToListMenu.addAction("Currently watching")->setData(SEARCHMENUACTION_CURRENTLYWATCHING);
-    AddToListMenu.addAction("Completed")->setData(SEARCHMENUACTION_COMPLETED);
-    AddToListMenu.addAction("On hold")->setData(SEARCHMENUACTION_ONHOLD);
-    AddToListMenu.addAction("Plan to watch")->setData(SEARCHMENUACTION_PLANTOWATCH);
-    AddToListMenu.addAction("Dropped")->setData(SEARCHMENUACTION_DROPPED);
+    AddToListMenu.addAction("Currently watching")->setData(SearchMenuAction_CurrentlyWatching);
+    AddToListMenu.addAction("Completed")->setData(SearchMenuAction_Completed);
+    AddToListMenu.addAction("On hold")->setData(SearchMenuAction_OnHold);
+    AddToListMenu.addAction("Plan to watch")->setData(SearchMenuAction_PlanToWatch);
+    AddToListMenu.addAction("Dropped")->setData(SearchMenuAction_Dropped);
 
     //disable the menu if we have the anime
     if(Anime_Database.Contains(Slug))
@@ -215,7 +215,7 @@ void Dialog_Search::ShowCustomContextMenu(const QPoint &Pos)
 
     int ActionValue = Action->data().toInt();
 
-    if(ActionValue == SEARCHMENUACTION_VIEWINFORMATION)
+    if(ActionValue == SearchMenuAction_ViewInformation)
     {
         GUI_Manager.ShowAnimeInformationDialog(Entity);
     } else {
@@ -224,23 +224,23 @@ void Dialog_Search::ShowCustomContextMenu(const QPoint &Pos)
         QString Status;
         switch(ActionValue)
         {
-            case SEARCHMENUACTION_CURRENTLYWATCHING:
+            case SearchMenuAction_CurrentlyWatching:
                 Status = STATUS_CURRENTLY_WATCHING;
             break;
 
-            case SEARCHMENUACTION_COMPLETED:
+            case SearchMenuAction_Completed:
                 Status = STATUS_COMPLETED;
             break;
 
-            case SEARCHMENUACTION_ONHOLD:
+            case SearchMenuAction_OnHold:
                 Status = STATUS_ON_HOLD;
             break;
 
-            case SEARCHMENUACTION_PLANTOWATCH:
+            case SearchMenuAction_PlanToWatch:
                 Status = STATUS_PLAN_TO_WATCH;
             break;
 
-            case SEARCHMENUACTION_DROPPED:
+            case SearchMenuAction_Dropped:
                 Status = STATUS_DROPPED;
             break;
         }

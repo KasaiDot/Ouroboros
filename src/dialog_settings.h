@@ -63,8 +63,9 @@ private:
     User CurrentUserCopy;
 
     //Color options
-    void ChangeColor(QPushButton *ColorButton,QColor &ColorVar);
-    void SetColor(QPushButton *ColorButton, QColor &ColorVar);
+    void ChangeColor(QPushButton *ColorButton);
+    void SetButtonColor(QPushButton *ColorButton, QColor &ColorVar);
+    void SaveButtonColor(QPushButton *ColorButton,QColor &ColorVar);
 
 };
 

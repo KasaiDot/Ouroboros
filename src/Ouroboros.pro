@@ -16,6 +16,7 @@ CONFIG += openssl c++11
 win32{
     RC_FILE = Ouroboros.rc
     QMAKE_LFLAGS += -static -static-libgcc -static-libstdc++
+    LIBS += -lpsapi
 }
 
 
@@ -36,7 +37,8 @@ SOURCES += main.cpp\
     historymanager.cpp \
     dialog_history.cpp \
     dialog_search.cpp \
-    singleapplication.cpp
+    singleapplication.cpp \
+    mediamanager.cpp
 
 HEADERS  += ouroboros.h \
     threadmanager.h \
@@ -57,7 +59,8 @@ HEADERS  += ouroboros.h \
     historymanager.h \
     dialog_history.h \
     dialog_search.h \
-    singleapplication.h
+    singleapplication.h \
+    mediamanager.h
 
 FORMS    += ouroboros.ui \
     dialog_settings.ui \

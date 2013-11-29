@@ -28,6 +28,9 @@
 #define APP_LOCAL_VERSION_FILENAME "VersionInfo.xml"
 #define APP_UPDATER "Updater.exe"
 
+//*********************************************************************************************************
+#define RECOGNITION_TIMEDELAY 2000
+
 //********************************************** Messages ***************************************************
 #define APP_MESSAGE_SHOWAPP "ShowApp"
 

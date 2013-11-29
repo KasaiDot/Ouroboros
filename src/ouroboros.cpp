@@ -29,6 +29,7 @@
 #include "queuemanager.h"
 #include "guimanager.h"
 #include "historymanager.h"
+#include "mediamanager.h"
 
 Ouroboros::Ouroboros(QWidget *parent) :
     QMainWindow(parent),
@@ -42,6 +43,12 @@ Ouroboros::Ouroboros(QWidget *parent) :
     if(APP_DEBUG) Title.append(" Debug");
     this->setWindowTitle(Title);
     SetViewLayouts();
+
+    //Only detects on windows currently
+#ifdef WIN32
+    connect(&DetectionTimer,SIGNAL(timeout()),&Media_Manager,SLOT(DetectAnime()));
+    DetectionTimer.start(RECOGNITION_TIMEDELAY);
+#endif
 
     //setup tray icon
     SetupTrayIcon();
@@ -93,6 +100,8 @@ Ouroboros::~Ouroboros()
     File_Manager.SaveAnimeDatabase();
     File_Manager.SaveQueue();
     File_Manager.SaveHistory();
+
+    TrayIcon->hide();
 
     delete ui;
 }

@@ -22,6 +22,7 @@
 #include <QMainWindow>
 #include <QTabWidget>
 #include <QTreeView>
+#include <QTimer>
 #include <QSystemTrayIcon>
 
 #include "threadmanager.h"
@@ -84,6 +85,9 @@ private:
     //System tray
     QSystemTrayIcon *TrayIcon;
     QMenu *TrayMenu;
+
+    //detection
+    QTimer DetectionTimer;
 
 protected:
 

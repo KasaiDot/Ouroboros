@@ -20,6 +20,7 @@
 #define MEDIAMANAGER_H
 
 #define MEDIAMANAGER_MEDIANOTFOUND -1
+#define MEDIAMANAGER_UPDATEDELAY 1000
 
 #include <QObject>
 #include <QList>
@@ -31,6 +32,10 @@
 #include "windows.h"
 #include "psapi.h"
 #include "winuser.h"
+
+/*********************************************************************
+ * Credits to erengy(Creator of Taiga) for the media class
+ ********************************************************************/
 
 namespace Recognition
 {
@@ -82,6 +87,7 @@ public:
 
 private:
     bool TitleChanged;
+    int MediaTicker;
 
 signals:
 

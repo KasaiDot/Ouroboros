@@ -20,15 +20,21 @@
 #include "animeepisode.h"
 #include "animeentity.h"
 #include "animedatabase.h"
+#include "recognitionengine.h"
 
 using namespace Recognition;
 MediaManager Media_Manager;
+
+/*********************************************************************
+ * Credits to erengy(Creator of Taiga) for the media class
+ ********************************************************************/
 
 MediaManager::MediaManager(QObject *parent) :
     QObject(parent),
     Index(-1),
     OldIndex(-1),
-    TitleChanged(false)
+    TitleChanged(false),
+    MediaTicker(-1)
 {
 }
 
@@ -113,7 +119,6 @@ QString MediaManager::GetWindowTitleFromHandle(HWND Handle)
  ******************************************************************************/
 int MediaManager::DetectMediaPlayer()
 {
-
     Index = -1;
     bool Recognized = false;
 
@@ -171,9 +176,86 @@ void MediaManager::DetectAnime()
         //Check if we are not watching an episode
         if(CurrentEpisode.Slug == ANIMEEPISODE_UNKNOWN_SLUG)
         {
+            if(Recognition_Engine.ExamineTitle(CurrentTitle,CurrentEpisode))
+            {
+                QString AnimeSlug = Anime_Database.GetAnimeSlug(CurrentEpisode.CleanTitle,false);
+                if(AnimeSlug != ANIMEDATABASE_UKNOWN_SLUG)
+                {
+                    Entity = Anime_Database.GetAnime(AnimeSlug);
+                    if(Entity)
+                    {
+                        CurrentEpisode.Set(Entity->GetAnimeSlug());
+                        return;
+                    }
+                }
+                //Not recognised
+            } else {
+                CurrentEpisode.Set(ANIMEEPISODE_UNKNOWN_SLUG);
+                if(!CurrentEpisode.Title.isEmpty())
+                {
+                    SetTitleChanged(false);
+                    //Unknown title
+                }
+            }
+            // Already watching or not recognized before
+        } else {
+            if (MediaTicker > -1 && MediaTicker <= MEDIAMANAGER_UPDATEDELAY)
+            {
+                if (MediaTicker == MEDIAMANAGER_UPDATEDELAY)
+                {
+                    // Disable ticker
+                    MediaTicker = -1;
+                    // Update anime
+                    if (Entity); //TODO: Add an update function based on currentepisode
+                    //anime_item->UpdateList(CurrentEpisode);
+                    return;
+                }
 
+                if (MediaList[MediaPlayerIndex].WindowHandle == GetForegroundWindow())
+                    MediaTicker++;
+            }
+            // Caption changed?
+            if (TitleChanged)
+            {
+                SetTitleChanged(false);
+                bool Processed = CurrentEpisode.Processed;
+                CurrentEpisode.Set(ANIMEEPISODE_UNKNOWN_SLUG);
+                if (Entity)
+                {
+                    //TODO: ADD START AND END WATCHING FUNCTIONS
+                    //anime_item->EndWatching(CurrentEpisode);
+                    CurrentEpisode.Slug = Entity->GetAnimeSlug();
+                    CurrentEpisode.Processed = Processed;
+                    //anime_item->UpdateList(CurrentEpisode);
+                    CurrentEpisode.Slug = ANIMEEPISODE_UNKNOWN_SLUG;
+                }
+                MediaTicker = 0;
+            }
+        }
+     // Media player is NOT running
+    } else {
+        // Was running, but not watching
+        if (!Entity)
+        {
+            if (OldIndex > 0)
+            {
+                CurrentEpisode.Set(ANIMEEPISODE_UNKNOWN_SLUG);
+                OldIndex = 0;
+            }
+
+            // Was running and watching
+        } else {
+            bool Processed = CurrentEpisode.Processed;
+            CurrentEpisode.Set(ANIMEEPISODE_UNKNOWN_SLUG);
+            //anime_item->EndWatching(CurrentEpisode);
+            CurrentEpisode.Slug = Entity->GetAnimeSlug();
+            CurrentEpisode.Processed = Processed;
+            //anime_item->UpdateList(CurrentEpisode);
+            CurrentEpisode.Slug = ANIMEEPISODE_UNKNOWN_SLUG;
+            MediaTicker = 0;
         }
     }
+
 }
 
 //*************************************************************************************************************

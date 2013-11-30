@@ -140,15 +140,21 @@ AnimeEntity* AnimeDatabase::GetAnime(QString Slug) const
  * This may take time depending on the size of the list.
  * If no slug is found then we return 'unknown slug'
  *******************************************************/
-QString AnimeDatabase::GetAnimeSlug(QString Title)
+QString AnimeDatabase::GetAnimeSlug(QString Title, bool Strict)
 {
     QString Slug = QString(ANIMEDATABASE_UKNOWN_SLUG);
 
     for(auto it = Database.begin(); it != Database.end(); ++it)
     {
         AnimeEntity *Anime = it.value();
-        if((Anime->GetAnimeTitle().toLower() == Title) || (Anime->GetAnimeAlternateTitle().toLower() == Title))
-            Slug = Anime->GetAnimeSlug();
+        if(Strict)
+        {
+            if((Anime->GetAnimeTitle() == Title) || (Anime->GetAnimeAlternateTitle() == Title))
+                Slug = Anime->GetAnimeSlug();
+        } else {
+            if((Anime->GetAnimeTitle().contains(Title,Qt::CaseInsensitive)) || (Anime->GetAnimeAlternateTitle().contains(Title,Qt::CaseInsensitive)))
+                Slug = Anime->GetAnimeSlug();
+        }
     }
 
     return Slug;

@@ -46,13 +46,12 @@ RecognitionEngine::RecognitionEngine()
  ******************************************************/
 bool RecognitionEngine::ExamineTitle(QString Title, Anime::AnimeEpisode &Episode, bool ExamineInside, bool ExamineOutside, bool ExamineNumber, bool CheckExtras)
 {
-
     //Clear old data
     Episode.Clear();
     if(Title.isEmpty()) return false;
 
     //Remove zero width space characters
-    Title.replace("\u200B","");
+    Title.replace(QString::fromUtf8("\u200B"),"");
 
     // Retrieve file name from full path and remove the extension
     if (Title.length() > 2 && Title.at(1) == ':' && Title.at(2) == '\\')
@@ -117,14 +116,11 @@ bool RecognitionEngine::ExamineTitle(QString Title, Anime::AnimeEpisode &Episode
     for (int i = 0; i < Tokens.size(); i++)
     {
         // Trim Separator character from each side of the token
-        if(Tokens[i].Content.at(0) == Tokens[i].Separator || '\0')
-            Tokens[i].Content.remove(0,1);
-        if(Tokens[i].Content.at(Tokens[i].Content.length() - 1) == Tokens[i].Separator || '\0')
-            Tokens[i].Content.remove(Tokens[i].Content.length() - 1,1);
+        QString TrimChar = QString(Tokens[i].Separator) + QString::fromLatin1('\0');
+        Trim(Tokens[i].Content, TrimChar);
 
         // Tokens that are too short are now garbage, so we take them out
-        QRegExp Number("\\d*");
-        if (Tokens[i].Content.length() < 2 && !Tokens[i].Content.contains(Number))
+        if (Tokens[i].Content.length() < 2 && !IsNumeric(Tokens[i].Content))
         {
             Tokens.erase(Tokens.begin() + i);
             i--;
@@ -134,7 +130,6 @@ bool RecognitionEngine::ExamineTitle(QString Title, Anime::AnimeEpisode &Episode
     //************************************************************************
     // Now we apply some logic to decide on the title and the group name
     //************************************************************************
-
     int GroupIndex = -1;
     int TitleIndex = -1;
     QVector<int> GroupVector, TitleVector;
@@ -195,11 +190,8 @@ bool RecognitionEngine::ExamineTitle(QString Title, Anime::AnimeEpisode &Episode
         // Replace the separator with a space character
         Tokens[TitleIndex].Content.replace(Tokens[TitleIndex].Separator, ' ');
         // Do some clean-up
-        if(Tokens[TitleIndex].Content.at(0) == " " && Tokens[TitleIndex].Content.at(1) == "-")
-            Tokens[TitleIndex].Content.remove(0,2);
-
-        if(Tokens[TitleIndex].Content.at(Tokens[TitleIndex].Content.length() - 2) == " " && Tokens[TitleIndex].Content.at(Tokens[TitleIndex].Content.length() - 1) == "-")
-            Tokens[TitleIndex].Content.remove(Tokens[TitleIndex].Content.length() - 2,2);
+        QString TrimChar = " -";
+        Trim(Tokens[TitleIndex].Content, TrimChar);
         // Set the title
         Title = Tokens[TitleIndex].Content;
         Tokens[TitleIndex].Content.clear();
@@ -213,13 +205,10 @@ bool RecognitionEngine::ExamineTitle(QString Title, Anime::AnimeEpisode &Episode
         if (!Tokens[GroupIndex].isEnclosed())
         {
             // Replace the separator with a space character
-            Tokens[GroupIndex].Content.replace(Tokens[GroupIndex].separator, ' ');
+            Tokens[GroupIndex].Content.replace(Tokens[GroupIndex].Separator, ' ');
             // Do some clean-up
-            if(Tokens[GroupIndex].Content.at(0) == " " && Tokens[GroupIndex].Content.at(1) == "-")
-                Tokens[GroupIndex].Content.remove(0,2);
-
-            if(Tokens[GroupIndex].Content.at(Tokens[GroupIndex].Content.length() - 2) == " " && Tokens[GroupIndex].Content.at(Tokens[GroupIndex].Content.length() - 1) == "-")
-                Tokens[GroupIndex].Content.remove(Tokens[GroupIndex].Content.length() - 2,2);
+            QString TrimChar = " -";
+            Trim(Tokens[GroupIndex].Content, TrimChar);
         }
         // Set the group name
         Episode.Group = Tokens[GroupIndex].Content;
@@ -227,6 +216,164 @@ bool RecognitionEngine::ExamineTitle(QString Title, Anime::AnimeEpisode &Episode
         // episode number later on
     }
 
+
+    //************************************************************
+    // Get episode number and version, if available
+    //*************************************************************
+
+    if (ExamineNumber)
+    {
+        // Check remaining Tokens first
+        for (int i = 0; i < Tokens.size(); i++)
+        {
+            if (IsEpisodeFormat(Tokens[i].Content, Episode, Tokens[i].Separator))
+            {
+                Tokens[i].Virgin = false;
+                break;
+            }
+        }
+
+        // Check title
+        if (Episode.Number.isEmpty())
+        {
+            // Split into words
+            QVector<QString> Words;
+            Words.reserve(4);
+            Tokenize(Title, QString(" "), Words);
+            if (Words.isEmpty()) return false;
+            Title.clear();
+            int NumberIndex = -1;
+
+            // Check for Episode number format, starting with the second word
+            for (int i = 1; i < Words.size(); i++)
+            {
+                if (IsEpisodeFormat(Words[i], Episode)) {
+                    NumberIndex = i;
+                    break;
+                }
+            }
+
+            // Set the first valid numeric token as Episode number
+            if (Episode.Number.isEmpty()) {
+                for (int i = 0; i < Tokens.size(); i++)
+                {
+                    if (IsNumeric(Tokens[i].Content))
+                    {
+                        Episode.Number = Tokens[i].Content;
+                        if (ValidateEpisodeNumber(Episode))
+                        {
+                            Tokens[i].Virgin = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Set the lastmost number that follows a '-'
+            if (Episode.Number.isEmpty() && Words.size() > 2)
+            {
+                for (int i = Words.size() - 2; i > 0; i--)
+                {
+                    if (Words[i] == "-" && IsNumeric(Words[i + 1]))
+                    {
+                        Episode.Number = Words[i + 1];
+                        if (ValidateEpisodeNumber(Episode))
+                        {
+                            NumberIndex = i + 1;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Set the lastmost number as a last resort
+            if (Episode.Number.isEmpty())
+            {
+                for (int i = Words.size() - 1; i > 0; i--)
+                {
+                    if (IsNumeric(Words[i]))
+                    {
+                        Episode.Number = Words[i];
+                        if (ValidateEpisodeNumber(Episode))
+                        {
+                            // Discard and give up if movie or season number (Episode numbers cannot precede them)
+                            if (i > 1 && (Words[i - 1] == "Season" || Words[i - 1] == "Movie") && !IsCountingWord(Words[i - 2]))
+                            {
+                                Episode.Number.clear();
+                                NumberIndex = -1;
+                                break;
+                            }
+                            NumberIndex = i;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Build title and name
+            for (int i = 0; i < Words.size(); i++)
+            {
+                if (i < NumberIndex)
+                {
+                    // Ignore Episode keywords
+                    if (i == NumberIndex - 1 && EpisodeKeywords.contains(Words[i])) continue;
+                    Title.append(Words[i]);
+                } else if (i > NumberIndex) {
+                    Episode.Name.append(Words[i]);
+                }
+            }
+
+            // Clean up
+            TrimRight(Title, QString(" -"));
+            TrimLeft(Episode.Name, QString(" -"));
+            if (Episode.Name.startsWith("'") && Episode.Name.endsWith("'"))
+                Trim(Episode.Name, "'");
+            TrimLeft(Episode.Name, QString("\u300C")); // Japanese left quotation mark
+            TrimRight(Episode.Name, QString("\u300D")); // Japanese right quotation mark
+        }
+    }
+    //*********************************************
+    // Check if the group token is still a virgin
+    //********************************************
+    if (GroupIndex > -1 && !Tokens[GroupIndex].Virgin)
+    {
+        Episode.Group.clear();
+        for ( int i = 0; i < Tokens.size(); i++)
+        {
+            // Set the first available virgin token as group name
+            if (!Tokens[i].Content.isEmpty() && Tokens[i].Virgin)
+            {
+                Episode.Group = Tokens[i].Content;
+                break;
+            }
+        }
+    }
+    // Set Episode name as group name if necessary
+    if (Episode.Group.isEmpty() && Episode.Name.length() > 2)
+    {
+        if (Episode.Name.startsWith("(") && Episode.Name.endsWith(")"))
+        {
+            Episode.Group = Episode.Name.mid(1, Episode.Name.length() - 2);
+            Episode.Name.clear();
+        }
+    }
+
+    // Examine remaining Tokens once more
+    for (int i = 0; i < Tokens.size(); i++)
+    {
+        if (!Tokens[i].Content.isEmpty()) {
+            ExamineToken(Tokens[i], Episode, true);
+        }
+    }
+
+    //*************************************************************
+    // Set the final title, hopefully name of the anime
+     //************************************************************
+    Episode.Title = Title;
+    Episode.CleanTitle = Title;
+    CleanTitle(Episode.CleanTitle);
+
+    return !Title.isEmpty();
 }
 
 /*********************************
@@ -312,6 +459,218 @@ void RecognitionEngine::ExamineToken(Token &CurToken, Anime::AnimeEpisode &Episo
     }
 }
 
+size_t RecognitionEngine::Tokenize(QString &String, QString Delimiters, QVector<QString> &Tokens)
+{
+    Tokens.clear();
+    size_t IndexBegin = String.toStdWString().find_first_not_of(Delimiters.toStdWString());
+    while (IndexBegin != std::wstring::npos)
+    {
+        size_t IndexEnd = String.toStdWString().find_first_of(Delimiters.toStdWString(), IndexBegin + 1);
+        if (IndexEnd == std::wstring::npos)
+        {
+            Tokens.push_back(String.mid(IndexBegin));
+            break;
+        } else {
+            Tokens.push_back(String.mid(IndexBegin, IndexEnd - IndexBegin));
+            IndexBegin = String.toStdWString().find_first_not_of(Delimiters.toStdWString(), IndexEnd + 1);
+        }
+    }
+    return Tokens.size();
+}
+
+/***************************************************
+ * Rids title of uneccesary words and punctuation
+ ***************************************************/
+void RecognitionEngine::CleanTitle(QString &Title)
+{
+    if (Title.isEmpty()) return;
+    EraseUnnecessary(Title);
+    TransliterateSpecial(Title);
+    ErasePunctuation(Title, true);
+}
+
+void RecognitionEngine::EraseUnnecessary(QString &String)
+{
+  EraseLeft(String, "the ", true);
+  String.replace(" the ", " ");
+  String.replace("episode "," ");
+  String.replace(" ep.", " ");
+  String.replace(" specials", " special");
+}
+void RecognitionEngine::TransliterateSpecial(QString &String)
+{
+  // Character equivalencies
+  String.replace("\u00E9", "e"); // small e acute accent
+  String.replace("\uFF0F", "/"); // unicode slash
+  String.replace("\uFF5E", "~"); // unicode tilde
+  String.replace("\u223C", "~"); // unicode tilde 2
+  String.replace("\u301C", "~"); // unicode tilde 3
+  String.replace("\uFF1F", "?"); // unicode question mark
+  String.replace("\uFF01", "!"); // unicode exclamation point
+  String.replace("\u00D7", "x"); // multiplication symbol
+  String.replace("\u2715", "x"); // multiplication symbol 2
+
+  // A few common always-equivalent romanizations
+  String.replace("\u014C", "Ou"); // O macron
+  String.replace("\u014D", "ou"); // o macron
+  String.replace("\u016B", "uu"); // u macron
+  String.replace(" wa ", " ha "); // hepburn to wapuro
+  String.replace(" e ", " he "); // hepburn to wapuro
+  String.replace(" o ", " wo "); // hepburn to wapuro
+
+  // Abbreviations
+  String.replace(" & ", " and ");
+}
+
+void RecognitionEngine::ErasePunctuation(QString &String, bool KeepTrailing)
+{
+  std::wstring StdString = String.toStdWString();
+  auto RLast = StdString.rbegin();
+  if (KeepTrailing)
+  {
+    RLast = std::find_if(StdString.rbegin(), StdString.rend(), [](wchar_t c) -> bool {
+      return !(c == L'!' || // "Hayate no Gotoku!", "K-ON!"...
+               c == L'+' || // "Needless+"
+               c == L'\''); // "Gintama'"
+    });
+  }
+
+  auto It = std::remove_if(StdString.begin(), RLast.base(),[](int c) -> bool {
+      // Control codes, white-space and punctuation characters
+      if (c <= 255 && !isalnum(c)) return true;
+      // Unicode stars, hearts, notes, etc. (0x2000-0x2767)
+      if (c > 8192 && c < 10087) return true;
+      // Valid character
+      return false;
+    });
+
+  if (KeepTrailing) std::copy(RLast.base(), StdString.end(), It);
+  StdString.resize(StdString.size() - (RLast.base() - It));
+
+  String = QString::fromStdWString(StdString);
+}
+
+bool IsCharsEqual(QChar c1,QChar c2)
+{
+    return c1.toLower() == c2.toLower();
+}
+
+void RecognitionEngine::EraseLeft(QString &String1, const QString String2, bool CaseInsensitive)
+{
+    std::wstring Str1 = String1.toStdWString();
+    std::wstring Str2 = String2.toStdWString();
+
+    if (Str1.length() < Str2.length()) return;
+    if (CaseInsensitive) {
+        if (!std::equal(Str2.begin(), Str2.end(), Str1.begin(), &IsCharsEqual)) return;
+    } else {
+        if (!std::equal(Str2.begin(), Str2.end(), Str1.begin())) return;
+    }
+    Str1.erase(Str1.begin(), Str1.begin() + Str2.length());
+
+    String1 = QString::fromStdWString(Str1);
+}
+
+void RecognitionEngine::EraseRight(QString &String1, const QString String2, bool CaseInsensitive)
+{
+  if (String1.length() < String2.length()) return;
+  if (CaseInsensitive) {
+    if (!std::equal(String2.begin(), String2.end(), String1.end() - String2.length(), &IsCharsEqual)) return;
+  } else {
+    if (!std::equal(String2.begin(), String2.end(), String1.end() - String2.length())) return;
+  }
+  String1.resize(String1.length() - String2.length());
+}
+
+/**************************************************
+ * Checks whether the string is in episode format
+ *************************************************/
+bool RecognitionEngine::IsEpisodeFormat(QString &String, Anime::AnimeEpisode &Episode, char Separator)
+{
+    int NumStart, i, j;
+
+    // Find first number
+    for (NumStart = 0; NumStart < String.length() && IsNumeric(String.at(NumStart)); NumStart++);
+    if (NumStart == String.length()) return false;
+
+    // Check for Episode prefix
+    if (NumStart > 0)
+        if (!EpisodePrefixes.contains(String.mid(0, NumStart))) return false;
+
+    for (i = NumStart + 1; i < String.length(); i++)
+    {
+        if (!IsNumeric(String.at(i)))
+        {
+            // *#-#*
+            if (String.at(i) == '-' || String.at(i) == '&')
+            {
+                if (i == String.length() - 1 || !IsNumeric(String.at(i + 1))) return false;
+                for (j = i + 1; j < String.length() && IsNumeric(String.at(j)); j++);
+                Episode.Number = String.mid(NumStart, j - NumStart);
+                // *#-#*v#
+                if (j < String.length() - 1 && (String.at(j) == 'v' || String.at(j) =='V'))
+                {
+                    NumStart = i + 1;
+                    continue;
+                } else {
+                    return true;
+                }
+
+                // v#
+            } else if (String.at(i) == 'v' || String.at(i) == 'V') {
+                if (Episode.Number.isEmpty()) {
+                    if (i == String.length() - 1 || !IsNumeric(String.at(i + 1))) return false;
+                    Episode.Number = String.mid(NumStart, i - NumStart);
+                }
+                Episode.Version = String.mid(i + 1);
+                return true;
+
+                // *# of #*
+            } else if (String.at(i) == Separator) {
+                if (String.length() < i + 5) return false;
+                if (String.at(i + 1) == 'o' &&
+                        String.at(i + 2) == 'f' &&
+                        String.at(i + 3) == Separator) {
+                    Episode.Number = String.mid(NumStart, i - NumStart);
+                    return true;
+                }
+
+                // *#x#*
+            } else if (String.at(i) == 'x') {
+                if (i == String.length() - 1 || !IsNumeric(String.at(i + 1))) return false;
+                for (j = i + 1; j < String.length() && IsNumeric(String.at(j)); j++);
+                Episode.Number = String.mid(i + 1, j - i - 1);
+                if (Episode.Number.toInt() < 100)
+                {
+                    return true;
+                } else {
+                    Episode.Number.clear();
+                    return false;
+                }
+
+                // Japanese counter
+            } else if (String.at(i) == QString::fromUtf8("\u8A71").at(0)) {
+                Episode.Number = String.mid(NumStart, i - 1);
+                return true;
+            } else {
+                Episode.Number.clear();
+                return false;
+            }
+        }
+    }
+
+    // [prefix]#*
+    if (NumStart > 0 && Episode.Number.isEmpty()) {
+        Episode.Number = String.mid(NumStart, String.length() - NumStart);
+        if (!ValidateEpisodeNumber(Episode)) return false;
+        return true;
+    }
+
+    // *#
+    return false;
+}
+
+
 /***********************************************************************
  * Gets the most common non alpha-numeric character  from the string
  **********************************************************************/
@@ -370,3 +729,8 @@ Token::Token() :
 {
 
 }
+
+
+
+
+

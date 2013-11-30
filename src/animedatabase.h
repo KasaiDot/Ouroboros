@@ -54,7 +54,7 @@ public:
     AnimeEntity* TakeAnime(QString Slug) { return Database.take(Slug); }
 
     //Get the slug of an anime based on the title/alternate title
-    QString GetAnimeSlug(QString Title);
+    QString GetAnimeSlug(QString Title, bool Strict = false);
 
     //Parses JSON data recieved from the api and creates a list
     void ParseJson(QByteArray Data);

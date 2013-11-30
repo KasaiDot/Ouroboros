@@ -28,6 +28,7 @@
 #define RECOGNITION_KEYWORD_EPISODE_PREFIX    "EP., EP, E, VOL., VOL, EPS."
 
 #include <QString>
+#include <QChar>
 #include <QVector>
 
 #include "animedatabase.h"
@@ -43,12 +44,12 @@ namespace Recognition
 class Token
 {
 public:
-  Token();
-  char Encloser;
-  char Separator;
-  QString Content;
-  bool Virgin;
-  inline bool isEnclosed() { return (Encloser == '[' || Encloser == '(' || Encloser == '{'); }
+    Token();
+    char Encloser;
+    char Separator;
+    QString Content;
+    bool Virgin;
+    inline bool isEnclosed() { return (Encloser == '[' || Encloser == '(' || Encloser == '{'); }
 };
 
 class RecognitionEngine
@@ -65,6 +66,14 @@ public:
                       bool CheckExtras = true);
     size_t TokenizeTitle(const QString &Title, const QString &Delimiters, QVector<Token> &Tokens);
     void ExamineToken(Token &CurToken, Anime::AnimeEpisode& Episode, bool CompareExtras);
+    size_t Tokenize(QString &String, QString Delimiters, QVector<QString> &Tokens);
+
+    void CleanTitle(QString &Title);
+    void EraseUnnecessary(QString &String);
+    void TransliterateSpecial(QString &String);
+    void ErasePunctuation(QString &String, bool KeepTrailing);
+    void EraseLeft(QString &String1, const QString String2, bool CaseInsensitive);
+    void EraseRight(QString &String1, const QString String2, bool CaseInsensitive);
 
     //********************************************************* Helper functions ***********************************************************
     //Character functions
@@ -139,6 +148,74 @@ public:
 
         CurToken.Virgin = false;
     }
+
+    inline bool IsNumeric(QChar c)  { return c >= '0' && c <= '9'; }
+    inline bool IsNumeric(QString String)
+    {
+        if (String.isEmpty()) return false;
+        for (int i = 0; i < String.length(); i++)
+            if (!IsNumeric(String.at(i))) return false;
+        return true;
+    }
+
+    inline bool IsCountingWord(QString String)
+    {
+        if (String.length() > 2) {
+            if (String.endsWith("th") || String.endsWith("nd") || String.endsWith("rd") || String.endsWith("st") ||
+                    String.endsWith("TH") || String.endsWith("ND") || String.endsWith("RD") || String.endsWith("ST"))
+            {
+                if (IsNumeric(String.mid(0, String.length() - 2)) ||
+                        String == "FIRST" ||
+                        String == "SECOND" ||
+                        String == "THIRD" ||
+                        String == "FOURTH" ||
+                        String == "FIFTH")
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    bool IsEpisodeFormat(QString &str, Anime::AnimeEpisode &episode,char separator = ' ');
+
+    inline void Trim(QString &String, QString TrimChars, bool TrimLeft = true, bool TrimRight = true)
+    {
+        if (String.isEmpty()) return;
+        const size_t IndexBegin = TrimLeft ? String.toStdWString().find_first_not_of(TrimChars.toStdWString()) : 0;
+        const size_t IndexEnd = TrimRight ? String.toStdWString().find_last_not_of(TrimChars.toStdWString()) : String.length() - 1;
+        if (IndexBegin == std::wstring::npos || IndexEnd == std::wstring::npos) {
+            String.clear();
+            return;
+        }
+        if (TrimRight) String.remove(IndexEnd + 1, String.length() - IndexEnd + 1);
+        if (TrimLeft) String.remove(0, IndexBegin);
+    }
+
+    inline void TrimLeft(QString &String, QString TrimChars)
+    {
+        Trim(String, TrimChars, true, false);
+    }
+
+    inline void TrimRight(QString &String, QString TrimChars)
+    {
+        Trim(String, TrimChars, false, true);
+    }
+
+    inline bool ValidateEpisodeNumber(Anime::AnimeEpisode &Episode) {
+        int Number = Episode.Number.toInt();
+        if (Number <= 0 || Number > 1000) {
+            if (Number > 1950 && Number < 2050) {
+                Episode.Year = Episode.Number;
+            }
+            Episode.Number.clear();
+            return false;
+        }
+        return true;
+    }
+
+    //*****************************************************************************
 
 private:
     QString CommonCharTable;

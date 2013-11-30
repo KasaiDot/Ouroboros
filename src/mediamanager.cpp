@@ -17,6 +17,9 @@
 */
 
 #include "mediamanager.h"
+#include "animeepisode.h"
+#include "animeentity.h"
+#include "animedatabase.h"
 
 using namespace Recognition;
 MediaManager Media_Manager;
@@ -32,10 +35,24 @@ MediaManager::MediaManager(QObject *parent) :
 /********************************************
  * Loads in all media information from file
  ********************************************/
-void MediaManager::Load(HWND Handle)
+void MediaManager::Load()
 {
-    GetProcessNameFromHandle(Handle);
-    GetWindowTitleFromHandle(Handle);
+
+}
+
+/**************************************************************
+ * Cleans up title by removing keywords provided in the item
+ *************************************************************/
+void MediaManager::RemoveKeywords(QString &Title, int MediaIndex)
+{
+    const int KeywordsSize = MediaList.at(MediaIndex).Keywords.size();
+    if(Title.isEmpty() || KeywordsSize <= 0) return;
+
+    //iterate through keywords and replace them with ""
+    for(int i = 0; i < KeywordsSize; ++i)
+    {
+        Title.replace(MediaList.at(MediaIndex).Keywords.at(i),"");
+    }
 }
 
 /**********************************************
@@ -85,17 +102,18 @@ QString MediaManager::GetWindowTitleFromHandle(HWND Handle)
     }
     return QString("");
 }
+//***************************************************************************************************************************
+
+/***************************************************************
+ * Credit to erengy (creator of taiga) for parts of this code
+ ***************************************************************/
 
 /******************************************************************************
  * Loops through all handles and checks if one of them is in the media list
- * If it is, then we pass it to the recognition class
  ******************************************************************************/
-int MediaManager::DetectAnime()
+int MediaManager::DetectMediaPlayer()
 {
-    qDebug() << "Detecting anime";
-    /***************************************************************
-     * Credit to erengy (creator of taiga) for parts of this code
-     ***************************************************************/
+
     Index = -1;
     bool Recognized = false;
 
@@ -103,25 +121,30 @@ int MediaManager::DetectAnime()
     HWND Handle = GetWindow(GetTopWindow(nullptr), GW_HWNDFIRST);
     while (Handle != nullptr)
     {
-        QLinkedList<Media>::iterator Item;
         //Iterate thorugh all our media players
-        for(Item = MediaList.begin(); Item != MediaList.end(); ++Item)
+        const int ListSize = MediaList.size();
+        for(int i = 0; i < ListSize; ++i)
         {
-            if(!Item->Enabled) continue;
-            if(!IsWindowVisible(Handle)) continue;
-            //Compare the process names
-            for(QStringList::iterator File = Item->Files.begin(); File != Item->Files.end(); ++File)
+            Media &Item = MediaList[i];
+            if(!Item.Enabled) continue;
+            if(!IsWindowVisible(Handle)) continue; //We only want the gui processes
+            //Compare the file names
+            const int FileListSize = Item.Files.size();
+            for(int j = 0; j < FileListSize; ++j)
             {
-                if(File->isEmpty()) continue;
-                if((*File == GetProcessNameFromHandle(Handle)) && !GetWindowTitleFromHandle(Handle).isEmpty())
+                QString File = Item.Files.at(j);
+                if(File.isEmpty()) continue;
+                if((File == GetProcessNameFromHandle(Handle)) && !GetWindowTitleFromHandle(Handle).isEmpty())
                 {
                     // Stick with the previously recognized window, if there is one
-                    if(!Recognized || Item->WindowHandle == Handle)
+                    if(!Recognized || Item.WindowHandle == Handle)
                     {
-                        //Index = OldIndex = Item - MediaList.begin();
+                        Index = OldIndex = i;
                         NewTitle = GetWindowTitleFromHandle(Handle);
+                        RemoveKeywords(NewTitle,Index);
+                        if(NewTitle != CurrentTitle) TitleChanged = true;
                         CurrentTitle = NewTitle;
-                        Item->WindowHandle = Handle;
+                        Item.WindowHandle = Handle;
                         return Index;
                     }
                 }
@@ -131,7 +154,26 @@ int MediaManager::DetectAnime()
         //check next handle
         Handle = GetWindow(Handle,GW_HWNDNEXT);
     }
-    return -1; //No anime detected
+    return MEDIAMANAGER_MEDIANOTFOUND; //No anime detected
+}
+
+/************************************************************
+ * Main loop called by the detection timer to detect anime
+ ***********************************************************/
+void MediaManager::DetectAnime()
+{
+    Anime::AnimeEntity *Entity = Anime_Database.GetAnime(CurrentEpisode.Slug);
+    int MediaPlayerIndex = DetectMediaPlayer();
+
+    //Media player is running
+    if(MediaPlayerIndex > MEDIAMANAGER_MEDIANOTFOUND)
+    {
+        //Check if we are not watching an episode
+        if(CurrentEpisode.Slug == ANIMEEPISODE_UNKNOWN_SLUG)
+        {
+
+        }
+    }
 }
 
 //*************************************************************************************************************

@@ -19,8 +19,10 @@
 #ifndef MEDIAMANAGER_H
 #define MEDIAMANAGER_H
 
+#define MEDIAMANAGER_MEDIANOTFOUND -1
+
 #include <QObject>
-#include <QLinkedList>
+#include <QList>
 #include <QtGlobal>
 #include <QDebug>
 #include <QStringList>
@@ -42,7 +44,7 @@ public:
     int Mode;
     QStringList Files;
     QStringList Folders;
-    QStringList RemoveKeywords;
+    QStringList Keywords;
     HWND WindowHandle;
 };
 
@@ -52,8 +54,10 @@ class MediaManager : public QObject
 public:
     explicit MediaManager(QObject *parent = 0);
 
-    void Load(HWND Handle);
+    void Load();
     void Save();
+
+    void RemoveKeywords(QString &Title, int MediaIndex);
 
     int Index;
     int OldIndex;
@@ -65,13 +69,16 @@ public:
     QString GetProcessNameFromHandle(HWND Handle);
     QString GetWindowTitleFromHandle(HWND Handle);
 
+    bool didTitleChange() const { return TitleChanged; }
+    void SetTitleChanged(bool Changed) { TitleChanged = Changed;}
+
     //Different modes of recognition, default is WindowTitle
     enum MediaModes
     {
         MediaMode_WindowTitle
     };
 
-    QLinkedList<Media> MediaList;
+    QList<Media> MediaList;
 
 private:
     bool TitleChanged;
@@ -79,7 +86,8 @@ private:
 signals:
 
 public slots:
-    int DetectAnime();
+    int DetectMediaPlayer();
+    void DetectAnime();
 
 };
 

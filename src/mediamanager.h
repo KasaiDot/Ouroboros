@@ -20,7 +20,10 @@
 #define MEDIAMANAGER_H
 
 #define MEDIAMANAGER_MEDIANOTFOUND -1
-#define MEDIAMANAGER_UPDATEDELAY 1000
+
+//TODO: add settings
+#define MEDIAMANAGER_UPDATEDELAY 120
+#define MEDIAMANAGER_WAITFORMPCLOSE true
 
 #include <QObject>
 #include <QList>
@@ -59,7 +62,7 @@ class MediaManager : public QObject
 public:
     explicit MediaManager(QObject *parent = 0);
 
-    void Load();
+    bool Load(QByteArray &Data);
     void Save();
 
     void RemoveKeywords(QString &Title, int MediaIndex);
@@ -74,7 +77,7 @@ public:
     QString GetProcessNameFromHandle(HWND Handle);
     QString GetWindowTitleFromHandle(HWND Handle);
 
-    bool didTitleChange() const { return TitleChanged; }
+    bool DidTitleChange() const { return TitleChanged; }
     void SetTitleChanged(bool Changed) { TitleChanged = Changed;}
 
     //Different modes of recognition, default is WindowTitle
@@ -84,10 +87,11 @@ public:
     };
 
     QList<Media> MediaList;
+    bool MediaListLoaded;
+    int MediaTicker;
 
 private:
     bool TitleChanged;
-    int MediaTicker;
 
 signals:
 

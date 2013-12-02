@@ -56,6 +56,7 @@ class RecognitionEngine
 {
 public:
     RecognitionEngine();
+    QStringList TrimStrings(QStringList StringList);
 
 
     bool ExamineTitle(QString Title,

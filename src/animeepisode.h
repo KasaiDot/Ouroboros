@@ -34,6 +34,12 @@ public:
     void Clear();
     void Set(QString Slug);
 
+    int GetEpisodeNumberHigh();
+    int GetEpisodeNumberHigh(QString Number);
+
+    int GetEpisodeNumberLow();
+    int GetEpisodeNumberLow(QString Number);
+
     QString Slug;
     QString File;
     QString FileExtension;

@@ -34,6 +34,7 @@ namespace Ui {
 class Ouroboros;
 }
 
+
 class Ouroboros : public QMainWindow
 {
     Q_OBJECT
@@ -41,6 +42,13 @@ class Ouroboros : public QMainWindow
 public:
     explicit Ouroboros(QWidget *parent = 0);
     ~Ouroboros();
+
+    enum Play_Status
+    {
+      PLAYSTATUS_STOPPED,
+      PLAYSTATUS_PLAYING,
+      PLAYSTATUS_UPDATED
+    }PlayStatus;
 
     //Views
     enum Views
@@ -109,6 +117,9 @@ private slots:
     void TrayIconTriggered(QSystemTrayIcon::ActivationReason Reason);
     void TrayMenuItemClicked(QAction *Action);
     void ShowTrayMessage(QString Title, QString Message, int msecs = 10000);
+
+signals:
+    void StopDetectionTimer();
 
 };
 

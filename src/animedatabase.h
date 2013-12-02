@@ -25,6 +25,7 @@
 #include <QMap>
 
 #include "animeentity.h"
+#include "animeepisode.h"
 
 namespace Anime
 {
@@ -59,6 +60,11 @@ public:
     //Parses JSON data recieved from the api and creates a list
     void ParseJson(QByteArray Data);
     void ParseMultipleJson(QByteArray Data);
+
+    //updates a specific entity with the episode within the database
+    void UpdateEntity(AnimeEpisode &Episode,AnimeEntity *Entity);
+    void UpdateEntity(AnimeEpisode &Episode,QString Slug);
+
 
 private:
 

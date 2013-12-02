@@ -41,6 +41,7 @@ FileManager::FileManager()
     FileManagerInfo.UserInfoFile = "UserInfo.json";
     FileManagerInfo.UserQueueFile = "Queue.json";
     FileManagerInfo.UserHistoryFile = "History.json";
+    FileManagerInfo.MediaFile = "Media.json";
 
     //Dirs
     FileManagerInfo.DataFolderPath = "/Data/";
@@ -368,6 +369,22 @@ bool FileManager::LoadHistory()
     if(Data.isNull() || Data.isEmpty()) return false;
 
     History_Manager.ParseHistoryJson(Data);
+
+    return true;
+}
+
+/****************************************************
+ * Loads the media file needed for the media manager
+ ****************************************************/
+bool FileManager::LoadMedia()
+{
+    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.DataFolderPath;
+    QString Filename = FileManagerInfo.MediaFile;
+
+    QByteArray Data = ReadFile(Filepath,Filename);
+    if(Data.isNull() || Data.isEmpty()) return false;
+
+    Media_Manager.Load(Data);
 
     return true;
 }

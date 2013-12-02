@@ -33,6 +33,7 @@
 
 Ouroboros::Ouroboros(QWidget *parent) :
     QMainWindow(parent),
+    PlayStatus(PLAYSTATUS_STOPPED),
     ui(new Ui::Ouroboros)
 {
     ui->setupUi(this);\
@@ -44,11 +45,6 @@ Ouroboros::Ouroboros(QWidget *parent) :
     this->setWindowTitle(Title);
     SetViewLayouts();
 
-    //Only detects on windows currently
-#ifdef WIN32
-    connect(&DetectionTimer,SIGNAL(timeout()),&Media_Manager,SLOT(DetectAnime()));
-    DetectionTimer.start(RECOGNITION_TIMEDELAY);
-#endif
 
     //setup tray icon
     SetupTrayIcon();
@@ -58,6 +54,21 @@ Ouroboros::Ouroboros(QWidget *parent) :
 
     //Set the ui for the manager
     GUI_Manager.SetMainWindow(this);
+
+    //Setup Detection
+    //Only detects on windows currently
+#ifdef WIN32
+
+    //Load Media
+    File_Manager.LoadMedia();
+    if(Media_Manager.MediaListLoaded)
+    {
+        DetectionTimer.setInterval(RECOGNITION_TIMEDELAY);
+        connect(&DetectionTimer,SIGNAL(timeout()),&Media_Manager,SLOT(DetectAnime()));
+        connect(this,SIGNAL(StopDetectionTimer()),&DetectionTimer,SLOT(stop()));
+        DetectionTimer.start();
+    }
+#endif
 
     //Generate a random seed
     QTime CurrentTime = QTime::currentTime();
@@ -71,6 +82,7 @@ Ouroboros::Ouroboros(QWidget *parent) :
     //Connect signals and slots
     connect(RunTimer,SIGNAL(timeout()),&Queue_Manager,SLOT(StartRunning()));
     connect(&Api_Manager,SIGNAL(ChangeStatus(QString,int)),this,SLOT(ChangeStatus(QString,int)));
+    connect(&GUI_Manager,SIGNAL(ShowTrayMessage(QString,QString,int)),this,SLOT(ShowTrayMessage(QString,QString,int)));
 
     //Load user info
     File_Manager.LoadUserInformation();
@@ -92,6 +104,9 @@ Ouroboros::Ouroboros(QWidget *parent) :
 
 Ouroboros::~Ouroboros()
 {
+    //Delete detection timer
+    emit StopDetectionTimer();
+
     //Save settings
     Settings.Save();
 

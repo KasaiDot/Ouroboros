@@ -24,7 +24,6 @@
 #include <QToolBar>
 
 #include "dialog_search.h"
-#include "animedatabase.h"
 #include "filemanager.h"
 #include "queuemanager.h"
 #include "dialog_animeinformation.h"
@@ -511,6 +510,41 @@ void GUIManager::HandleDoubleClickSignal(QModelIndex Index)
     //show anime information
     ShowAnimeInformationDialog(*Entity);
 }
+
+/*****************************************************************
+ * Sets up GUI for when user starts/finishes watching an anime
+ *****************************************************************/
+void GUIManager::StartWatching(Anime::AnimeEpisode &Episode, Anime::AnimeEntity *Entity)
+{
+    //Add anime to database if it doesn't exists
+    if(!Anime_Database.Contains(Entity->GetAnimeSlug())) Anime_Database.AddAnime(Entity);
+
+    //Change the status
+    MainWindow->PlayStatus = Ouroboros::PLAYSTATUS_PLAYING;
+
+    //Show tray message
+
+    //TODO: Add more information
+    QString Message;
+    Message.append(QString("Watching: %1 \n").arg(Episode.CleanTitle));
+    Message.append(QString("Episode: %1 \n").arg(Episode.GetEpisodeNumberHigh()));
+    emit ShowTrayMessage("Anime Detected",Message);
+
+    //Update anime if update delay is zero and we don't wait for media player to close
+    if(MEDIAMANAGER_UPDATEDELAY == 0 && !MEDIAMANAGER_WAITFORMPCLOSE)
+        Anime_Database.UpdateEntity(Episode,Entity);
+}
+
+void GUIManager::FinishWatching(Anime::AnimeEpisode &Episode, Anime::AnimeEntity *Entity)
+{
+    //Change the status
+    MainWindow->PlayStatus = Ouroboros::PLAYSTATUS_STOPPED;
+
+    //Set the slug
+    Episode.Slug = ANIMEDATABASE_UKNOWN_SLUG;
+}
+
+
 
 /************************************************** Context Menus************************************************************************/
 

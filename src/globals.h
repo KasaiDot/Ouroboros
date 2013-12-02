@@ -29,7 +29,7 @@
 #define APP_UPDATER "Updater.exe"
 
 //*********************************************************************************************************
-#define RECOGNITION_TIMEDELAY 2000
+#define RECOGNITION_TIMEDELAY 1000
 
 //********************************************** Messages ***************************************************
 #define APP_MESSAGE_SHOWAPP "ShowApp"

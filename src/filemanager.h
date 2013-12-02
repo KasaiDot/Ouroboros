@@ -41,6 +41,7 @@ public:
         QString UserInfoFile;
         QString UserQueueFile;
         QString UserHistoryFile;
+        QString MediaFile;
 
         //Dirs
         QString DataFolderPath;
@@ -77,6 +78,7 @@ public:
     QByteArray GetAnimeImage(QString Slug);
     bool LoadQueue();
     bool LoadHistory();
+    bool LoadMedia();
 
     void DeleteDirectory(QString Path);
 

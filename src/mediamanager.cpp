@@ -21,6 +21,8 @@
 #include "animeentity.h"
 #include "animedatabase.h"
 #include "recognitionengine.h"
+#include "guimanager.h"
+#include "filemanager.h"
 
 using namespace Recognition;
 MediaManager Media_Manager;
@@ -33,17 +35,54 @@ MediaManager::MediaManager(QObject *parent) :
     QObject(parent),
     Index(-1),
     OldIndex(-1),
-    TitleChanged(false),
-    MediaTicker(-1)
+    MediaListLoaded(false),
+    MediaTicker(-1),
+    TitleChanged(false)
 {
 }
 
 /********************************************
  * Loads in all media information from file
  ********************************************/
-void MediaManager::Load()
+bool MediaManager::Load(QByteArray &Data)
 {
+    MediaListLoaded = false;
+    QJsonDocument Doc = QJsonDocument::fromJson(Data);
+    QVariantList MediaArray = Doc.toVariant().toList();
 
+    //iterate through list
+    foreach(QVariant Variant,MediaArray)
+    {
+        QVariantMap MediaObject = Variant.toMap();
+
+        //Construct the media
+        Media NewMedia;
+        NewMedia.Name = MediaObject.value("Name","").toString();
+        NewMedia.Enabled = MediaObject.value("Enabled",false).toBool();
+        NewMedia.Mode = MediaObject.value("RecognitionMode",0).toInt();
+
+        QVariantList FileList = MediaObject.value("Files").toList();
+        foreach(QVariant File,FileList)
+            NewMedia.Files.append(File.toString());
+
+        QVariantList FolderList = MediaObject.value("Folders").toList();
+        foreach(QVariant Folder,FolderList)
+            NewMedia.Folders.append(Folder.toString());
+
+        QVariantList KeywordList = MediaObject.value("RemoveKeywords").toList();
+        foreach(QVariant Keyword,KeywordList)
+            NewMedia.Keywords.append(Keyword.toString());
+
+        //check if it is valid
+        if(NewMedia.Name.isEmpty() || NewMedia.Files.isEmpty()) continue;
+        else MediaList.append(NewMedia);
+
+    }
+
+    if(MediaList.size() > 0)
+        MediaListLoaded = true;
+
+    return true;
 }
 
 /**************************************************************
@@ -185,6 +224,7 @@ void MediaManager::DetectAnime()
                     if(Entity)
                     {
                         CurrentEpisode.Set(Entity->GetAnimeSlug());
+                        GUI_Manager.StartWatching(CurrentEpisode,Entity);
                         return;
                     }
                 }
@@ -206,8 +246,9 @@ void MediaManager::DetectAnime()
                     // Disable ticker
                     MediaTicker = -1;
                     // Update anime
-                    if (Entity); //TODO: Add an update function based on currentepisode
-                    //anime_item->UpdateList(CurrentEpisode);
+                    if(!MEDIAMANAGER_WAITFORMPCLOSE)
+                        if (Entity)
+                            Anime_Database.UpdateEntity(CurrentEpisode,Entity);
                     return;
                 }
 
@@ -222,17 +263,16 @@ void MediaManager::DetectAnime()
                 CurrentEpisode.Set(ANIMEEPISODE_UNKNOWN_SLUG);
                 if (Entity)
                 {
-                    //TODO: ADD START AND END WATCHING FUNCTIONS
-                    //anime_item->EndWatching(CurrentEpisode);
+                    GUI_Manager.FinishWatching(CurrentEpisode,Entity);
                     CurrentEpisode.Slug = Entity->GetAnimeSlug();
                     CurrentEpisode.Processed = Processed;
-                    //anime_item->UpdateList(CurrentEpisode);
+                    Anime_Database.UpdateEntity(CurrentEpisode,Entity);
                     CurrentEpisode.Slug = ANIMEEPISODE_UNKNOWN_SLUG;
                 }
                 MediaTicker = 0;
             }
         }
-     // Media player is NOT running
+        // Media player is NOT running
     } else {
         // Was running, but not watching
         if (!Entity)
@@ -247,11 +287,14 @@ void MediaManager::DetectAnime()
         } else {
             bool Processed = CurrentEpisode.Processed;
             CurrentEpisode.Set(ANIMEEPISODE_UNKNOWN_SLUG);
-            //anime_item->EndWatching(CurrentEpisode);
-            CurrentEpisode.Slug = Entity->GetAnimeSlug();
-            CurrentEpisode.Processed = Processed;
-            //anime_item->UpdateList(CurrentEpisode);
-            CurrentEpisode.Slug = ANIMEEPISODE_UNKNOWN_SLUG;
+            GUI_Manager.FinishWatching(CurrentEpisode,Entity);
+            if(MEDIAMANAGER_WAITFORMPCLOSE)
+            {
+                CurrentEpisode.Slug = Entity->GetAnimeSlug();
+                CurrentEpisode.Processed = Processed;
+                Anime_Database.UpdateEntity(CurrentEpisode,Entity);
+                CurrentEpisode.Slug = ANIMEEPISODE_UNKNOWN_SLUG;
+            }
             MediaTicker = 0;
         }
     }

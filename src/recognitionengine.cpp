@@ -32,13 +32,29 @@ RecognitionEngine::RecognitionEngine()
 {
     CommonCharTable = ",_ -+;.&|~";
 
-    AudioKeywords = QString(RECOGNITION_KEYWORD_AUDIO).split(",").toVector();
-    VideoKeywords = QString(RECOGNITION_KEYWORD_VIDEO).split(",").toVector();
-    ExtraKeywords = QString(RECOGNITION_KEYWORD_EXTRA).split(",").toVector();
-    ExtraUnsafeKeywords = QString(RECOGNITION_KEYWORD_EXTRA_UNSAFE).split(",").toVector();
-    VersionKeywords = QString(RECOGNITION_KEYWORD_VERSION).split(",").toVector();
-    EpisodeKeywords = QString(RECOGNITION_KEYWORD_EPISODE).split(",").toVector();
-    EpisodePrefixes = QString(RECOGNITION_KEYWORD_EPISODE_PREFIX).split(",").toVector();
+    //Trim all the keywords
+    AudioKeywords = TrimStrings(QString(RECOGNITION_KEYWORD_AUDIO).split(",")).toVector();
+    VideoKeywords = TrimStrings(QString(RECOGNITION_KEYWORD_VIDEO).split(",")).toVector();
+    ExtraKeywords = TrimStrings(QString(RECOGNITION_KEYWORD_EXTRA).split(",")).toVector();
+    ExtraUnsafeKeywords = TrimStrings(QString(RECOGNITION_KEYWORD_EXTRA_UNSAFE).split(",")).toVector();
+    VersionKeywords = TrimStrings(QString(RECOGNITION_KEYWORD_VERSION).split(",")).toVector();
+    EpisodeKeywords = TrimStrings(QString(RECOGNITION_KEYWORD_EPISODE).split(",")).toVector();
+    EpisodePrefixes = TrimStrings(QString(RECOGNITION_KEYWORD_EPISODE_PREFIX).split(",")).toVector();
+
+
+}
+/***********************************************************
+ * Removes all spaces and uneeded character from string
+ **********************************************************/
+QStringList RecognitionEngine::TrimStrings(QStringList StringList)
+{
+    QStringList TrimmedList;
+    foreach(QString String,StringList)
+    {
+        TrimmedList << String.trimmed();
+    }
+
+    return TrimmedList;
 }
 
 /******************************************************
@@ -216,11 +232,9 @@ bool RecognitionEngine::ExamineTitle(QString Title, Anime::AnimeEpisode &Episode
         // episode number later on
     }
 
-
     //************************************************************
     // Get episode number and version, if available
     //*************************************************************
-
     if (ExamineNumber)
     {
         // Check remaining Tokens first
@@ -315,7 +329,6 @@ bool RecognitionEngine::ExamineTitle(QString Title, Anime::AnimeEpisode &Episode
             {
                 if (i < NumberIndex)
                 {
-                    // Ignore Episode keywords
                     if (i == NumberIndex - 1 && EpisodeKeywords.contains(Words[i])) continue;
                     Title.append(Words[i]);
                 } else if (i > NumberIndex) {
@@ -590,7 +603,7 @@ bool RecognitionEngine::IsEpisodeFormat(QString &String, Anime::AnimeEpisode &Ep
     int NumStart, i, j;
 
     // Find first number
-    for (NumStart = 0; NumStart < String.length() && IsNumeric(String.at(NumStart)); NumStart++);
+    for (NumStart = 0; NumStart < String.length() && !IsNumeric(String.at(NumStart)); NumStart++);
     if (NumStart == String.length()) return false;
 
     // Check for Episode prefix

@@ -32,6 +32,8 @@
 #include <QApplication>
 
 #include "globals.h"
+#include "animeepisode.h"
+#include "mediamanager.h"
 
 namespace Anime
 {
@@ -43,6 +45,8 @@ public:
     UserAnimeInformation();
 
     void ParseUserMap(QVariantMap UserInfoMap);
+    bool Update(Anime::AnimeEpisode &Episode);
+    bool IsUpdateAllowed(AnimeEpisode &Episode, bool IgnoreUpdateTime);
 
     //****************************************** Setters and Getter methods *********************************************************************/
     inline void UpdateLastWatched() { SetLastWatched(QDateTime::currentDateTimeUtc());}

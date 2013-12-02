@@ -23,6 +23,8 @@
 #include <QVariantList>
 
 #include "filemanager.h"
+#include "guimanager.h"
+#include "historymanager.h"
 
 using namespace Anime;
 
@@ -193,3 +195,20 @@ void AnimeDatabase::ParseMultipleJson(QByteArray Data)
        ParseJson(Doc.toJson());
     }
 }
+
+/***********************************************************
+ * Updates anime entity based on the episode provided
+ ***********************************************************/
+void AnimeDatabase::UpdateEntity(AnimeEpisode &Episode, QString Slug) { UpdateEntity(Episode,GetAnime(Slug)); }
+void AnimeDatabase::UpdateEntity(AnimeEpisode &Episode, AnimeEntity *Entity)
+{
+   if(!Entity->GetUserInfo()->Update(Episode)) return;
+
+   //Refresh the model
+   GUI_Manager.UpdateAnime(Entity);
+   GUI_Manager.UpdateHummingbirdAnime(Entity->GetAnimeSlug());
+
+   QString Action = "Watched Episode: %1";
+   History_Manager.AddHistoryItem(Entity->GetAnimeTitle(),Action.arg(QString::number(Entity->GetUserInfo()->GetEpisodesWatched())),QDateTime::currentDateTime().toString(HISTORY_DATEFORMAT));
+}
+

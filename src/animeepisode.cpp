@@ -60,3 +60,30 @@ void AnimeEpisode::Set(QString Slug)
     this->Slug = Slug;
     Processed = false;
 }
+
+/************************************************************
+ * Gets episode number, if format is: low-high, E.g 01-02
+ ***********************************************************/
+int AnimeEpisode::GetEpisodeNumberHigh() { return GetEpisodeNumberHigh(Number); }
+int AnimeEpisode::GetEpisodeNumberHigh(QString Number)
+{
+    int Value = 1;
+    int Pos = Number.lastIndexOf("-");
+    if (Pos == Number.length() - 1)
+    {
+      Value = Number.mid(0, Pos).toInt();
+    } else if (Pos > -1) {
+      Value = Number.mid(Pos + 1).toInt();
+    } else {
+      Value = Number.toInt();
+    }
+    return Value;
+}
+int AnimeEpisode::GetEpisodeNumberLow() { return GetEpisodeNumberLow(Number); }
+int AnimeEpisode::GetEpisodeNumberLow(QString Number)
+{
+    int Pos = Number.indexOf("-");
+    if(Pos < 0)
+        return Number.toInt();
+    return Number.mid(0,Pos).toInt();
+}

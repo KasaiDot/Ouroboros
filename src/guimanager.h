@@ -52,6 +52,8 @@
 #include "ouroboros.h"
 #include "settings.h"
 #include "globals.h"
+#include "animeentity.h"
+#include "animedatabase.h"
 #include "customguielements.h"
 
 namespace Manager
@@ -128,6 +130,10 @@ public slots:
     void ConnectDoubleClickSignal(QTreeView *View);
     void HandleDoubleClickSignal(QModelIndex Index);
 
+    //Anime detection functions
+    void StartWatching(Anime::AnimeEpisode &Episode,Anime::AnimeEntity *Entity);
+    void FinishWatching(Anime::AnimeEpisode &Episode,Anime::AnimeEntity *Entity);
+
 private:
     Ouroboros *MainWindow;
     bool isMainWindowSet;
@@ -153,6 +159,7 @@ private:
     void SetUpDelegates();
 
 signals:
+    void ShowTrayMessage(QString Title, QString Message, int msecs = 10000);
 
 };
 

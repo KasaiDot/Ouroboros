@@ -288,16 +288,16 @@ QJsonObject AnimeEntity::ConstructUpdateJsonObject()
 //******************************************************************************************************
 
 UserAnimeInformation::UserAnimeInformation():
-     EpisodesWatched(ANIMEENTITY_UNKNOWN_USER_EPISODE),
-     LastWatched(QDateTime::currentDateTime()),
-     RewatchedTimes(-1),
-     Notes(""),
-     NotesPresent(false),
-     Status(""),
-     Private(false),
-     Rewatching(false),
-     RatingType(""),
-     RatingValue(0)
+    EpisodesWatched(ANIMEENTITY_UNKNOWN_USER_EPISODE),
+    LastWatched(QDateTime::currentDateTime()),
+    RewatchedTimes(-1),
+    Notes(""),
+    NotesPresent(false),
+    Status(""),
+    Private(false),
+    Rewatching(false),
+    RatingType(""),
+    RatingValue(0)
 {
 }
 
@@ -316,4 +316,48 @@ void UserAnimeInformation::ParseUserMap(QVariantMap UserInfoMap)
     SetRewatching(UserInfoMap.value("rewatching",false).toBool());
     SetRatingType(UserInfoMap.value("rating").toMap().value("type","simple").toString());
     SetRatingValue(UserInfoMap.value("rating").toMap().value("value",0).toFloat());
+}
+
+/****************************************************
+ * Updates user info based on the episode watched
+ ****************************************************/
+bool UserAnimeInformation::Update(AnimeEpisode &Episode)
+{
+    if(!IsUpdateAllowed(Episode,false))
+        return false;
+
+    Episode.Processed = true;
+
+    //Set the episode count
+    SetEpisodesWatched(Episode.GetEpisodeNumberHigh(),true);
+    if(GetStatus() == STATUS_PLAN_TO_WATCH)
+        SetStatus(STATUS_CURRENTLY_WATCHING);
+
+    return true;
+}
+
+/***************************************************************
+ * Checks if updating from the episode is allowed
+ ***************************************************************/
+bool UserAnimeInformation::IsUpdateAllowed(Anime::AnimeEpisode &Episode, bool IgnoreUpdateTime)
+{
+    if (Episode.Processed)
+        return false;
+
+    if (!IgnoreUpdateTime)
+        if (MEDIAMANAGER_UPDATEDELAY > Media_Manager.MediaTicker)
+            if (Media_Manager.MediaTicker > -1)
+                return false;
+
+    //Don't update if we've completed and are not rewatching
+    if (GetStatus() == STATUS_COMPLETED && !isRewatching())
+        return false;
+
+    int EpisodeNumber = Episode.GetEpisodeNumberHigh();
+
+    //Check if episode is valid
+    if ((EpisodeNumber < 0) || (EpisodeNumber < GetEpisodesWatched()) || (EpisodeNumber == GetEpisodesWatched() && AnimeEpisodes != 1) || (EpisodeNumber > AnimeEpisodes && AnimeEpisodes <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE))
+        return false;
+
+    return true;
 }

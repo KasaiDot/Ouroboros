@@ -215,7 +215,7 @@ void Ouroboros::TrayMenuItemClicked(QAction *Action)
         break;
 
         case Tray_Exit:
-            QApplication::instance()->exit();
+            QApplication::instance()->quit();
         break;
 
         case Tray_Sync:

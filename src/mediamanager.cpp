@@ -184,10 +184,10 @@ int MediaManager::DetectMediaPlayer()
                     if(!Recognized || Item.WindowHandle == Handle)
                     {
                         Index = OldIndex = i;
-                        NewTitle = GetWindowTitleFromHandle(Handle);
+                        NewTitle = GetWindowTitleFromHandle(Handle).trimmed();
                         RemoveKeywords(NewTitle,Index);
                         if(NewTitle != CurrentTitle) TitleChanged = true;
-                        CurrentTitle = NewTitle;
+                        CurrentTitle = NewTitle.trimmed();
                         Item.WindowHandle = Handle;
                         return Index;
                     }
@@ -217,7 +217,7 @@ void MediaManager::DetectAnime()
         {
             if(Recognition_Engine.ExamineTitle(CurrentTitle,CurrentEpisode))
             {
-                QString AnimeSlug = Anime_Database.GetAnimeSlug(CurrentEpisode.CleanTitle,false);
+                QString AnimeSlug = Anime_Database.GetAnimeSlug(CurrentEpisode.CleanTitle,true,false);
                 if(AnimeSlug != ANIMEDATABASE_UKNOWN_SLUG)
                 {
                     Entity = Anime_Database.GetAnime(AnimeSlug);

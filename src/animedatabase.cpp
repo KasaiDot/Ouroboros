@@ -142,7 +142,7 @@ AnimeEntity* AnimeDatabase::GetAnime(QString Slug) const
  * This may take time depending on the size of the list.
  * If no slug is found then we return 'unknown slug'
  *******************************************************/
-QString AnimeDatabase::GetAnimeSlug(QString Title, bool Strict)
+QString AnimeDatabase::GetAnimeSlug(QString Title, bool isCleanTitle, bool Strict)
 {
     QString Slug = QString(ANIMEDATABASE_UKNOWN_SLUG);
 
@@ -151,10 +151,12 @@ QString AnimeDatabase::GetAnimeSlug(QString Title, bool Strict)
         AnimeEntity *Anime = it.value();
         if(Strict)
         {
-            if((Anime->GetAnimeTitle() == Title) || (Anime->GetAnimeAlternateTitle() == Title))
+            if((Anime->GetAnimeTitle(isCleanTitle).trimmed() == Title.trimmed()) || (Anime->GetAnimeAlternateTitle(isCleanTitle).trimmed() == Title.trimmed()))
                 Slug = Anime->GetAnimeSlug();
         } else {
-            if((Anime->GetAnimeTitle().contains(Title,Qt::CaseInsensitive)) || (Anime->GetAnimeAlternateTitle().contains(Title,Qt::CaseInsensitive)))
+
+            if(Anime->GetAnimeTitle(isCleanTitle).toLower() == Title.toLower() || Anime->GetAnimeAlternateTitle(isCleanTitle).toLower() == Title.toLower() ||
+                    Anime->GetAnimeTitle(isCleanTitle).contains(Title,Qt::CaseInsensitive) || Anime->GetAnimeAlternateTitle(isCleanTitle).contains(Title,Qt::CaseInsensitive))
                 Slug = Anime->GetAnimeSlug();
         }
     }

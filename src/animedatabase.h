@@ -29,7 +29,6 @@
 
 namespace Anime
 {
-
 class AnimeDatabase : public QObject
 {
     Q_OBJECT
@@ -55,7 +54,7 @@ public:
     AnimeEntity* TakeAnime(QString Slug) { return Database.take(Slug); }
 
     //Get the slug of an anime based on the title/alternate title
-    QString GetAnimeSlug(QString Title, bool Strict = false);
+    QString GetAnimeSlug(QString Title, bool isCleanTitle = false, bool Strict = false);
 
     //Parses JSON data recieved from the api and creates a list
     void ParseJson(QByteArray Data);
@@ -70,7 +69,6 @@ private:
 
     //Database of the anime. Each anime has a slug which is used as the key
     QMap<QString,AnimeEntity*> Database;
-
 
 signals:
 

@@ -32,6 +32,7 @@
 #include <QApplication>
 
 #include "globals.h"
+#include "common.h"
 #include "animeepisode.h"
 #include "mediamanager.h"
 
@@ -193,11 +194,34 @@ public:
     QString GetAnimeUrl() const { return AnimeUrl; }
     inline void SetAnimeUrl(QString Url) { AnimeUrl = Url; }
 
-    QString GetAnimeTitle() const { return AnimeTitle; }
-    inline void SetAnimeTitle(QString Title) { AnimeTitle = Title; }
+    QString GetAnimeTitle(bool Clean = false) const
+    {
+        if(!Clean)
+            return AnimeTitle;
+        return CleanAnimeTitle;
+    }
+    inline void SetAnimeTitle(QString Title,bool SetCleanTitleOnly = false)
+    {
+        if(!SetCleanTitleOnly)
+            AnimeTitle = Title;
 
-    QString GetAnimeAlternateTitle() const { return AnimeAlternateTitle; }
-    inline void SetAnimeAlternateTitle(QString AlternateTitle) { AnimeAlternateTitle = AlternateTitle; }
+        CleanAnimeTitle = Title;
+        CleanTitle(CleanAnimeTitle);
+    }
+
+    QString GetAnimeAlternateTitle(bool Clean = false) const
+    {
+        if(!Clean)
+            return AnimeAlternateTitle;
+        return CleanAnimeTitle;
+    }
+    inline void SetAnimeAlternateTitle(QString AlternateTitle, bool SetCleanTitleOnly = false)
+    {
+        if(!SetCleanTitleOnly)
+            AnimeAlternateTitle = AlternateTitle;
+        CleanAlternateTitle = AlternateTitle;
+        CleanTitle(CleanAlternateTitle);
+    }
 
     int GetAnimeEpisodeCount() const { return AnimeEpisodeCount; }
     inline void SetAnimeEpisodeCount(int EpisodeCount) { if(EpisodeCount >= 0) AnimeEpisodeCount = EpisodeCount; }
@@ -226,6 +250,11 @@ private:
     QString AnimeUrl;
     QString AnimeTitle;
     QString AnimeAlternateTitle;
+
+    //Used with recognition
+    QString CleanAnimeTitle;
+    QString CleanAlternateTitle;
+
     int AnimeEpisodeCount;
     QString AnimeImage;
     QString AnimeSynopsis;

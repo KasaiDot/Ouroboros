@@ -23,6 +23,7 @@
 #define RECOGNITION_KEYWORD_EXTRA             "ASS, BATCH, BD, BLURAY, BLU-RAY, COMPLETE, DIRECTOR'S CUT, DVD, DVD5, DVD9, DVD-R2J, DVDRIP, ENG, ENGLISH, HARDSUB, PS3, R2DVD, R2J, R2JDVD, RAW, REMASTERED, SOFTSUB, SUBBED, SUB, UNCENSORED, UNCUT, VOSTFR, WEBCAST, WIDESCREEN, WS"
 #define RECOGNITION_KEYWORD_EXTRA_UNSAFE      "END, FINAL, OAV, ONA, OVA"
 #define RECOGNITION_KEYWORD_VERSION           "V0, V2, V3, V4"
+#define RECOGNITION_KEYWORD_EXTENSION         "MKV, AVI, MP4, OGM, RM, RMVB, WMV, DIVX, MOV, FLV, MPG, 3GP"
 #define RECOGNITION_KEYWORD_VIDEO             "8BIT, 10BIT, AVI, DIVX, H264, H.264, HD, HDTV, HI10P, HQ, LQ, RMVB, SD, TS, VFR, WMV, X264, X.264, XVID"
 #define RECOGNITION_KEYWORD_EPISODE           "EPISODE, EP., EP, VOLUME, VOL., VOL, EPS., EPS"
 #define RECOGNITION_KEYWORD_EPISODE_PREFIX    "EP., EP, E, VOL., VOL, EPS."
@@ -34,6 +35,7 @@
 #include "animedatabase.h"
 #include "animeentity.h"
 #include "animeepisode.h"
+#include "common.h"
 
 /*********************************************************************
  * Credits to erengy(Creator of Taiga) for the recognition class
@@ -68,13 +70,6 @@ public:
     size_t TokenizeTitle(const QString &Title, const QString &Delimiters, QVector<Token> &Tokens);
     void ExamineToken(Token &CurToken, Anime::AnimeEpisode& Episode, bool CompareExtras);
     size_t Tokenize(QString &String, QString Delimiters, QVector<QString> &Tokens);
-
-    void CleanTitle(QString &Title);
-    void EraseUnnecessary(QString &String);
-    void TransliterateSpecial(QString &String);
-    void ErasePunctuation(QString &String, bool KeepTrailing);
-    void EraseLeft(QString &String1, const QString String2, bool CaseInsensitive);
-    void EraseRight(QString &String1, const QString String2, bool CaseInsensitive);
 
     //********************************************************* Helper functions ***********************************************************
     //Character functions
@@ -223,6 +218,7 @@ private:
 
     QVector<QString> AudioKeywords;
     QVector<QString> VideoKeywords;
+    QVector<QString> ExtentionKeywords;
     QVector<QString> ExtraKeywords;
     QVector<QString> ExtraUnsafeKeywords;
     QVector<QString> VersionKeywords;

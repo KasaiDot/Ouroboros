@@ -526,7 +526,7 @@ void GUIManager::StartWatching(Anime::AnimeEpisode &Episode, Anime::AnimeEntity 
 
     //TODO: Add more information
     QString Message;
-    Message.append(QString("Watching: %1 \n").arg(Episode.CleanTitle));
+    Message.append(QString("Watching: %1 \n").arg(Episode.Title));
     Message.append(QString("Episode: %1 \n").arg(Episode.GetEpisodeNumberHigh()));
     emit ShowTrayMessage("Anime Detected",Message);
 

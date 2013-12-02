@@ -40,7 +40,8 @@ SOURCES += main.cpp\
     singleapplication.cpp \
     mediamanager.cpp \
     animeepisode.cpp \
-    recognitionengine.cpp
+    recognitionengine.cpp \
+    common.cpp
 
 HEADERS  += ouroboros.h \
     threadmanager.h \
@@ -64,7 +65,8 @@ HEADERS  += ouroboros.h \
     singleapplication.h \
     mediamanager.h \
     animeepisode.h \
-    recognitionengine.h
+    recognitionengine.h \
+    common.h
 
 FORMS    += ouroboros.ui \
     dialog_settings.ui \

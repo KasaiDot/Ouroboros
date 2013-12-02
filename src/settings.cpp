@@ -36,6 +36,15 @@ OuroborosSettings::OuroborosSettings()
     SettingsName.Application.CloseToTray = "CloseToTray";
     SettingsName.Application.MinimizeToTray = "MinimizeToTray";
 
+    //Recognition
+    SettingsName.Recognition.GroupName = "Recognition";
+    SettingsName.Recognition.Enabled = "Enabled";
+    SettingsName.Recognition.Delay = "Delay";
+    SettingsName.Recognition.MPFocus = "MediaPlayerMustBeFocused";
+    SettingsName.Recognition.NotifyEpisodeRecognised = "NotifyEpisodeRecognised";
+    SettingsName.Recognition.NotifyEpisodeNotRecognised = "NotifyEpisodeNotRecognised";
+    SettingsName.Recognition.WaitForMPClose = "WaitForMediaPlayerClose";
+
     //Progress bar
     SettingsName.ProgressBar.GroupName = "Progress_Bar";
     SettingsName.ProgressBar.TextColor = "TextColor";
@@ -51,6 +60,14 @@ OuroborosSettings::OuroborosSettings()
     //Application
     Default.Application.CloseToTray = true;
     Default.Application.MinimizeToTray = true;
+
+    //Recognition
+    Default.Recognition.Enabled = true;
+    Default.Recognition.Delay = 120;
+    Default.Recognition.WaitForMPClose = false;
+    Default.Recognition.MPFocus = true;
+    Default.Recognition.NotifyEpisodeRecognised = true;
+    Default.Recognition.NotifyEpisodeNotRecognised = false;
 
     //Progress bar
     Default.ProgressDelegate.TextColor = Qt::black;
@@ -73,11 +90,22 @@ void OuroborosSettings::Load()
 
     SettingsNames::ApplicationNames ApplicationName = SettingsName.Application;
     SettingsNames::ProgressBarNames ProgressBarName = SettingsName.ProgressBar;
+    SettingsNames::RecognitionNames RecognitionNames = SettingsName.Recognition;
 
     //Application settings
     Settings.beginGroup(ApplicationName.GroupName);
     Application.CloseToTray = Settings.value(ApplicationName.CloseToTray,Default.Application.CloseToTray).toBool();
     Application.MinimizeToTray = Settings.value(ApplicationName.MinimizeToTray,Default.Application.MinimizeToTray).toBool();
+    Settings.endGroup();
+
+    //Recognition
+    Settings.beginGroup(RecognitionNames.GroupName);
+    Recognition.Enabled = Settings.value(RecognitionNames.Enabled,Default.Recognition.Enabled).toBool();
+    Recognition.Delay = Settings.value(RecognitionNames.Delay,Default.Recognition.Delay).toInt();
+    Recognition.MPFocus = Settings.value(RecognitionNames.MPFocus,Default.Recognition.MPFocus).toBool();
+    Recognition.WaitForMPClose = Settings.value(RecognitionNames.WaitForMPClose,Default.Recognition.WaitForMPClose).toBool();
+    Recognition.NotifyEpisodeRecognised = Settings.value(RecognitionNames.NotifyEpisodeRecognised,Default.Recognition.NotifyEpisodeRecognised).toBool();
+    Recognition.NotifyEpisodeNotRecognised = Settings.value(RecognitionNames.NotifyEpisodeNotRecognised,Default.Recognition.NotifyEpisodeNotRecognised).toBool();
     Settings.endGroup();
 
     //Progressbar colors
@@ -102,11 +130,22 @@ void OuroborosSettings::Save()
 
     SettingsNames::ApplicationNames ApplicationName = SettingsName.Application;
     SettingsNames::ProgressBarNames ProgressBarName = SettingsName.ProgressBar;
+    SettingsNames::RecognitionNames RecognitionNames = SettingsName.Recognition;
 
     //Application
     Settings.beginGroup(ApplicationName.GroupName);
     Settings.setValue(ApplicationName.CloseToTray,Application.CloseToTray);
     Settings.setValue(ApplicationName.MinimizeToTray,Application.MinimizeToTray);
+    Settings.endGroup();
+
+    //Recognition
+    Settings.beginGroup(RecognitionNames.GroupName);
+    Settings.setValue(RecognitionNames.Enabled,Recognition.Enabled);
+    Settings.setValue(RecognitionNames.Delay,Recognition.Delay);
+    Settings.setValue(RecognitionNames.MPFocus,Recognition.MPFocus);
+    Settings.setValue(RecognitionNames.WaitForMPClose,Recognition.WaitForMPClose);
+    Settings.setValue(RecognitionNames.NotifyEpisodeRecognised,Recognition.NotifyEpisodeRecognised);
+    Settings.setValue(RecognitionNames.NotifyEpisodeNotRecognised,Recognition.NotifyEpisodeNotRecognised);
     Settings.endGroup();
 
     //Progress bar
@@ -130,4 +169,6 @@ void OuroborosSettings::ResetSettings()
 {
     //progressbar
     ProgressDelegate = Default.ProgressDelegate;
+    Application = Default.Application;
+    Recognition = Default.Recognition;
 }

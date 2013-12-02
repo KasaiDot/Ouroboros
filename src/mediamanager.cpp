@@ -186,7 +186,7 @@ int MediaManager::DetectMediaPlayer()
                         Index = OldIndex = i;
                         NewTitle = GetWindowTitleFromHandle(Handle).trimmed();
                         RemoveKeywords(NewTitle,Index);
-                        if(NewTitle != CurrentTitle) TitleChanged = true;
+                        if(NewTitle.trimmed().toLower() != CurrentTitle.trimmed().toLower()) TitleChanged = true;
                         CurrentTitle = NewTitle.trimmed();
                         Item.WindowHandle = Handle;
                         return Index;
@@ -212,51 +212,60 @@ void MediaManager::DetectAnime()
     //Media player is running
     if(MediaPlayerIndex > MEDIAMANAGER_MEDIANOTFOUND)
     {
-        //Check if we are not watching an episode
         if(CurrentEpisode.Slug == ANIMEEPISODE_UNKNOWN_SLUG)
         {
-            if(Recognition_Engine.ExamineTitle(CurrentTitle,CurrentEpisode))
+            if(Settings.Recognition.Enabled)
             {
-                QString AnimeSlug = Anime_Database.GetAnimeSlug(CurrentEpisode.CleanTitle,true,false);
-                if(AnimeSlug != ANIMEDATABASE_UKNOWN_SLUG)
+                //Check if we are not watching an episode
+                if(Recognition_Engine.ExamineTitle(CurrentTitle,CurrentEpisode))
                 {
-                    Entity = Anime_Database.GetAnime(AnimeSlug);
-                    if(Entity)
+                    QString AnimeSlug = Anime_Database.GetAnimeSlug(CurrentEpisode.CleanTitle,true,false);
+                    if(AnimeSlug != ANIMEDATABASE_UKNOWN_SLUG)
                     {
-                        CurrentEpisode.Set(Entity->GetAnimeSlug());
-                        GUI_Manager.StartWatching(CurrentEpisode,Entity);
-                        return;
+                        Entity = Anime_Database.GetAnime(AnimeSlug);
+                        if(Entity)
+                        {
+                            SetTitleChanged(false);
+                            CurrentEpisode.Set(Entity->GetAnimeSlug());
+                            GUI_Manager.StartWatching(CurrentEpisode,Entity);
+                            return;
+                        }
                     }
-                }
-                //Not recognised
-            } else {
-                CurrentEpisode.Set(ANIMEEPISODE_UNKNOWN_SLUG);
-                if(!CurrentEpisode.Title.isEmpty())
-                {
-                    SetTitleChanged(false);
-                    //Unknown title
+                    //Not recognised
+                } else {
+                    CurrentEpisode.Set(ANIMEEPISODE_UNKNOWN_SLUG);
+                    if(!CurrentEpisode.Title.isEmpty())
+                    {
+                        SetTitleChanged(false);
+                        if(Settings.Recognition.NotifyEpisodeNotRecognised)
+                        {
+                            QString Message = QString("Cannot recognise %1 \n").arg(CurrentEpisode.Title);
+                            Message.append("If you think this is a bug, please report it to the Ouroboros hummingbird thread.");
+                            emit ShowTrayMessage("Unknown Title", Message);
+                        }
+                    }
                 }
             }
             // Already watching or not recognized before
         } else {
-            if (MediaTicker > -1 && MediaTicker <= MEDIAMANAGER_UPDATEDELAY)
+            if (MediaTicker > -1 && MediaTicker <= Settings.Recognition.Delay)
             {
-                if (MediaTicker == MEDIAMANAGER_UPDATEDELAY)
+                if (MediaTicker == Settings.Recognition.Delay)
                 {
                     // Disable ticker
                     MediaTicker = -1;
                     // Update anime
-                    if(!MEDIAMANAGER_WAITFORMPCLOSE)
+                    if(!Settings.Recognition.WaitForMPClose)
                         if (Entity)
                             Anime_Database.UpdateEntity(CurrentEpisode,Entity);
                     return;
                 }
 
-                if (MediaList[MediaPlayerIndex].WindowHandle == GetForegroundWindow())
+                if (!Settings.Recognition.MPFocus || MediaList[MediaPlayerIndex].WindowHandle == GetForegroundWindow())
                     MediaTicker++;
             }
             // Caption changed?
-            if (TitleChanged)
+            if (DidTitleChange())
             {
                 SetTitleChanged(false);
                 bool Processed = CurrentEpisode.Processed;
@@ -288,7 +297,7 @@ void MediaManager::DetectAnime()
             bool Processed = CurrentEpisode.Processed;
             CurrentEpisode.Set(ANIMEEPISODE_UNKNOWN_SLUG);
             GUI_Manager.FinishWatching(CurrentEpisode,Entity);
-            if(MEDIAMANAGER_WAITFORMPCLOSE)
+            if(Settings.Recognition.WaitForMPClose)
             {
                 CurrentEpisode.Slug = Entity->GetAnimeSlug();
                 CurrentEpisode.Processed = Processed;

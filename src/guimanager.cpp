@@ -311,28 +311,28 @@ void GUIManager::TabChanged(int Tab)
 {
     switch(Tab)
     {
-        case TAB_COMPLETED:
-            CurrentView = MainWindow->GetView(Ouroboros::Completed);
+    case TAB_COMPLETED:
+        CurrentView = MainWindow->GetView(Ouroboros::Completed);
         break;
 
-        case TAB_CURRENTLY_WATCHING:
-            CurrentView = MainWindow->GetView(Ouroboros::CurrentlyWatching);
+    case TAB_CURRENTLY_WATCHING:
+        CurrentView = MainWindow->GetView(Ouroboros::CurrentlyWatching);
         break;
 
-        case TAB_DROPPED:
-            CurrentView = MainWindow->GetView(Ouroboros::Dropped);
+    case TAB_DROPPED:
+        CurrentView = MainWindow->GetView(Ouroboros::Dropped);
         break;
 
-        case TAB_ON_HOLD:
-            CurrentView = MainWindow->GetView(Ouroboros::OnHold);
+    case TAB_ON_HOLD:
+        CurrentView = MainWindow->GetView(Ouroboros::OnHold);
         break;
 
-        case TAB_PLAN_TO_WATCH:
-            CurrentView = MainWindow->GetView(Ouroboros::PlanToWatch);
+    case TAB_PLAN_TO_WATCH:
+        CurrentView = MainWindow->GetView(Ouroboros::PlanToWatch);
         break;
 
-        case TAB_SEARCH:
-            CurrentView = MainWindow->GetView(Ouroboros::Search);
+    case TAB_SEARCH:
+        CurrentView = MainWindow->GetView(Ouroboros::Search);
         break;
     }
 }
@@ -524,15 +524,17 @@ void GUIManager::StartWatching(Anime::AnimeEpisode &Episode, Anime::AnimeEntity 
     MainWindow->PlayStatus = Ouroboros::PLAYSTATUS_PLAYING;
 
     //Show tray message
-
     //TODO: Add more information
-    QString Message;
-    Message.append(QString("Watching: %1 \n").arg(Episode.Title));
-    Message.append(QString("Episode: %1 \n").arg(Episode.GetEpisodeNumberHigh()));
-    emit ShowTrayMessage("Anime Detected",Message);
+    if(Settings.Recognition.NotifyEpisodeRecognised)
+    {
+        QString Message;
+        Message.append(QString("Watching: %1 \n").arg(Episode.Title));
+        Message.append(QString("Episode: %1 \n").arg(Episode.GetEpisodeNumberHigh()));
+        emit ShowTrayMessage("Anime Detected",Message);
+    }
 
     //Update anime if update delay is zero and we don't wait for media player to close
-    if(MEDIAMANAGER_UPDATEDELAY == 0 && !MEDIAMANAGER_WAITFORMPCLOSE)
+    if(Settings.Recognition.Delay == 0 && !Settings.Recognition.WaitForMPClose)
         Anime_Database.UpdateEntity(Episode,Entity);
 }
 
@@ -544,8 +546,6 @@ void GUIManager::FinishWatching(Anime::AnimeEpisode &Episode, Anime::AnimeEntity
     //Set the slug
     Episode.Slug = ANIMEDATABASE_UKNOWN_SLUG;
 }
-
-
 
 /************************************************** Context Menus************************************************************************/
 
@@ -674,7 +674,7 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
     RatingMenu.addActions(RatingGroup->actions());
     EditMenu.addMenu(&RatingMenu);
 
-   //****** Main menu
+    //****** Main menu
 
     //Add edit menu
     Menu.addMenu(&EditMenu);

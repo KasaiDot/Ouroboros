@@ -23,6 +23,7 @@
 #include <QJsonObject>
 
 #include "mediamanager.h"
+#include "settings.h"
 
 using namespace Anime;
 
@@ -347,7 +348,7 @@ bool UserAnimeInformation::IsUpdateAllowed(Anime::AnimeEpisode &Episode, bool Ig
         return false;
 
     if (!IgnoreUpdateTime)
-        if (MEDIAMANAGER_UPDATEDELAY > Media_Manager.MediaTicker)
+        if (Settings.Recognition.Delay > Media_Manager.MediaTicker)
             if (Media_Manager.MediaTicker > -1)
                 return false;
 

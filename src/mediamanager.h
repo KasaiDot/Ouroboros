@@ -21,10 +21,6 @@
 
 #define MEDIAMANAGER_MEDIANOTFOUND -1
 
-//TODO: add settings
-#define MEDIAMANAGER_UPDATEDELAY 120
-#define MEDIAMANAGER_WAITFORMPCLOSE true
-
 #include <QObject>
 #include <QList>
 #include <QtGlobal>
@@ -94,6 +90,7 @@ private:
     bool TitleChanged;
 
 signals:
+    void ShowTrayMessage(QString Title, QString Message, int msecs = 10000);
 
 public slots:
     int DetectMediaPlayer();

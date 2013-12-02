@@ -42,6 +42,18 @@ public:
             QString MinimizeToTray;
         }Application;
 
+        //Recognition
+        struct RecognitionNames
+        {
+            QString GroupName;
+            QString Enabled;
+            QString Delay;
+            QString WaitForMPClose;
+            QString MPFocus;
+            QString NotifyEpisodeRecognised;
+            QString NotifyEpisodeNotRecognised;
+        }Recognition;
+
         //progressbar
         struct ProgressBarNames
         {
@@ -57,6 +69,7 @@ public:
         }ProgressBar;
 
 
+
     }SettingsName;
 
 
@@ -66,6 +79,17 @@ public:
         bool CloseToTray;
         bool MinimizeToTray;
     }Application;
+
+    //Recognition
+    struct RecognitionSettings
+    {
+        bool Enabled;
+        int Delay;
+        bool WaitForMPClose;
+        bool MPFocus;
+        bool NotifyEpisodeRecognised;
+        bool NotifyEpisodeNotRecognised;
+    }Recognition;
 
     //Since we can't apply a stylesheet to the progress delegate,
     //we get the colors the user sets
@@ -86,6 +110,7 @@ public:
     {
         ApplicationSettings Application;
         ProgressDelegateSettings ProgressDelegate;
+        RecognitionSettings Recognition;
     }Default;
 
 private:

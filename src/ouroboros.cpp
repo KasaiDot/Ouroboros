@@ -59,14 +59,17 @@ Ouroboros::Ouroboros(QWidget *parent) :
     //Only detects on windows currently
 #ifdef WIN32
 
-    //Load Media
-    File_Manager.LoadMedia();
-    if(Media_Manager.MediaListLoaded)
+    if(Settings.Recognition.Enabled)
     {
-        DetectionTimer.setInterval(RECOGNITION_TIMEDELAY);
-        connect(&DetectionTimer,SIGNAL(timeout()),&Media_Manager,SLOT(DetectAnime()));
-        connect(this,SIGNAL(StopDetectionTimer()),&DetectionTimer,SLOT(stop()));
-        DetectionTimer.start();
+        //Load Media
+        File_Manager.LoadMedia();
+        if(Media_Manager.MediaListLoaded)
+        {
+            DetectionTimer.setInterval(RECOGNITION_TIMEDELAY);
+            connect(&DetectionTimer,SIGNAL(timeout()),&Media_Manager,SLOT(DetectAnime()));
+            connect(this,SIGNAL(StopDetectionTimer()),&DetectionTimer,SLOT(stop()));
+            DetectionTimer.start();
+        }
     }
 #endif
 
@@ -183,16 +186,16 @@ void Ouroboros::TrayIconTriggered(QSystemTrayIcon::ActivationReason Reason)
 {
     switch(Reason)
     {
-        case QSystemTrayIcon::DoubleClick:
-        case QSystemTrayIcon::Trigger:
-            if(this->isHidden())
-            {
-                this->showNormal();
-                this->setFocus();
-            }
+    case QSystemTrayIcon::DoubleClick:
+    case QSystemTrayIcon::Trigger:
+        if(this->isHidden())
+        {
+            this->showNormal();
+            this->setFocus();
+        }
         break;
 
-        default:
+    default:
         break;
     }
 }
@@ -206,30 +209,30 @@ void Ouroboros::TrayMenuItemClicked(QAction *Action)
 
     switch (ActionNumber)
     {
-        case Tray_ShowOuroboros:
+    case Tray_ShowOuroboros:
         if(this->isHidden())
         {
-                this->showNormal();
-                this->setFocus();
+            this->showNormal();
+            this->setFocus();
         }
         break;
 
-        case Tray_Exit:
-            QApplication::instance()->quit();
+    case Tray_Exit:
+        QApplication::instance()->quit();
         break;
 
-        case Tray_Sync:
-            Queue_Manager.Sync();
-            ShowTrayMessage("Ouroboros Syncing","Syncing anime list ...");
+    case Tray_Sync:
+        Queue_Manager.Sync();
+        ShowTrayMessage("Ouroboros Syncing","Syncing anime list ...");
         break;
 
-        case Tray_Settings:
-            //show settings dialog
-            on_Action_ChangeSettings_triggered();
+    case Tray_Settings:
+        //show settings dialog
+        on_Action_ChangeSettings_triggered();
 
         break;
 
-        default:
+    default:
         break;
     }
 }
@@ -301,28 +304,28 @@ QTreeView* Ouroboros::GetView(Ouroboros::Views Type)
 {
     switch(Type)
     {
-        case CurrentlyWatching:
-            return ui->View_CurrentlyWatching;
+    case CurrentlyWatching:
+        return ui->View_CurrentlyWatching;
         break;
 
-        case OnHold:
-           return ui->View_OnHold;
+    case OnHold:
+        return ui->View_OnHold;
         break;
 
-        case PlanToWatch:
-            return ui->View_PlanToWatch;
+    case PlanToWatch:
+        return ui->View_PlanToWatch;
         break;
 
-        case Dropped:
-            return ui->View_Dropped;
+    case Dropped:
+        return ui->View_Dropped;
         break;
 
-        case Completed:
-            return ui->View_Completed;
+    case Completed:
+        return ui->View_Completed;
         break;
 
-        case Search:
-            return ui->View_Search;
+    case Search:
+        return ui->View_Search;
         break;
     }
 
@@ -336,8 +339,8 @@ QAction *Ouroboros::GetAction(Ouroboros::Actions Type)
 {
     switch (Type)
     {
-        case EditUserEpisodes:
-            return ui->Action_EditUserEpisodes;
+    case EditUserEpisodes:
+        return ui->Action_EditUserEpisodes;
         break;
     }
 
@@ -394,5 +397,3 @@ void Ouroboros::on_Action_ViewSearch_triggered()
 {
     GUI_Manager.ShowSearchDialog();
 }
-
-

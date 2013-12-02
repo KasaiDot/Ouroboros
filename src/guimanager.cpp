@@ -28,6 +28,7 @@
 #include "queuemanager.h"
 #include "dialog_animeinformation.h"
 #include "historymanager.h"
+#include "mediamanager.h"
 
 using namespace Manager;
 GUIManager GUI_Manager;

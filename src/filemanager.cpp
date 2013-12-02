@@ -31,6 +31,7 @@
 #include "apimanager.h"
 #include "queuemanager.h"
 #include "historymanager.h"
+#include "mediamanager.h"
 
 using namespace Manager;
 FileManager File_Manager;

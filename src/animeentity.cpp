@@ -22,6 +22,8 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
+#include "mediamanager.h"
+
 using namespace Anime;
 
 AnimeEntity::AnimeEntity():

@@ -34,7 +34,6 @@
 #include "globals.h"
 #include "common.h"
 #include "animeepisode.h"
-#include "mediamanager.h"
 
 namespace Anime
 {
@@ -91,10 +90,40 @@ public:
         QTime CurTime = GetLastWatched().time();
         QTime ArgTime = Time.time();
 
-        bool DateGreater = (CurDate >= ArgDate);
-        bool TimeGreater = ((CurTime.hour() >= ArgTime.hour()) && (CurTime.minute() >= ArgTime.minute()) && (CurTime.second() > ArgTime.second()));
+        //Check if the current date is later than the argument date, if it is then we are 100% sure it is later
+        bool DateGreater = (CurDate > ArgDate);
+        if(DateGreater)
+            return true;
 
-        return (DateGreater && TimeGreater);
+        //Since the date isn't greater, we check to see if it is the current day, in which case we compare the times then
+        if(CurDate == ArgDate)
+        {
+            bool HourGreater = CurTime.hour() >= ArgTime.hour();
+            bool HourEqual = CurTime.hour() == ArgTime.hour();
+
+            bool MinuteGreater = CurTime.minute() >= ArgTime.minute();
+            bool MinuteEqual = CurTime.minute() == ArgTime.minute();
+
+            bool SecondsGreater = CurTime.second() > ArgTime.second();
+
+            if(!HourGreater)
+                return false;
+            if(HourGreater && !HourEqual)
+                return true;
+            if(HourGreater && HourEqual)
+            {
+                if(!MinuteGreater)
+                    return false;
+                if(MinuteGreater && !MinuteEqual)
+                    return true;
+                if(MinuteGreater && MinuteEqual)
+                    if(SecondsGreater)
+                        return true;
+            }
+        }
+
+        //Neither date or time is later than arg time
+        return false;
     }
 
     int GetRewatchedTimes() const { return RewatchedTimes; }

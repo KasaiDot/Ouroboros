@@ -87,6 +87,7 @@ Ouroboros::Ouroboros(QWidget *parent) :
     connect(RunTimer,SIGNAL(timeout()),&Queue_Manager,SLOT(StartRunning()));
     connect(&Api_Manager,SIGNAL(ChangeStatus(QString,int)),this,SLOT(ChangeStatus(QString,int)));
     connect(&GUI_Manager,SIGNAL(ShowTrayMessage(QString,QString,int)),this,SLOT(ShowTrayMessage(QString,QString,int)));
+    connect(&Media_Manager,SIGNAL(ShowTrayMessage(QString,QString,int)),this,SLOT(ShowTrayMessage(QString,QString,int)));
 
     //Load user info
     File_Manager.LoadUserInformation();

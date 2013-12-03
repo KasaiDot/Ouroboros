@@ -86,6 +86,8 @@ public:
     bool MediaListLoaded;
     int MediaTicker;
 
+    QString NotRecognisedTitle;
+
 private:
     bool TitleChanged;
 

@@ -37,6 +37,7 @@ MediaManager::MediaManager(QObject *parent) :
     OldIndex(-1),
     MediaListLoaded(false),
     MediaTicker(-1),
+    NotRecognisedTitle(""),
     TitleChanged(false)
 {
 }
@@ -231,18 +232,18 @@ void MediaManager::DetectAnime()
                             return;
                         }
                     }
-                    //Not recognised
-                } else {
-                    CurrentEpisode.Set(ANIMEEPISODE_UNKNOWN_SLUG);
-                    if(!CurrentEpisode.Title.isEmpty())
+                }
+                //Not recognised
+                CurrentEpisode.Set(ANIMEEPISODE_UNKNOWN_SLUG);
+                if(!CurrentEpisode.Title.isEmpty() && NotRecognisedTitle.toLower() != CurrentEpisode.CleanTitle.toLower())
+                {
+                    NotRecognisedTitle = CurrentEpisode.CleanTitle;
+                    SetTitleChanged(false);
+                    if(Settings.Recognition.NotifyEpisodeNotRecognised)
                     {
-                        SetTitleChanged(false);
-                        if(Settings.Recognition.NotifyEpisodeNotRecognised)
-                        {
-                            QString Message = QString("Cannot recognise %1 \n").arg(CurrentEpisode.Title);
-                            Message.append("If you think this is a bug, please report it to the Ouroboros hummingbird thread.");
-                            emit ShowTrayMessage("Unknown Title", Message);
-                        }
+                        QString Message = QString("Cannot recognise %1 \n").arg(CurrentEpisode.Title);
+                        Message.append("If you think this is a bug, please report it to the Ouroboros hummingbird thread.");
+                        emit ShowTrayMessage("Unknown Title", Message);
                     }
                 }
             }
@@ -270,6 +271,7 @@ void MediaManager::DetectAnime()
                 SetTitleChanged(false);
                 bool Processed = CurrentEpisode.Processed;
                 CurrentEpisode.Set(ANIMEEPISODE_UNKNOWN_SLUG);
+                NotRecognisedTitle = "";
                 if (Entity)
                 {
                     GUI_Manager.FinishWatching(CurrentEpisode,Entity);
@@ -289,6 +291,7 @@ void MediaManager::DetectAnime()
             if (OldIndex > 0)
             {
                 CurrentEpisode.Set(ANIMEEPISODE_UNKNOWN_SLUG);
+                NotRecognisedTitle = "";
                 OldIndex = 0;
             }
 

@@ -59,7 +59,7 @@ public:
     explicit MediaManager(QObject *parent = 0);
 
     bool Load(QByteArray &Data);
-    void Save();
+    QByteArray ConstructJson();
 
     void RemoveKeywords(QString &Title, int MediaIndex);
 

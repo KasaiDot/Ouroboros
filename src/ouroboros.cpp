@@ -59,7 +59,7 @@ Ouroboros::Ouroboros(QWidget *parent) :
     //Setup Detection
     //Only detects on windows currently
 #ifdef WIN32
-
+    File_Manager.SaveMedia();
     if(Settings.Recognition.Enabled)
     {
         //Load Media

@@ -70,6 +70,7 @@ public:
     bool SaveAnimeImage(Anime::AnimeEntity *Entity);
     bool SaveQueue();
     bool SaveHistory();
+    bool SaveMedia();
 
     bool LoadSettings();
     bool LoadUserInformation();

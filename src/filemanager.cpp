@@ -217,6 +217,22 @@ bool FileManager::SaveHistory()
     return true;
 }
 
+/*******************************************************
+ * Saves Media.json to data folder if there isn't one
+ *******************************************************/
+bool FileManager::SaveMedia()
+{
+    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.DataFolderPath;
+    QString Filename = FileManagerInfo.MediaFile;
+
+    if(QFile(QString(Filepath).append(Filename)).exists()) return false;
+
+    QByteArray Data = QJsonDocument::fromJson(Media_Manager.ConstructJson()).toJson(); //This will format the code properley
+
+    if(!WriteDataToFile(Filepath,Filename,Data)) return false;
+    return true;
+}
+
 /*************************
  * Loads user information
  *************************/

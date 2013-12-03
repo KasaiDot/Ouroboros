@@ -68,7 +68,7 @@ bool RecognitionEngine::ExamineTitle(QString Title, Anime::AnimeEpisode &Episode
     if(Title.isEmpty()) return false;
 
     //Remove zero width space characters
-    Title.replace(QString::fromUtf8("\u200B"),"");
+    Title.remove(QString::fromUtf8("\u200B"));
 
     // Retrieve file name from full path and remove the extension
     if (Title.length() > 2 && Title.at(1) == ':' && Title.at(2) == '\\')
@@ -88,7 +88,7 @@ bool RecognitionEngine::ExamineTitle(QString Title, Anime::AnimeEpisode &Episode
         {
             if(Title.lastIndexOf(Extension,0,Qt::CaseInsensitive) <= 5)
             {
-                Title.replace(Extension,"",Qt::CaseInsensitive);
+                Title.remove(Extension,Qt::CaseInsensitive);
                 Episode.FileExtension = Keyword;
             }
         }

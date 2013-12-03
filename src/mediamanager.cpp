@@ -86,6 +86,15 @@ bool MediaManager::Load(QByteArray &Data)
     return true;
 }
 
+/*****************************************************
+ * returns pre-made json media file for saving
+ *****************************************************/
+QByteArray MediaManager::ConstructJson()
+{
+    QString MediaFile = "[{\"Name\":\"DivX Player\",\"Enabled\":true,\"RecognitionMode\":0,\"Files\":[\"DivX Player.exe\",\"DivX Player.exe\"],\"Folders\":[\"%ProgramFiles%/DivX/DivX Plus Player/\",\"%ProgramW64%/DivX/DivX Plus Player/\"],\"RemoveKeywords\":[]},{\"Name\":\"Media Player Classic Home Cinema\",\"Enabled\":true,\"RecognitionMode\":0,\"Files\":[\"mpc-hc.exe\",\"mpc-hc64.exe\"],\"Folders\":[\"%ProgramFiles%/K-Lite Codec Pack/Media Player Classic/\",\"%ProgramW64%/K-Lite Codec Pack/Media Player Classic/\",\"%ProgramFiles%/Media Player Classic - Home Cinema/\",\"%ProgramW64%/Media Player Classic - Home Cinema/\"],\"RemoveKeywords\":[\"Media Player Classic\",\"MPC-HC\"]},{\"Name\":\"VLC Media Player\",\"Enabled\":true,\"RecognitionMode\":0,\"Files\":[\"vlc.exe\"],\"Folders\":[\"%ProgramFiles%/VideoLAN/VLC/\",\"%%ProgramW64%/VideoLAN/VLC/\"],\"RemoveKeywords\":[\"VLC media player\"]},{\"Name\":\"XBMC\",\"Enabled\":true,\"RecognitionMode\":0,\"Files\":[\"XBMC.exe\"],\"Folders\":[\"%ProgramFiles%/XBMC/\",\"%ProgramW64%/XBMC/\"],\"RemoveKeywords\":[]}]";
+    return MediaFile.toLatin1();
+}
+
 /**************************************************************
  * Cleans up title by removing keywords provided in the item
  *************************************************************/

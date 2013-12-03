@@ -17,15 +17,19 @@ Classes
 
 **AnimeDatabase** - Main database which contains all functions to access single entities.  
 **AnimeEntity** - Hold all anime data and user data for a specific anime.  
+**AnimeEpisode** - Holds all the information about the video file user is currently watching.  
 **ApiManager** - Class which links Ouroboros with the Hummingbird Api.  
+**Common** - Class which contains functions which are common to two or more classes.  
 **CustomGui(Header)** - Contains all modified and custom gui elements, such as Textbox with clear button  
 **FileManager** - Class which handles all loading and saving in Ouroboros.  
 **Globals** - Holds global values which are tweakable.  
 **GUIManager** - Class which acts like an interface between the ui and the data.  
-**HistoryManager** - Manages user anime history, and passes it to Dialog_History  
+**HistoryManager** - Manages user anime history, and passes it to Dialog_History.  
+**MediaManager** - Class which handles anime detection (credits erengy).  
 **Ouroboros** - Main entry point into the program.  
 **QueueItem** - Single queue entity which is used by QueueManager.  
 **QueueManager** - Class that handles queueing of user actions such as authenticating user, getting library etc...  
+**RecogntionEngine** - Class which handles recognition of anime (credits erengy).  
 **Settings** - Holds all settings of Ouroboros.  
 **SingleApplication** - Class derived from QApplication that handles application instances.  
 **ThreadManager** - Class which handles creation and deletion of threads within the application.  
@@ -33,10 +37,11 @@ Classes
 
 ## Dialogs  
 
-**Dialog_Settings** - Settings dialog  
-**Dialog_AnimeInformation** - Displays anime information  
-**Dialog_History** - Displays user anime history  
-**Dialog_Search** - Searches and displays anime from hummingbird  
+**Dialog_Settings** - Settings dialog.  
+**Dialog_AnimeInformation** - Displays anime information.  
+**Dialog_History** - Displays user anime history.  
+**Dialog_Search** - Searches and displays anime from hummingbird.  
+**Dialog_About** - Basic ouroboros about dialog.  
 
 ## Classes not included  
   
@@ -58,6 +63,9 @@ Here is the list of classes that are global and their equivalent variable:
 * **GUIManager** - GUI_Manager  
 * **HistoryManager** - History_Manager
 * **OuroborosSettings** - Settings  
+* **AnimeEpisode** - CurrentEpisode  
+* **MediaManager** - Media_Manager  
+* **RecognitionEngine** - Recognition_Engine  
   
 You may also notice that classes have been put into namespaces. This is used to group classes based on what they are part of or what they do, E.g ApiManager is part of managers  
   
@@ -66,7 +74,8 @@ Here are the list of current namespaces:
 * Anime  
 * Queue  
 * Manager  
-* CustomGui
+* CustomGui  
+* Recognition  
 * Ui - Default Qt namespace 
 
 You may also notice that sometimes objects are created (A *a = new A) but they aren't deleted.  

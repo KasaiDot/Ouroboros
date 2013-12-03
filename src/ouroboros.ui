@@ -594,8 +594,15 @@
     <addaction name="Action_ViewHistory"/>
     <addaction name="Action_ViewSearch"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="Action_About"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="MainToolBar">
    <property name="contextMenuPolicy">
@@ -682,6 +689,11 @@
    </property>
    <property name="toolTip">
     <string>Search anime online</string>
+   </property>
+  </action>
+  <action name="Action_About">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

@@ -23,6 +23,7 @@
 #include <QDebug>
 
 #include "dialog_settings.h"
+#include "dialog_about.h"
 #include "animeentity.h"
 #include "settings.h"
 #include "filemanager.h"
@@ -284,8 +285,8 @@ void Ouroboros::RecievedMessageFromInstance(QStringList Messages)
         if(Message == QString(APP_MESSAGE_SHOWAPP))
         {
             this->showNormal();
-            this->activateWindow();
             this->setFocus();
+            this->activateWindow();
         }
 
     }
@@ -396,4 +397,13 @@ void Ouroboros::on_Action_ViewHistory_triggered()
 void Ouroboros::on_Action_ViewSearch_triggered()
 {
     GUI_Manager.ShowSearchDialog();
+}
+
+/************************
+ * Display about dialog
+ ************************/
+void Ouroboros::on_Action_About_triggered()
+{
+    Dialog_About Dialog;
+    Dialog.exec();
 }

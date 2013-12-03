@@ -118,6 +118,8 @@ private slots:
     void TrayMenuItemClicked(QAction *Action);
     void ShowTrayMessage(QString Title, QString Message, int msecs = 10000);
 
+    void on_Action_About_triggered();
+
 signals:
     void StopDetectionTimer();
 

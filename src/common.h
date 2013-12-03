@@ -31,6 +31,7 @@ void TransliterateSpecial(QString &String);
 void ErasePunctuation(QString &String, bool KeepTrailing);
 void EraseLeft(QString &String1, const QString String2, bool CaseInsensitive);
 void EraseRight(QString &String1, const QString String2, bool CaseInsensitive);
+void Replace(QString &InputString, QString FindString, QString ReplaceString, bool ReplaceAll, bool CaseInsensitive);
 
 
 #endif // COMMON_H

@@ -41,7 +41,8 @@ SOURCES += main.cpp\
     mediamanager.cpp \
     animeepisode.cpp \
     recognitionengine.cpp \
-    common.cpp
+    common.cpp \
+    dialog_about.cpp
 
 HEADERS  += ouroboros.h \
     threadmanager.h \
@@ -66,13 +67,15 @@ HEADERS  += ouroboros.h \
     mediamanager.h \
     animeepisode.h \
     recognitionengine.h \
-    common.h
+    common.h \
+    dialog_about.h
 
 FORMS    += ouroboros.ui \
     dialog_settings.ui \
     dialog_animeinformation.ui \
     dialog_history.ui \
-    dialog_search.ui
+    dialog_search.ui \
+    dialog_about.ui
 
 RESOURCES += \
     Resources.qrc

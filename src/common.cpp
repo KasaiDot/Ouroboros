@@ -60,10 +60,10 @@ void TransliterateSpecial(QString &String)
 void EraseUnnecessary(QString &String)
 {
   EraseLeft(String, "the ", true);
-  String.replace(" the ", " ");
-  String.replace("episode "," ");
-  String.replace(" ep.", " ");
-  String.replace(" specials", " special");
+  //Replace(String, " the ", " ", false, true);
+  String.remove("episode ",Qt::CaseInsensitive);
+  String.remove(" ep.",Qt::CaseInsensitive);
+  Replace(String, " specials", " special", false, true);
 }
 
 void ErasePunctuation(QString &String, bool KeepTrailing)
@@ -72,14 +72,16 @@ void ErasePunctuation(QString &String, bool KeepTrailing)
   auto RLast = StdString.rbegin();
   if (KeepTrailing)
   {
-    RLast = std::find_if(StdString.rbegin(), StdString.rend(), [](wchar_t c) -> bool {
+    RLast = std::find_if(StdString.rbegin(), StdString.rend(), [](wchar_t c) -> bool
+    {
       return !(c == L'!' || // "Hayate no Gotoku!", "K-ON!"...
                c == L'+' || // "Needless+"
                c == L'\''); // "Gintama'"
     });
   }
 
-  auto It = std::remove_if(StdString.begin(), RLast.base(),[](int c) -> bool {
+  auto It = std::remove_if(StdString.begin(), RLast.base(),[](int c) -> bool
+  {
       // Control codes, white-space and punctuation characters
       if (c <= 255 && !isalnum(c)) return true;
       // Unicode stars, hearts, notes, etc. (0x2000-0x2767)
@@ -125,4 +127,48 @@ void EraseRight(QString &String1, const QString String2, bool CaseInsensitive)
     if (!std::equal(String2.begin(), String2.end(), String1.end() - String2.length())) return;
   }
   String1.resize(String1.length() - String2.length());
+}
+
+/*************************************************** Replace functions ******************************************************/
+
+/***********************************************
+ * Custom replace function made by erengy
+ ***********************************************/
+void Replace(QString &InputString, QString FindString, QString ReplaceString, bool ReplaceAll, bool CaseInsensitive)
+{
+
+  std::wstring Input = InputString.toStdWString();
+  std::wstring Find = FindString.toStdWString();
+  std::wstring ReplaceWith = ReplaceString.toStdWString();
+
+  if (Find.empty() || Find == ReplaceWith || Input.length() < Find.length()) return;
+  if (!CaseInsensitive) {
+    for (size_t Pos = Input.find(Find); Pos != std::wstring::npos; Pos = Input.find(Find, Pos))
+    {
+      Input.replace(Pos, Find.length(), ReplaceWith);
+      if (!ReplaceAll) Pos += ReplaceWith.length();
+    }
+  } else {
+    for (size_t i = 0; i < Input.length() - Find.length() + 1; i++)
+    {
+      for (size_t j = 0; j < Find.length(); j++)
+      {
+        if (Input.length() < Find.length()) return;
+        if (tolower(Input[i + j]) == tolower(Find[j]))
+        {
+          if (j == Find.length() - 1)
+          {
+            Input.replace(i--, Find.length(), ReplaceWith);
+            if (!ReplaceAll) i += ReplaceWith.length();
+            break;
+          }
+        } else {
+          i += j;
+          break;
+        }
+      }
+    }
+  }
+
+  InputString = QString::fromStdWString(Input);
 }

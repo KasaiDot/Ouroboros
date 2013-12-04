@@ -27,6 +27,7 @@
 #include <QMessageBox>
 
 #define UNIQUE_ID "Ouroboros_Hummingbird"
+#define UNIQUIE_DEBUG_ID "Ouroboros_Debug"
 
 /***********************************
  * Writes application version info
@@ -108,7 +109,8 @@ void CheckUpdaterFiles(QString UpdaterFilename)
 
 int main(int argc, char *argv[])
 {
-    SingleApplication App(argc, argv,UNIQUE_ID);
+    QString APP_ID = (APP_DEBUG) ? UNIQUIE_DEBUG_ID : UNIQUE_ID;
+    SingleApplication App(argc, argv,APP_ID);
     //check if there is another process running
     if(App.AlreadyExists())
     {

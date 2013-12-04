@@ -84,10 +84,16 @@ void ErasePunctuation(QString &String, bool KeepTrailing)
     });
   }
 
+
   auto It = std::remove_if(StdString.begin(), RLast.base(),[](int c) -> bool
   {
+      //Characters to keep, to distinguish certain anime
+      // E.g, Shinryaku! Ika Musume and Shinryaku!! Ika Musume
+      //      Working!! and Working'!!
+      QString KeepChars = "!'";
+
       // Control codes, white-space and punctuation characters
-      if (c <= 255 && !isalnum(c)) return true;
+      if (c <= 255 && !isalnum(c) && !KeepChars.contains(QChar(c))) return true;
       // Unicode stars, hearts, notes, etc. (0x2000-0x2767)
       if (c > 8192 && c < 10087) return true;
       // Valid character

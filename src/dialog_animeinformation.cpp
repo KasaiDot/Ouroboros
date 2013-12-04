@@ -23,10 +23,14 @@
 
 Dialog_AnimeInformation::Dialog_AnimeInformation(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::Dialog_AnimeInformation)
+    ui(new Ui::Dialog_AnimeInformation),
+    ShowMyInfo(false)
 {
     ui->setupUi(this);
     setWindowFlags(this->windowFlags() |= Qt::MSWindowsFixedSizeDialogHint);
+
+    connect(ui->ActionListWidget,SIGNAL(currentRowChanged(int)),ui->stackedWidget,SLOT(setCurrentIndex(int)));
+    ui->ActionListWidget->setCurrentRow(0);
 }
 
 Dialog_AnimeInformation::~Dialog_AnimeInformation()
@@ -37,8 +41,11 @@ Dialog_AnimeInformation::~Dialog_AnimeInformation()
 /*********************************************************
  * Extracts information from the anime and sets the info
  ********************************************************/
-void Dialog_AnimeInformation::ParseAnime(Anime::AnimeEntity &Entity)
+void Dialog_AnimeInformation::ParseAnime(Anime::AnimeEntity &Entity, bool ShowMyInfo)
 {
+    this->Entity = &Entity;
+    this->ShowMyInfo = ShowMyInfo;
+
     //download the image if not availiable
     File_Manager.SaveAnimeImage(&Entity);
 
@@ -93,5 +100,79 @@ void Dialog_AnimeInformation::ParseAnime(Anime::AnimeEntity &Entity)
         this->ui->Genres->setText(GenreList);
     }
 
+    //Set recogntition titles
+    QString RecognitionString;
+    foreach(QString Title,Entity.GetRecognitionTitles())
+    {
+        RecognitionString.append(Title + ",");
+    }
+    if(!RecognitionString.isEmpty())
+        RecognitionString.chop(1); //Remove the trailing comma
+
+    ui->AlternateRecognitionTitles->setText(RecognitionString);
+
+    if(ShowMyInfo)
+    {
+        ui->ActionListWidget->addItem("My Information");
+
+        Anime::UserAnimeInformation *UserInfo = Entity.GetUserInfo();
+
+        //Set the episodes
+        int MaxEpisodes = (Entity.GetAnimeEpisodeCount() == ANIMEENTITY_UNKNOWN_ANIME_EPISODE) ? 999 : Entity.GetAnimeEpisodeCount();
+        int CurrentEpisode = (UserInfo->GetEpisodesWatched() == ANIMEENTITY_UNKNOWN_USER_EPISODE) ? 0 : UserInfo->GetEpisodesWatched();
+        ui->EpisodeSpinBox->setMaximum(MaxEpisodes);
+        ui->EpisodeSpinBox->setValue(CurrentEpisode);
+
+        //set the rewatching checkbox
+        if(UserInfo->GetStatus() == STATUS_COMPLETED)
+        {
+            ui->RewatchingCheckBox->setChecked(UserInfo->isRewatching());
+        } else {
+            ui->RewatchingCheckBox->setEnabled(false);
+        }
+
+        //Set the status and score
+        ui->StatusComboBox->setCurrentIndex(GetStatusIndex(UserInfo->GetStatus()));
+        ui->ScoreComboBox->setCurrentIndex(UserInfo->GetRatingValue() * 2);
+    }
+
+
+}
+
+/****************************************
+ * Rewatching checkbox clicked by user
+ ****************************************/
+void Dialog_AnimeInformation::on_RewatchingCheckBox_toggled(bool Checked)
+{
+    if(Checked)
+    {
+        ui->EpisodeSpinBox->setValue(0);
+        ui->StatusComboBox->setEnabled(false);
+    } else {
+        int CurrentEpisode = (Entity->GetUserInfo()->GetEpisodesWatched() == ANIMEENTITY_UNKNOWN_USER_EPISODE) ? 0 : Entity->GetUserInfo()->GetEpisodesWatched();
+        ui->EpisodeSpinBox->setValue(CurrentEpisode);
+        ui->StatusComboBox->setEnabled(true);
+    }
+}
+
+/***********************
+ * User clicked ok
+ ***********************/
+void Dialog_AnimeInformation::on_MainButtonBox_accepted()
+{
+    //Set the recognition names
+    QStringList RecognitionNames = ui->AlternateRecognitionTitles->text().split(",");
+    Entity->SetRecognitionTitles(RecognitionNames);
+
+    if(ShowMyInfo)
+    {
+        //Set user info
+        Entity->GetUserInfo()->SetRewatching(ui->RewatchingCheckBox->isChecked());
+        Entity->GetUserInfo()->SetEpisodesWatched(ui->EpisodeSpinBox->value(),true);
+        Entity->GetUserInfo()->SetStatus(GetStatusName(ui->StatusComboBox->currentIndex()));
+        Entity->GetUserInfo()->SetRatingValue(ui->ScoreComboBox->currentIndex() / 2);
+
+        emit UpdateAnime(Entity);
+    }
 
 }

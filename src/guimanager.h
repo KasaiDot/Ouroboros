@@ -119,7 +119,7 @@ public slots:
     void ShowViewItemComtextMenu(const QPoint &Pos);
 
     //Menu functions
-    void ShowAnimeInformationDialog(Anime::AnimeEntity &Entity);
+    void ShowAnimeInformationDialog(Anime::AnimeEntity &Entity, bool ShowMyInfo = true);
     void ShowSearchDialog(QString Text = "");
     bool EditUserEpisodes(Anime::AnimeEntity *Entity);
 

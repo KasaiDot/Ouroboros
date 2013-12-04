@@ -136,27 +136,101 @@ AnimeEntity* AnimeDatabase::GetAnime(QString Slug) const
     return nullptr;
 }
 
+AnimeEntity *AnimeDatabase::GetAnime(AnimeEpisode &Episode, bool Strict)
+{
+    for(auto it = Database.begin(); it != Database.end(); ++it)
+    {
+        AnimeEntity *Anime = it.value();
+        if(CompareEpisode(Episode,Anime,Strict))
+            return GetAnime(Episode.Slug);
+    }
+
+    return nullptr;
+}
+
+/***************************************************
+ * Compares the anime with the episode provided
+ ****************************************************/
+bool AnimeDatabase::CompareEpisode(AnimeEpisode &Episode, AnimeEntity *Entity, bool Strict)
+{
+    //Since detection works with clean titles, we leave it if it is empty
+    if(Episode.CleanTitle.isEmpty()) return false;
+
+    bool Found = CompareCleanTitles(Episode,Entity,Strict);
+
+    if(!Found) return false;
+
+    //Assume user is watching episode 1 if the anime is one episode long
+    if(Episode.Number.isEmpty() && Entity->GetAnimeEpisodeCount() == 1)
+        Episode.Number = "1";
+
+    Episode.Slug = Entity->GetAnimeSlug();
+    return true;
+}
+
+/*********************************************************************
+ * Compares clean titles of the episode to that of the anime entity
+ **********************************************************************/
+bool AnimeDatabase::CompareCleanTitles(AnimeEpisode &Episode, AnimeEntity *Entity, bool Strict)
+{
+
+    //Check if the entity contains clean titles
+    if(!Entity->GetCleanTitles().size() > 0) Entity->CleanAllTitles();
+
+    //Check again to see if it has any clean titles
+    if(!Entity->GetCleanTitles().size() > 0) return false;
+
+    foreach (QString CleanTitle, Entity->GetCleanTitles())
+    {
+        //Compare with Title + number
+        if(Strict && Entity->GetAnimeEpisodeCount() == 1 && !Episode.Number.isEmpty())
+        {
+            if(QString(Episode.CleanTitle.trimmed() + Episode.Number).trimmed() == CleanTitle.trimmed())
+            {
+                Episode.Title.append(Episode.Number);
+                Episode.Number.clear();
+                return true;
+            }
+        }
+
+        //Compare with title
+        if(Strict)
+        {
+            if(CleanTitle.trimmed() == Episode.CleanTitle.trimmed()) return true;
+        } else {
+            if(CleanTitle.trimmed().contains(Episode.CleanTitle.trimmed(),Qt::CaseInsensitive)) return true;
+        }
+    }
+
+    //Failed
+    return false;
+}
+
 
 /*******************************************************
  * Retrieves anime from the database based on the title
  * This may take time depending on the size of the list.
  * If no slug is found then we return 'unknown slug'
  *******************************************************/
-QString AnimeDatabase::GetAnimeSlug(QString Title, bool isCleanTitle, bool Strict)
+QString AnimeDatabase::GetAnimeSlug(QString Title, bool Strict)
 {
     QString Slug = QString(ANIMEDATABASE_UKNOWN_SLUG);
 
     for(auto it = Database.begin(); it != Database.end(); ++it)
     {
         AnimeEntity *Anime = it.value();
+        QString TrimmedTitle = Title.trimmed();
+        QString TrimmedAnimeTitle = Anime->GetAnimeTitle().trimmed();
+        QString TrimmedAnimeAlternateTitle = Anime->GetAnimeAlternateTitle().trimmed();
+
         if(Strict)
         {
-            if((Anime->GetAnimeTitle(isCleanTitle).trimmed() == Title.trimmed()) || (Anime->GetAnimeAlternateTitle(isCleanTitle).trimmed() == Title.trimmed()))
+            if((TrimmedAnimeTitle == TrimmedTitle) || (TrimmedAnimeAlternateTitle == TrimmedTitle))
                 Slug = Anime->GetAnimeSlug();
         } else {
 
-            if(Anime->GetAnimeTitle(isCleanTitle).toLower() == Title.toLower() || Anime->GetAnimeAlternateTitle(isCleanTitle).toLower() == Title.toLower() ||
-                    Anime->GetAnimeTitle(isCleanTitle).contains(Title,Qt::CaseInsensitive) || Anime->GetAnimeAlternateTitle(isCleanTitle).contains(Title,Qt::CaseInsensitive))
+            if(TrimmedAnimeTitle.toLower() == TrimmedTitle.toLower() || TrimmedAnimeAlternateTitle.toLower() == TrimmedTitle.toLower() ||
+                    TrimmedAnimeTitle.contains(TrimmedTitle,Qt::CaseInsensitive) || TrimmedAnimeAlternateTitle.contains(TrimmedTitle,Qt::CaseInsensitive))
                 Slug = Anime->GetAnimeSlug();
         }
     }

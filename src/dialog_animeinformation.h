@@ -33,10 +33,64 @@ class Dialog_AnimeInformation : public QDialog
 public:
     explicit Dialog_AnimeInformation(QWidget *parent = 0);
     ~Dialog_AnimeInformation();
-    void ParseAnime(Anime::AnimeEntity &Entity);
+    void ParseAnime(Anime::AnimeEntity &Entity, bool ShowMyInfo = true);
+    inline QString GetStatusName(int Index)
+    {
+        switch (Index)
+        {
+            case 0:
+                return QString(STATUS_CURRENTLY_WATCHING);
+            break;
+
+            case 1:
+                return QString(STATUS_COMPLETED);
+            break;
+
+            case 2:
+                return QString(STATUS_ON_HOLD);
+            break;
+
+            case 3:
+                return QString(STATUS_PLAN_TO_WATCH);
+            break;
+
+            case 4:
+                return QString(STATUS_DROPPED);
+            break;
+
+            default:
+                return "";
+            break;
+        }
+    }
+    inline int GetStatusIndex(QString Status)
+    {
+        if(Status == STATUS_CURRENTLY_WATCHING)
+            return 0;
+        else if(Status == STATUS_COMPLETED)
+            return 1;
+        else if(Status == STATUS_ON_HOLD)
+            return 2;
+        else if(Status == STATUS_PLAN_TO_WATCH)
+            return 3;
+        else if(Status == STATUS_DROPPED)
+            return 4;
+
+        return 0;
+    }
+
+private slots:
+    void on_RewatchingCheckBox_toggled(bool Checked);
+
+    void on_MainButtonBox_accepted();
+
+signals:
+    void UpdateAnime(Anime::AnimeEntity *Entity);
 
 private:
     Ui::Dialog_AnimeInformation *ui;
+    Anime::AnimeEntity *Entity;
+    bool ShowMyInfo;
 };
 
 #endif // DIALOG_ANIMEINFORMATION_H

@@ -57,6 +57,7 @@ AnimeEntity::AnimeEntity(AnimeEntity &Entity)
     SetAnimeSynopsis(Entity.GetAnimeSynopsis());
     SetAnimeTitle(Entity.GetAnimeTitle());
     SetAnimeUrl(Entity.GetAnimeUrl());
+    SetRecognitionTitles(Entity.GetRecognitionTitles());
     UserAnimeInformation *Info = Entity.GetUserInfo();
     SetUserInfo(*Info);
 }
@@ -73,7 +74,32 @@ AnimeEntity::AnimeEntity(const AnimeEntity &Entity)
     SetAnimeSynopsis(Entity.GetAnimeSynopsis());
     SetAnimeTitle(Entity.GetAnimeTitle());
     SetAnimeUrl(Entity.GetAnimeUrl());
+    SetRecognitionTitles(Entity.GetRecognitionTitles());
     SetUserInfo(*Entity.GetConstUserInfo());
+}
+
+
+/**************************************************************************
+ * This function compares the titles and alternate titles of two entities
+ **************************************************************************/
+bool AnimeEntity::CompareTitle(AnimeEntity &Entity)
+{
+    if( (Entity.GetAnimeTitle() == GetAnimeTitle()) ||
+            (Entity.GetAnimeAlternateTitle() == GetAnimeTitle()) ||
+            (Entity.GetAnimeTitle() == GetAnimeAlternateTitle()) ||
+            (Entity.GetAnimeAlternateTitle() == GetAnimeAlternateTitle()))
+        return true;
+
+    return false;
+}
+
+bool AnimeEntity::operator ==(const AnimeEntity &Other)
+{
+    //Compare the slugs since they are the key values
+    if(this->GetAnimeSlug() == Other.GetAnimeSlug())
+        return true;
+
+    return false;
 }
 
 /**********************************
@@ -107,6 +133,14 @@ bool AnimeEntity::ParseAnimeJson(QByteArray Data, bool ContainsUserInfo)
     SetAnimeSynopsis(AnimeInfoMap.value("synopsis","").toString());
     SetAnimeShowType(AnimeInfoMap.value("show_type","").toString());
 
+    if(AnimeInfoMap.contains("recognition"))
+    {
+        QVariantList RecognitionVariantList = AnimeInfoMap.value("recognition").toList();
+        QStringList  RecognitionList;
+        foreach(QVariant Title, RecognitionVariantList)
+            RecognitionList << Title.toString();
+        SetRecognitionTitles(RecognitionList);
+    }
 
     //Go through each genre
     if(AnimeInfoMap.contains("genres"))
@@ -127,29 +161,6 @@ bool AnimeEntity::ParseAnimeJson(QByteArray Data, bool ContainsUserInfo)
     }
 
     return true;
-}
-
-/**************************************************************************
- * This function compares the titles and alternate titles of two entities
- **************************************************************************/
-bool AnimeEntity::CompareTitle(AnimeEntity &Entity)
-{
-    if( (Entity.GetAnimeTitle() == GetAnimeTitle()) ||
-            (Entity.GetAnimeAlternateTitle() == GetAnimeTitle()) ||
-            (Entity.GetAnimeTitle() == GetAnimeAlternateTitle()) ||
-            (Entity.GetAnimeAlternateTitle() == GetAnimeAlternateTitle()))
-        return true;
-
-    return false;
-}
-
-bool AnimeEntity::operator ==(const AnimeEntity &Other)
-{
-    //Compare the slugs since they are the key values
-    if(this->GetAnimeSlug() == Other.GetAnimeSlug())
-        return true;
-
-    return false;
 }
 
 /*****************************************************************
@@ -189,8 +200,16 @@ QJsonDocument AnimeEntity::ConstructAnimeJsonDocument()
 
         GenreArray.append(GenreObjectValue);
     }
-
     QJsonValue Genres(GenreArray);
+
+    //Save recognition titles
+    QJsonArray RecognitionArray;
+    foreach(QString Title,RecognitionTitles)
+    {
+        QJsonValue TitleValue(Title);
+        RecognitionArray.append(TitleValue);
+    }
+    QJsonValue RecognitionValue(RecognitionArray);
 
     //Construct the json file
     QJsonObject EntityObject;
@@ -203,6 +222,7 @@ QJsonDocument AnimeEntity::ConstructAnimeJsonDocument()
     EntityObject.insert("cover_image",ImageLink);
     EntityObject.insert("synopsis",Synopsis);
     EntityObject.insert("show_type",ShowType);
+    EntityObject.insert("recognition",RecognitionValue);
 
     if(!GenreArray.isEmpty())
         EntityObject.insert("genres",Genres);
@@ -286,6 +306,35 @@ QJsonObject AnimeEntity::ConstructUpdateJsonObject()
         Object.insert("notes",UserInfo.GetNotes());
 
     return Object;
+}
+
+/***********************************************************************
+ * Cleans all anime titles and appends them to the cleantitles list
+ ***********************************************************************/
+void AnimeEntity::CleanAllTitles()
+{
+    CleanTitles.clear();
+
+    //Add user recognition names first
+    foreach (QString Title, RecognitionTitles)
+    {
+        QString CleanedTitle = Title;
+        CleanTitle(CleanedTitle);
+        CleanTitles << CleanedTitle;
+    }
+
+
+    //Add the anime clean titles last
+    QString CleanAnimeTitle = AnimeTitle;
+    QString CleanAlternateTitle = AnimeAlternateTitle;
+
+    //Clean titles
+    CleanTitle(CleanAnimeTitle);
+    CleanTitle(CleanAlternateTitle);
+
+    CleanTitles << CleanAnimeTitle << CleanAlternateTitle;
+
+
 }
 
 //******************************************************************************************************

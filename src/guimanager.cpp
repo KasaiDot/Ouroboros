@@ -732,10 +732,17 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
 /**************************************
  * Shows the anime information dialog
  *************************************/
-void GUIManager::ShowAnimeInformationDialog(Anime::AnimeEntity &Entity)
+void GUIManager::ShowAnimeInformationDialog(Anime::AnimeEntity &Entity, bool ShowMyInfo)
 {
     Dialog_AnimeInformation InfoDialog;
-    InfoDialog.ParseAnime(Entity);
+
+    connect(&InfoDialog,SIGNAL(UpdateAnime(Anime::AnimeEntity*)),this,SLOT(UpdateAnime(Anime::AnimeEntity*)));
+    connect(&InfoDialog,&Dialog_AnimeInformation::UpdateAnime,[=](Anime::AnimeEntity *AnimeEntity)
+    {
+        UpdateHummingbirdAnime(AnimeEntity->GetAnimeSlug());
+    });
+
+    InfoDialog.ParseAnime(Entity,ShowMyInfo);
     InfoDialog.exec();
 }
 

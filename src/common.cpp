@@ -29,6 +29,10 @@ void CleanTitle(QString &Title)
     EraseUnnecessary(Title);
     TransliterateSpecial(Title);
     ErasePunctuation(Title, true);
+
+    //Trim the title and make it all lowercase
+    QString TrimmedTitle = Title.trimmed();
+    Title = TrimmedTitle.toLower();
 }
 
 void TransliterateSpecial(QString &String)
@@ -60,7 +64,7 @@ void TransliterateSpecial(QString &String)
 void EraseUnnecessary(QString &String)
 {
   EraseLeft(String, "the ", true);
-  //Replace(String, " the ", " ", false, true);
+  Replace(String, " the ", " ", false, true);
   String.remove("episode ",Qt::CaseInsensitive);
   String.remove(" ep.",Qt::CaseInsensitive);
   Replace(String, " specials", " special", false, true);

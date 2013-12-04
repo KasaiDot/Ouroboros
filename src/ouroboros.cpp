@@ -31,6 +31,7 @@
 #include "guimanager.h"
 #include "historymanager.h"
 #include "mediamanager.h"
+#include "recognitionengine.h"
 
 Ouroboros::Ouroboros(QWidget *parent) :
     QMainWindow(parent),

@@ -229,17 +229,13 @@ void MediaManager::DetectAnime()
                 //Check if we are not watching an episode
                 if(Recognition_Engine.ExamineTitle(CurrentTitle,CurrentEpisode))
                 {
-                    QString AnimeSlug = Anime_Database.GetAnimeSlug(CurrentEpisode.CleanTitle,true,false);
-                    if(AnimeSlug != ANIMEDATABASE_UKNOWN_SLUG)
+                    Entity = Anime_Database.GetAnime(CurrentEpisode,true);
+                    if(Entity)
                     {
-                        Entity = Anime_Database.GetAnime(AnimeSlug);
-                        if(Entity)
-                        {
-                            SetTitleChanged(false);
-                            CurrentEpisode.Set(Entity->GetAnimeSlug());
-                            GUI_Manager.StartWatching(CurrentEpisode,Entity);
-                            return;
-                        }
+                        SetTitleChanged(false);
+                        CurrentEpisode.Set(Entity->GetAnimeSlug());
+                        GUI_Manager.StartWatching(CurrentEpisode,Entity);
+                        return;
                     }
                 }
                 //Not recognised

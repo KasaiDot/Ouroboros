@@ -217,7 +217,7 @@ void Dialog_Search::ShowCustomContextMenu(const QPoint &Pos)
 
     if(ActionValue == SearchMenuAction_ViewInformation)
     {
-        GUI_Manager.ShowAnimeInformationDialog(Entity);
+        GUI_Manager.ShowAnimeInformationDialog(Entity,false);
     } else {
 
         //get the status
@@ -265,7 +265,7 @@ void Dialog_Search::HandleDoubleClick(QModelIndex Index)
     if(!AnimeList.contains(Slug)) return;
     Anime::AnimeEntity Entity = AnimeList.value(Slug);
 
-    GUI_Manager.ShowAnimeInformationDialog(Entity);
+    GUI_Manager.ShowAnimeInformationDialog(Entity, false);
 }
 
 /***************************************************

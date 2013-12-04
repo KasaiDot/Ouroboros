@@ -41,7 +41,13 @@ public:
     void NewAnime(AnimeEntity* Anime, QString UserStatus);
     AnimeEntity* RemoveAnime(QString Slug, bool Delete = true);
     bool RemoveAnime(AnimeEntity* Anime, bool Delete = true);
+
     AnimeEntity* GetAnime(QString Slug) const;
+    AnimeEntity* GetAnime(Anime::AnimeEpisode &Episode, bool Strict = false);
+
+    bool CompareEpisode(Anime::AnimeEpisode &Episode, AnimeEntity *Entity, bool Strict);
+    bool CompareCleanTitles(Anime::AnimeEpisode &Episode,AnimeEntity *Entity, bool Strict);
+
     inline int GetDatabaseSize() const { return Database.size(); }
     inline bool Contains(QString Slug) const { return Database.contains(Slug); }
     void ClearDatabase();
@@ -54,7 +60,7 @@ public:
     AnimeEntity* TakeAnime(QString Slug) { return Database.take(Slug); }
 
     //Get the slug of an anime based on the title/alternate title
-    QString GetAnimeSlug(QString Title, bool isCleanTitle = false, bool Strict = false);
+    QString GetAnimeSlug(QString Title, bool Strict = false);
 
     //Parses JSON data recieved from the api and creates a list
     void ParseJson(QByteArray Data);

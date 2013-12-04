@@ -169,7 +169,6 @@ private:
 
     //Number of anime episodes
     int AnimeEpisodes;
-
 };
 
 class AnimeEntity
@@ -223,34 +222,11 @@ public:
     QString GetAnimeUrl() const { return AnimeUrl; }
     inline void SetAnimeUrl(QString Url) { AnimeUrl = Url; }
 
-    QString GetAnimeTitle(bool Clean = false) const
-    {
-        if(!Clean)
-            return AnimeTitle;
-        return CleanAnimeTitle;
-    }
-    inline void SetAnimeTitle(QString Title,bool SetCleanTitleOnly = false)
-    {
-        if(!SetCleanTitleOnly)
-            AnimeTitle = Title;
+    QString GetAnimeTitle() const { return AnimeTitle; }
+    inline void SetAnimeTitle(QString Title) { AnimeTitle = Title; CleanAllTitles(); }
 
-        CleanAnimeTitle = Title;
-        CleanTitle(CleanAnimeTitle);
-    }
-
-    QString GetAnimeAlternateTitle(bool Clean = false) const
-    {
-        if(!Clean)
-            return AnimeAlternateTitle;
-        return CleanAnimeTitle;
-    }
-    inline void SetAnimeAlternateTitle(QString AlternateTitle, bool SetCleanTitleOnly = false)
-    {
-        if(!SetCleanTitleOnly)
-            AnimeAlternateTitle = AlternateTitle;
-        CleanAlternateTitle = AlternateTitle;
-        CleanTitle(CleanAlternateTitle);
-    }
+    QString GetAnimeAlternateTitle() const { return AnimeAlternateTitle; }
+    inline void SetAnimeAlternateTitle(QString AlternateTitle) {  AnimeAlternateTitle = AlternateTitle; CleanAllTitles(); }
 
     int GetAnimeEpisodeCount() const { return AnimeEpisodeCount; }
     inline void SetAnimeEpisodeCount(int EpisodeCount) { if(EpisodeCount >= 0) AnimeEpisodeCount = EpisodeCount; }
@@ -270,6 +246,13 @@ public:
 
     bool isUserInfoSet() const { return UserInfoSet; }
 
+    //Recognition
+    void CleanAllTitles();
+    inline QStringList GetCleanTitles() const { return CleanTitles; }
+
+    inline void SetRecognitionTitles(QStringList List) { RecognitionTitles = List; CleanAllTitles(); }
+    inline QStringList GetRecognitionTitles() const { return RecognitionTitles; }
+
 
 private:
 
@@ -280,9 +263,9 @@ private:
     QString AnimeTitle;
     QString AnimeAlternateTitle;
 
-    //Used with recognition
-    QString CleanAnimeTitle;
-    QString CleanAlternateTitle;
+    //recognition
+    QStringList CleanTitles;
+    QStringList RecognitionTitles;
 
     int AnimeEpisodeCount;
     QString AnimeImage;

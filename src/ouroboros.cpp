@@ -22,6 +22,7 @@
 #include <QTimer>
 #include <QDebug>
 
+#include "appinfo.h"
 #include "dialog_settings.h"
 #include "dialog_about.h"
 #include "animeentity.h"
@@ -32,6 +33,10 @@
 #include "historymanager.h"
 #include "mediamanager.h"
 #include "recognitionengine.h"
+
+//Class which contains a definition APP_DEBUG to indicate whether we are debugging or not
+//this is in a seperate header to minimize build times
+#include "ouroborosdebug.h"
 
 Ouroboros::Ouroboros(QWidget *parent) :
     QMainWindow(parent),
@@ -46,7 +51,6 @@ Ouroboros::Ouroboros(QWidget *parent) :
     if(APP_DEBUG) Title.append(" Debug");
     this->setWindowTitle(Title);
     SetViewLayouts();
-
 
     //setup tray icon
     SetupTrayIcon();
@@ -162,6 +166,7 @@ void Ouroboros::SetupTrayIcon()
 {
     TrayIcon = new QSystemTrayIcon(QIcon(":/Resources/Icon.png"),this);
     QString ToolTip = QString("%1 %2.%3").arg(APP_NAME).arg(QString::number(APP_MAJOR_VERSION)).arg(QString::number(APP_MINOR_VERSION));
+    if(APP_DEBUG) ToolTip.append(" DEBUG");
     TrayIcon->setToolTip(ToolTip);
 
     //create the menu

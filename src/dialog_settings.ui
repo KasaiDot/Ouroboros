@@ -97,6 +97,12 @@
             </item>
             <item>
              <widget class="QLineEdit" name="UsernameField">
+              <property name="toolTip">
+               <string>Type in hummigbird username(not email) here</string>
+              </property>
+              <property name="whatsThis">
+               <string>Type in hummigbird username(not email) here</string>
+              </property>
               <property name="placeholderText">
                <string>Username here ...</string>
               </property>
@@ -117,6 +123,12 @@
              <widget class="QLineEdit" name="PasswordField">
               <property name="contextMenuPolicy">
                <enum>Qt::PreventContextMenu</enum>
+              </property>
+              <property name="toolTip">
+               <string>Type in hummingbird password here</string>
+              </property>
+              <property name="whatsThis">
+               <string>Type in hummingbird password here</string>
               </property>
               <property name="inputMask">
                <string/>
@@ -139,6 +151,12 @@
           </item>
           <item>
            <widget class="QPushButton" name="AccountTestButton">
+            <property name="toolTip">
+             <string>Test to see if username and password are correct.</string>
+            </property>
+            <property name="whatsThis">
+             <string>Test to see if username and password are correct.</string>
+            </property>
             <property name="text">
              <string>Test</string>
             </property>
@@ -220,6 +238,9 @@
               <layout class="QVBoxLayout" name="verticalLayout_5">
                <item>
                 <widget class="QCheckBox" name="Application_TrayMinimize">
+                 <property name="toolTip">
+                  <string>Check this if you want hummingbird to minimize to tray when you click the minimize button</string>
+                 </property>
                  <property name="text">
                   <string>Minimize to tray</string>
                  </property>
@@ -227,6 +248,9 @@
                </item>
                <item>
                 <widget class="QCheckBox" name="Application_TrayClose">
+                 <property name="toolTip">
+                  <string>Check this if you want hummingbird to minimize to tray when you click the close button</string>
+                 </property>
                  <property name="text">
                   <string>Close to tray</string>
                  </property>
@@ -277,6 +301,9 @@
                  <layout class="QHBoxLayout" name="horizontalLayout_13">
                   <item>
                    <widget class="QCheckBox" name="Recognition_Enabled">
+                    <property name="toolTip">
+                     <string>Enable recognition</string>
+                    </property>
                     <property name="text">
                      <string>Enabled</string>
                     </property>
@@ -297,6 +324,9 @@
                   </item>
                   <item>
                    <widget class="QLabel" name="label">
+                    <property name="toolTip">
+                     <string>The amount of time before an anime episode is marked as watched</string>
+                    </property>
                     <property name="text">
                      <string>Delay (Seconds):</string>
                     </property>
@@ -304,6 +334,9 @@
                   </item>
                   <item>
                    <widget class="QSpinBox" name="Recognition_DelaySpinBox">
+                    <property name="toolTip">
+                     <string>The amount of time before an anime episode is marked as watched</string>
+                    </property>
                     <property name="suffix">
                      <string/>
                     </property>
@@ -321,6 +354,9 @@
               <layout class="QHBoxLayout" name="horizontalLayout_16">
                <item>
                 <widget class="QCheckBox" name="Recogntion_MPClose">
+                 <property name="toolTip">
+                  <string>If ticked, this will update anime after the media player closes</string>
+                 </property>
                  <property name="text">
                   <string>Wait for media player to close</string>
                  </property>
@@ -341,6 +377,9 @@
                </item>
                <item>
                 <widget class="QCheckBox" name="Recogntion_MPFocus">
+                 <property name="toolTip">
+                  <string>If ticked, delay time will only decrease if the media player is in focus</string>
+                 </property>
                  <property name="text">
                   <string>Media player must be in focus</string>
                  </property>
@@ -352,6 +391,9 @@
               <layout class="QVBoxLayout" name="verticalLayout_7">
                <item>
                 <widget class="QCheckBox" name="Recogntion_NotifyRecognised">
+                 <property name="toolTip">
+                  <string>Shows a popup message when an episode is recognised</string>
+                 </property>
                  <property name="text">
                   <string>Notify me when episode is recognised</string>
                  </property>
@@ -359,6 +401,9 @@
                </item>
                <item>
                 <widget class="QCheckBox" name="Recogntion_NotifyNotRecognised">
+                 <property name="toolTip">
+                  <string>Shows a popup message when an episode is not recognised</string>
+                 </property>
                  <property name="text">
                   <string>Notify me when an episode is not recognised</string>
                  </property>
@@ -367,11 +412,6 @@
               </layout>
              </item>
             </layout>
-            <zorder>frame_3</zorder>
-            <zorder>Recogntion_NotifyRecognised</zorder>
-            <zorder>Recogntion_NotifyNotRecognised</zorder>
-            <zorder>Recogntion_MPClose</zorder>
-            <zorder>label</zorder>
            </widget>
           </item>
           <item>
@@ -416,6 +456,9 @@
               <layout class="QHBoxLayout" name="horizontalLayout_4">
                <item>
                 <widget class="QLabel" name="ProgressBar_TextColorLabel">
+                 <property name="toolTip">
+                  <string>Change the progress bar text color</string>
+                 </property>
                  <property name="text">
                   <string>Text Color: </string>
                  </property>
@@ -473,6 +516,9 @@
               <layout class="QHBoxLayout" name="horizontalLayout_5">
                <item>
                 <widget class="QLabel" name="ProgressBar_OutlineColorLabel">
+                 <property name="toolTip">
+                  <string>Change the progress bar outline color</string>
+                 </property>
                  <property name="text">
                   <string>Outline Color: </string>
                  </property>
@@ -527,6 +573,9 @@
               <layout class="QHBoxLayout" name="horizontalLayout_6">
                <item>
                 <widget class="QLabel" name="ProgressBar_BackgroundColorLabel">
+                 <property name="toolTip">
+                  <string>Change the progress bar background color</string>
+                 </property>
                  <property name="text">
                   <string>Background Color: </string>
                  </property>
@@ -581,6 +630,9 @@
               <layout class="QHBoxLayout" name="horizontalLayout_8">
                <item>
                 <widget class="QLabel" name="ProgressBar_CurrentlyWatchingColorLabel">
+                 <property name="toolTip">
+                  <string>Change the progress bar color when the anime status is set to Currently watching</string>
+                 </property>
                  <property name="text">
                   <string>Currently Watching Color:</string>
                  </property>
@@ -635,6 +687,9 @@
               <layout class="QHBoxLayout" name="horizontalLayout_7">
                <item>
                 <widget class="QLabel" name="ProgressBar_CompletedColorLabel">
+                 <property name="toolTip">
+                  <string>Change the progress bar color when the anime status is set to Completed</string>
+                 </property>
                  <property name="text">
                   <string>Completed Color:</string>
                  </property>
@@ -689,6 +744,9 @@
               <layout class="QHBoxLayout" name="horizontalLayout_10">
                <item>
                 <widget class="QLabel" name="ProgressBar_OnHoldColorLabel">
+                 <property name="toolTip">
+                  <string>Change the progress bar color when the anime status is set to On hold</string>
+                 </property>
                  <property name="text">
                   <string>On Hold Color:</string>
                  </property>
@@ -743,6 +801,9 @@
               <layout class="QHBoxLayout" name="horizontalLayout_11">
                <item>
                 <widget class="QLabel" name="ProgressBar_DroppedColorLabel">
+                 <property name="toolTip">
+                  <string>Change the progress bar color when the anime status is set to Dropped</string>
+                 </property>
                  <property name="text">
                   <string>Dropped Color:</string>
                  </property>
@@ -825,6 +886,12 @@
          <weight>50</weight>
          <bold>false</bold>
         </font>
+       </property>
+       <property name="toolTip">
+        <string>Reset all settings to default ouroboros settings</string>
+       </property>
+       <property name="whatsThis">
+        <string>Reset all settings to default ouroboros settings</string>
        </property>
        <property name="text">
         <string>Restore default settings</string>

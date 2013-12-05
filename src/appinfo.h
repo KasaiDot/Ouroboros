@@ -16,21 +16,14 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "dialog_about.h"
-#include "ui_dialog_about.h"
+#ifndef APPINFO_H
+#define APPINFO_H
 
-#include "appinfo.h"
+#define APP_NAME "Ouroboros"
+#define APP_MINOR_VERSION 0.8
+#define APP_MAJOR_VERSION 0
 
-Dialog_About::Dialog_About(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::Dialog_About)
-{
-    ui->setupUi(this);
-    ui->VersionLabel->setText(QString("Version: %1.%2").arg(APP_MAJOR_VERSION).arg(APP_MINOR_VERSION));
-    setWindowFlags(this->windowFlags() |= Qt::MSWindowsFixedSizeDialogHint);
-}
+#define APP_LOCAL_VERSION_FILENAME "VersionInfo.xml"
+#define APP_UPDATER "Updater.exe"
 
-Dialog_About::~Dialog_About()
-{
-    delete ui;
-}
+#endif // APPINFO_H

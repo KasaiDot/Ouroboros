@@ -91,6 +91,11 @@ private:
     Ui::Dialog_AnimeInformation *ui;
     Anime::AnimeEntity *Entity;
     bool ShowMyInfo;
+
+    int Episode;
+    QString Status;
+    float Score;
+    bool Rewatching;
 };
 
 #endif // DIALOG_ANIMEINFORMATION_H

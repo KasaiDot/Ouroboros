@@ -30,6 +30,9 @@
       <layout class="QHBoxLayout" name="SearchFieldLayout">
        <item>
         <widget class="QPushButton" name="SearchButton">
+         <property name="toolTip">
+          <string>Search for anime online</string>
+         </property>
          <property name="text">
           <string>Search</string>
          </property>

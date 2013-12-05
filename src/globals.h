@@ -19,15 +19,6 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#define APP_DEBUG true
-
-#define APP_NAME "Ouroboros"
-#define APP_MINOR_VERSION 0.7
-#define APP_MAJOR_VERSION 0
-
-#define APP_LOCAL_VERSION_FILENAME "VersionInfo.xml"
-#define APP_UPDATER "Updater.exe"
-
 //*********************************************************************************************************
 #define RECOGNITION_TIMEDELAY 1000
 

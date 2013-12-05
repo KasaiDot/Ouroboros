@@ -5,6 +5,7 @@ private.h
 *.user
 Resources/
 ServerInfo.h
+ouroborosdebug.h
 
 #################
 ## Eclipse

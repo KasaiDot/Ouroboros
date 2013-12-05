@@ -213,6 +213,9 @@
            <attribute name="headerMinimumSectionSize">
             <number>100</number>
            </attribute>
+           <attribute name="headerShowSortIndicator" stdset="0">
+            <bool>false</bool>
+           </attribute>
           </widget>
          </item>
         </layout>
@@ -298,7 +301,7 @@
             <number>100</number>
            </attribute>
            <attribute name="headerShowSortIndicator" stdset="0">
-            <bool>true</bool>
+            <bool>false</bool>
            </attribute>
           </widget>
          </item>
@@ -678,6 +681,9 @@
    <property name="text">
     <string>History</string>
    </property>
+   <property name="toolTip">
+    <string>View anime history</string>
+   </property>
   </action>
   <action name="Action_ViewSearch">
    <property name="icon">
@@ -694,6 +700,9 @@
   <action name="Action_About">
    <property name="text">
     <string>About</string>
+   </property>
+   <property name="toolTip">
+    <string>View about dialog</string>
    </property>
   </action>
  </widget>

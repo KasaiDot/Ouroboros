@@ -68,7 +68,9 @@ HEADERS  += ouroboros.h \
     animeepisode.h \
     recognitionengine.h \
     common.h \
-    dialog_about.h
+    dialog_about.h \
+    ouroborosdebug.h \
+    appinfo.h
 
 FORMS    += ouroboros.ui \
     dialog_settings.ui \

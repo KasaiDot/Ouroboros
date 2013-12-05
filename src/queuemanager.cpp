@@ -315,7 +315,6 @@ void QueueManager::QueueItemFinished(QueueItem *Item)
     }else if(Item->Error == QueueItem::ItemReturn_ApiFail || Item->Error == QueueItem::ItemReturn_NoData || Item->Error == QueueItem::ItemReturn_Success) {
 
         DeleteItem(Item);
-
     }
 
     //Run the next item

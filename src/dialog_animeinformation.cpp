@@ -134,6 +134,11 @@ void Dialog_AnimeInformation::ParseAnime(Anime::AnimeEntity &Entity, bool ShowMy
         //Set the status and score
         ui->StatusComboBox->setCurrentIndex(GetStatusIndex(UserInfo->GetStatus()));
         ui->ScoreComboBox->setCurrentIndex(UserInfo->GetRatingValue() * 2);
+
+        Episode = CurrentEpisode;
+        Status = UserInfo->GetStatus();
+        Score = UserInfo->GetRatingValue();
+        Rewatching = UserInfo->isRewatching();
     }
 
 
@@ -164,7 +169,8 @@ void Dialog_AnimeInformation::on_MainButtonBox_accepted()
     QStringList RecognitionNames = ui->AlternateRecognitionTitles->text().split(",");
     Entity->SetRecognitionTitles(RecognitionNames);
 
-    if(ShowMyInfo)
+    if(ShowMyInfo && (ui->EpisodeSpinBox->value() != Episode || ui->RewatchingCheckBox->isChecked() != Rewatching ||
+                      GetStatusName(ui->StatusComboBox->currentIndex()) != Status || (ui->ScoreComboBox->currentIndex() / 2) != Score))
     {
         //Set user info
         Entity->GetUserInfo()->SetRewatching(ui->RewatchingCheckBox->isChecked());

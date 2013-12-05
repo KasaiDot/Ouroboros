@@ -17,14 +17,20 @@
 */
 
 #include "ouroboros.h"
-#include "globals.h"
-#include "singleapplication.h"
 
 #include <QApplication>
 #include <QDebug>
 #include <QProcess>
 #include <QtXml>
 #include <QMessageBox>
+
+#include "globals.h"
+#include "appinfo.h"
+#include "singleapplication.h"
+
+//Class which contains a definition APP_DEBUG to indicate whether we are debugging or not
+//this is in a seperate header to minimize build times
+#include "ouroborosdebug.h"
 
 #define UNIQUE_ID "Ouroboros_Hummingbird"
 #define UNIQUIE_DEBUG_ID "Ouroboros_Debug"

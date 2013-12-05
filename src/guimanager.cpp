@@ -89,6 +89,7 @@ void GUIManager::SetUpSearchBox(CustomGui::EraseableLineEdit *SearchBox)
     SearchBox->setMaximumWidth(200);
     SearchBox->setPlaceholderText("Search anime");
     SearchBox->setContentsMargins(5,5,5,5);
+    SearchBox->setToolTip("Search anime in local list");
 
     //Add a spacer widget so the search box is at the end of the toolbar
     QWidget *Spacer = new QWidget(MainWindow);

@@ -29,6 +29,9 @@ UpdateAvailiableDialog::UpdateAvailiableDialog(bool AppUpdate, bool UpdaterUpdat
         ui->ChangeLog->append(UpdaterChangeLog);
         ui->ChangeLog->append("\n");
     }
+
+    //Scroll to the top of the changelog
+    ui->ChangeLog->scrollToAnchor("Ouroboros");
 }
 
 UpdateAvailiableDialog::~UpdateAvailiableDialog()

@@ -19,11 +19,14 @@
 #include "updateperformclass.h"
 #include "Globals.h"
 #include "ServerInfo.h"
+#include "updateavailiabledialog.h"
 
 #include <QDebug>
 
 UpdatePerformClass::UpdatePerformClass(QObject *parent) :
     QObject(parent),
+    AppUpdateAvailiable(false),
+    UpdaterUpdateAvailable(false),
     ErrorsDownloading(false),
     UpdatesPerformed(0),
     UpdateCount(0)
@@ -44,28 +47,35 @@ void UpdatePerformClass::PerformUpdate()
 
         if(DataRead)
         {
-            if(LocalAppMajorVersion != AppMajorVersion || LocalAppMinorVersion != AppMinorVersion)
-            {
-                UpdateCount += AppLinkList.size();
-                UpdateListQueue.append(UPDATE_APPLICATION);
-            }
-
             if(QString::number(UPDATER_VERSION) != QString::number(UpdaterVersion))
             {
-                UpdateCount += UpdaterLinkList.size();
-                UpdateListQueue.append(UPDATE_UPDATER);
+                UpdateCount += UpdaterDownloadList.size();
+                UpdaterUpdateAvailable = true;
             }
+
+            if(LocalAppMajorVersion != AppMajorVersion || LocalAppMinorVersion != AppMinorVersion)
+            {
+                UpdateCount += AppDownloadList.size();
+                AppUpdateAvailiable = true;
+            }
+
+
         }
     }
 
     //no updates found
     if(UpdateCount == 0)
     {
-        emit finished();
+        emit Finished();
         return;
     }
 
-    RunUpdate();
+    //launch the update dialog
+    UpdateAvailiableDialog Dialog(AppUpdateAvailiable,UpdaterUpdateAvailable,AppChangeLog,UpdaterChangeLog);
+    connect(&Dialog,SIGNAL(Update(bool,bool)),this,SLOT(Update(bool,bool)));
+    if(Dialog.exec() == QDialog::Rejected)
+        emit Finished();
+
 }
 
 /********************************************
@@ -73,23 +83,38 @@ void UpdatePerformClass::PerformUpdate()
  ********************************************/
 void UpdatePerformClass::RunUpdate()
 {
-    if(UpdateListQueue.size() <= 0)
+    if(DownloadList.size() <= 0)
     {
-        emit finished();
+        emit Finished();
         return;
     }
 
-    int UpdateValue = UpdateListQueue.dequeue();
-    switch (UpdateValue)
-    {
-        case UPDATE_APPLICATION:
-            DownloadFiles(AppLinkList,AppDirectoryList);
-        break;
+    QPair<QPair<QString,QString>,bool> DownloadPair = DownloadList.takeFirst();
+    DownloadFiles(DownloadPair.first,DownloadPair.second);
+}
 
-        case UPDATE_UPDATER:
-            DownloadFiles(UpdaterLinkList,UpdaterDirectoryList,false);
-        break;
+/************************************************
+ * Handles signal from update availiable dialog
+ ************************************************/
+void UpdatePerformClass::Update(bool App, bool Updater)
+{
+    if(Updater)
+    {
+        for(int i = 0; i < UpdaterDownloadList.size(); ++i)
+        {
+            DownloadList.append(qMakePair(UpdaterDownloadList.at(i),false));
+        }
     }
+
+    if(App)
+    {
+        for(int i = 0; i < AppDownloadList.size(); ++i)
+        {
+            DownloadList.append(qMakePair(AppDownloadList.at(i),true));
+        }
+    }
+
+    RunUpdate();
 }
 
 /**********************
@@ -155,23 +180,15 @@ bool UpdatePerformClass::GetAppVersion(QString AppXmlName)
 /*******************
  * Downloads files
  ******************/
-void UpdatePerformClass::DownloadFiles(QStringList &LinkList, QStringList &DirectoryList, bool Rename)
+void UpdatePerformClass::DownloadFiles(QPair<QString,QString> Pair, bool Rename)
 {
-    for(int i = 0; i < LinkList.size(); i++)
-    {
-        QString Link = LinkList.takeAt(i);
-        QString Directory = DirectoryList.takeAt(i);
-
-        startRequest(QUrl(Link),Directory,Rename);
-
-    }
-
+    StartRequest(QUrl(Pair.first),Pair.second,Rename);
 }
 
 /**********************
  * Sends a GET request
  **********************/
-void UpdatePerformClass::startRequest(QUrl Url,QString Directory,bool Rename)
+void UpdatePerformClass::StartRequest(QUrl Url,QString Directory,bool Rename)
 {
     QFileInfo FileInfo(Url.path());
 
@@ -272,7 +289,7 @@ void UpdatePerformClass::ReplyFinished(QNetworkReply *Reply, QUrl Url, QString D
 
     if(UpdateCount <= UpdatesPerformed)
     {
-        emit finished();
+        emit Finished();
         return;
     }
 
@@ -298,30 +315,27 @@ bool UpdatePerformClass::ReadXML(QNetworkReply *Reply)
     QDomElement ApplicationElement = DocumentElement.elementsByTagName("Ouroboros").at(0).toElement();
     QDomElement UpdaterElement = DocumentElement.elementsByTagName("Updater").at(0).toElement();
 
-    //Updater info
+    //********************************* Updater info ***************************************************
     QDomNodeList VersionNode = UpdaterElement.elementsByTagName("Version");
     QDomElement VersionElement = VersionNode.at(0).toElement();
     UpdaterVersion = VersionElement.text().toFloat();
 
     QDomNodeList UpdaterLinks = UpdaterElement.elementsByTagName("Link");
+    QDomNodeList UpdaterDirectory = UpdaterElement.elementsByTagName("Directory");
     for(int i = 0; i < UpdaterLinks.size(); i++)
     {
         QDomElement Link = UpdaterLinks.at(i).toElement();
-
-        QString LinkString = Link.text();
-        UpdaterLinkList << LinkString;
-    }
-
-    QDomNodeList UpdaterDirectory = UpdaterElement.elementsByTagName("Directory");
-    for(int i = 0; i < UpdaterDirectory.size(); i++)
-    {
         QDomElement Directory = UpdaterDirectory.at(i).toElement();
 
-        QString DirectoryString = Directory.text();
-        UpdaterDirectoryList << DirectoryString;
+        QString LinkString = Link.text();
+        QString DirectoryString = (Directory.isNull()) ? "/": Directory.text();
+
+        UpdaterDownloadList.append(qMakePair(LinkString,DirectoryString));
     }
 
-    //Read application data
+    UpdaterChangeLog = UpdaterElement.elementsByTagName("changelog").at(0).toElement().text();
+
+    //******************************** Read application data *****************************************
     QDomNodeList MajorNode = ApplicationElement.elementsByTagName("Major_Version");
     QDomElement MajorElement = MajorNode.at(0).toElement();
 
@@ -332,22 +346,18 @@ bool UpdatePerformClass::ReadXML(QNetworkReply *Reply)
     AppMinorVersion = MinorElement.text().toFloat();
 
     QDomNodeList AppLinks = ApplicationElement.elementsByTagName("Link");
+    QDomNodeList AppDirectory = ApplicationElement.elementsByTagName("Directory");
     for(int i = 0; i < AppLinks.size(); i++)
     {
         QDomElement Link = AppLinks.at(i).toElement();
-
-        QString LinkString = Link.text();
-        AppLinkList << LinkString;
-    }
-
-    QDomNodeList AppDirectory = ApplicationElement.elementsByTagName("Directory");
-    for(int i = 0; i < AppDirectory.size(); i++)
-    {
         QDomElement Directory = AppDirectory.at(i).toElement();
 
-        QString DirectoryString = Directory.text();
-        AppDirectoryList << DirectoryString;
+        QString LinkString = Link.text();
+        QString DirectoryString = (Directory.isNull()) ? "/": Directory.text();
+        AppDownloadList.append(qMakePair(LinkString,DirectoryString));
     }
+
+    AppChangeLog = ApplicationElement.elementsByTagName("changelog").at(0).toElement().text();
 
     return true;
 }

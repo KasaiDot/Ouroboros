@@ -32,6 +32,8 @@ MainUpdateWindow::MainUpdateWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //Ovveride the title because it won't set in designer
+    setWindowTitle("Updater");
 
     UpdatePerformClass *UpdateClass = new UpdatePerformClass(this);
 
@@ -41,7 +43,7 @@ MainUpdateWindow::MainUpdateWindow(QWidget *parent) :
     QObject::connect(UpdateClass,SIGNAL(SetProgressLabel(QString)),ui->ProgressLabel,SLOT(setText(QString)));
 
     QObject::connect(UpdateClass,SIGNAL(OpenWarningMessageBox(QString,QString)),this,SLOT(OpenWarningMessageBox(QString,QString)));
-    QObject::connect(UpdateClass,&UpdatePerformClass::finished,[=]() { QMetaObject::invokeMethod( this, "LaunchApp", Qt::QueuedConnection );} );
+    QObject::connect(UpdateClass,&UpdatePerformClass::Finished,[=]() { QMetaObject::invokeMethod( this, "LaunchApp", Qt::QueuedConnection );} );
 
     /* Connects the Slots and Signals */
 

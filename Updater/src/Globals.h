@@ -26,6 +26,6 @@
 #define APP_LOCAL_VERSION_FILENAME "VersionInfo.xml"
 
 /* Updater Version */
-#define UPDATER_VERSION 0.3
+#define UPDATER_VERSION 0.4
 
 #endif // GLOBALS_H

@@ -15,21 +15,22 @@ TEMPLATE = app
 
 win32{
     RC_FILE = Ouroboros.rc
-    QMAKE_LFLAGS += -static-libgcc
-    QMAKE_LFLAGS += -static-libstdc++
 }
 
 
 SOURCES += main.cpp\
     mainupdatewindow.cpp \
-    updateperformclass.cpp
+    updateperformclass.cpp \
+    updateavailiabledialog.cpp
 
 HEADERS  += \
     mainupdatewindow.h \
     updateperformclass.h \
     Globals.h \
-    ServerInfo.h
+    ServerInfo.h \
+    updateavailiabledialog.h
 
 FORMS    += \
-    mainupdatewindow.ui
+    mainupdatewindow.ui \
+    updateavailiabledialog.ui
 

@@ -26,6 +26,7 @@
 #include <QtNetwork>
 #include <QtXml>
 #include <QApplication>
+#include <QPair>
 
 class UpdatePerformClass : public QObject
 {
@@ -40,23 +41,24 @@ public:
     QNetworkReply* GetXML(QString Url);
 
     //Downloads files
-    void DownloadFiles(QStringList &LinkList, QStringList &DirectoryList, bool Rename = true);
+    void DownloadFiles(QPair<QString, QString> Pair, bool Rename = true);
 
     void RenameFile(QString Filename);
 
-    void startRequest(QUrl url, QString Directory = "/", bool Rename = true);
+    void StartRequest(QUrl url, QString Directory = "/", bool Rename = true);
     bool GetAppVersion(QString AppXmlName);
 
 public slots:
     void PerformUpdate();
     void RunUpdate();
+    void Update(bool App,bool Updater);
 
 private slots:
     void updateDataReadProgress(qint64 bytesRead, qint64 totalBytes);
     void ReplyFinished(QNetworkReply *Reply, QUrl Url, QString Directory, bool Rename);
 
 signals:
-    void finished();
+    void Finished();
     void SetProgressValue(int Value);
     void SetProgressMax(int Value);
     void SetProgressLabel(QString Text);
@@ -74,11 +76,12 @@ private:
     float AppMinorVersion;
     float UpdaterVersion;
 
-    QStringList AppLinkList;
-    QStringList AppDirectoryList;
-
-    QStringList UpdaterLinkList;
-    QStringList UpdaterDirectoryList;
+    //   <         Link,Directory     renamefile
+    QList<QPair<QPair<QString,QString>,bool>> DownloadList;
+    QList<QPair<QString,QString>> AppDownloadList;
+    QList<QPair<QString,QString>> UpdaterDownloadList;
+    bool AppUpdateAvailiable;
+    bool UpdaterUpdateAvailable;
 
     bool ErrorsDownloading;
     bool DataRead;
@@ -86,7 +89,8 @@ private:
     int UpdatesPerformed;
     int UpdateCount;
 
-    QQueue<int> UpdateListQueue;
+    QString AppChangeLog;
+    QString UpdaterChangeLog;
     
 };
 

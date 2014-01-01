@@ -5,11 +5,21 @@ Hummingbird.me anime tracker
 
 Index
 ==========================
+* [Folders](#folders-found-in-src)
 * [Classes](#classes)  
 * [Notes](#notes)  
 * [Src Requirements](#src-requirements)  
 * [Building Src](#building-src)  
 * [Copyright Info](#copyright-info)  
+
+Folders (found in src)
+============================
+**api** - Classes which are related to the retrieval/sending of data between the client and the server.  
+**library** - Classes that are related to the anime library/list.  
+**manager** - Managers which do not belong to any other folder.  
+**ouroboros** - Classes which do not belong to any other folder that are required by ouroboros.  
+**recognition** - Classes related to the recognition of anime.  
+**ui** - Classes which are related to the GUI.  
 
 
 Classes

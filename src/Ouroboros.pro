@@ -7,8 +7,13 @@
 QT       += xml core gui network
 
 #includes
-include(dialogs/dialogs.pri);
-include(managers/managers.pri);
+include(api/api.pri)
+include(library/library.pri)
+include(manager/manager.pri)
+include(ouroboros/ouroboros.pri)
+include(recognition/recognition.pri)
+include(ui/ui.pri)
+
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -25,34 +30,9 @@ win32{
 
 
 SOURCES += main.cpp\
-    ouroboros.cpp \
-    animeentity.cpp \
-    animedatabase.cpp \
-    queueitem.cpp \
-    settings.cpp \
-    user.cpp \
     singleapplication.cpp \
-    animeepisode.cpp \
-    recognitionengine.cpp \
-    common.cpp \
 
-HEADERS  += ouroboros.h \
-    globals.h \
-    animeentity.h \
-    animedatabase.h \
-    queueitem.h \
-    private.h \
-    settings.h \
-    user.h \
-    customguielements.h \
-    singleapplication.h \
-    animeepisode.h \
-    recognitionengine.h \
-    common.h \
-    ouroborosdebug.h \
-    appinfo.h
-
-FORMS    += ouroboros.ui
+HEADERS  += singleapplication.h \
 
 RESOURCES += \
     Resources.qrc

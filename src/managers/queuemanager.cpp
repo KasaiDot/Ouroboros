@@ -21,9 +21,9 @@
 #include <QTimer>
 
 #include "threadmanager.h"
-#include "user.h"
 #include "filemanager.h"
 #include "guimanager.h"
+#include "user.h"
 
 using namespace Queue;
 
@@ -62,9 +62,10 @@ QJsonDocument QueueManager::ConstructQueueJsonDocument()
 {
     QJsonArray Array;
 
+    //if the item is of type update library, then we get the data from it which in this case is the slug from both the queues
     foreach (QueueItem *Item, ItemQueue)
     {
-        //if the item is of type update library, then we get the data from it which in this case is the slug
+
         if(Item->GetItemType() == QueueItem::Item_UpdateLibrary)
             if(!Item->GetData().isEmpty() && !Array.contains(Item->GetData()))
                 Array.append(Item->GetData());
@@ -72,7 +73,6 @@ QJsonDocument QueueManager::ConstructQueueJsonDocument()
 
     foreach (QueueItem *Item, FailedUpdates)
     {
-        //if the item is of type update library, then we get the data from it which in this case is the slug
         if(Item->GetItemType() == QueueItem::Item_UpdateLibrary)
             if(!Item->GetData().isEmpty() && !Array.contains(Item->GetData()))
                 Array.append(Item->GetData());
@@ -158,16 +158,10 @@ void QueueManager::ResetQueue(bool PerformSync)
 void QueueManager::AuthenticateUser()
 {
     //Auth should be first priority, so we add it to the top of the queue
-    if(ItemQueue.size() > 0)
+    if(ItemQueue.size() <= 0 || ItemQueue.at(0)->GetItemType() != QueueItem::Item_Auth)
     {
-        if(ItemQueue.at(0)->GetItemType() != QueueItem::Item_Auth)
-        {
-            QueueItem *Item = new QueueItem(this,QueueItem::Item_Auth);
-            ItemQueue.insert(0,Item);
-        }
-    } else {
         QueueItem *Item = new QueueItem(this,QueueItem::Item_Auth);
-        AddItem(Item);
+        AddItem(Item,true);
     }
 
     StartRunning();
@@ -214,16 +208,10 @@ void QueueManager::UpdateLibrary(QString Slug)
 
     //Check if we have updates pending for the same anime
     bool QueueContainsItem = ItemContainsData(Slug);
-    if(!QueueContainsItem)
+    if(!QueueContainsItem || (QueueContainsItem && Running))
     {
         QueueItem *Item = new QueueItem(this,QueueItem::Item_UpdateLibrary,Slug);
         AddItem(Item);
-    } else {
-        if(Running)
-        {
-            QueueItem *Item = new QueueItem(this,QueueItem::Item_UpdateLibrary,Slug);
-            AddItem(Item);
-        }
     }
 
     StartRunning();
@@ -297,6 +285,7 @@ void QueueManager::QueueItemFinished(QueueItem *Item)
             return;
         }
 
+        //if authentication fails we stop the whole queue from proceeding
         if(Item->Error == QueueItem::ItemReturn_AuthFail)
         {
             return;
@@ -312,7 +301,7 @@ void QueueManager::QueueItemFinished(QueueItem *Item)
             DeleteItem(Item);
         }
 
-    }else if(Item->Error == QueueItem::ItemReturn_ApiFail || Item->Error == QueueItem::ItemReturn_NoData || Item->Error == QueueItem::ItemReturn_Success) {
+    } else if(Item->Error == QueueItem::ItemReturn_ApiFail || Item->Error == QueueItem::ItemReturn_NoData || Item->Error == QueueItem::ItemReturn_Success) {
 
         DeleteItem(Item);
     }
@@ -324,7 +313,7 @@ void QueueManager::QueueItemFinished(QueueItem *Item)
 /***********************************************************
  * Adds item to the queue, if it already exists it returns
  ***********************************************************/
-void QueueManager::AddItem(QueueItem *Item)
+void QueueManager::AddItem(QueueItem *Item, bool PushFront)
 {
     if(ItemQueue.contains(Item)) return;
 
@@ -333,7 +322,10 @@ void QueueManager::AddItem(QueueItem *Item)
     connect(Item,SIGNAL(PopulateModel()),&GUI_Manager,SLOT(PopulateModel()));
 
     //Add the item
-    ItemQueue.enqueue(Item);
+    if(PushFront)
+        ItemQueue.insert(0,Item);
+    else
+        ItemQueue.enqueue(Item);
 }
 
 /*******************************************************

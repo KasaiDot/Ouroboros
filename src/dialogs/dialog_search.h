@@ -19,9 +19,11 @@
 #ifndef DIALOG_SEARCH_H
 #define DIALOG_SEARCH_H
 
+//*********************************************************************************************************
 #define SEARCH_HEADER_TITLE 0
 #define SEARCH_HEADER_EPISODE 1
 #define SEARCH_HEADER_TYPE 2
+//*********************************************************************************************************
 
 #include <QDialog>
 #include "QList"

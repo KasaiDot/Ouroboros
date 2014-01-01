@@ -19,6 +19,7 @@
 #ifndef GUIMANAGER_H
 #define GUIMANAGER_H
 
+//*********************************************************************************************************
 //Header column positions
 #define HEADER_NAME 0
 #define HEADER_PROGRESS 1
@@ -39,6 +40,7 @@
 #define TABNAME_ON_HOLD "On hold"
 #define TABNAME_PLAN_TO_WATCH "Plan to watch"
 #define TABNAME_DROPPED "Dropped"
+//*********************************************************************************************************
 
 
 #include <QObject>

@@ -42,4 +42,5 @@
 #define ROLE_USER_STATUS (ROLE_DEFAULT + 3)
 #define ROLE_USER_EPISODES 0//Make this equal to the display role so we can sort the progress
 
+
 #endif // GLOBALS_H

@@ -23,9 +23,9 @@
 #include <QDebug>
 #include <QTimer>
 
+#include "guimanager.h"
 #include "user.h"
 #include "animedatabase.h"
-#include "guimanager.h"
 
 using namespace Manager;
 

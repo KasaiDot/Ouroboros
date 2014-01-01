@@ -72,8 +72,15 @@ void AnimeDatabase::AddAnime(AnimeEntity *Anime)
         {
             //Move the userinfo of the old anime to the new one, incase the anime information (not user information) has been updated
             UserAnimeInformation *OldInfo = OldAnime->GetUserInfo();
+            QStringList RecognitionTitles = OldAnime->GetRecognitionTitles();
             Anime->SetUserInfo(*OldInfo);
+            Anime->SetRecognitionTitles(RecognitionTitles);
+        //since the old information is not newer than the information we got from the api, we check to see if the anime episode count is valid
+        } else if(Anime->GetUserInfo()->GetEpisodesWatched() <= ANIMEENTITY_UNKNOWN_USER_EPISODE) {
+            //if the episode count returned was unknown, then we set the episode count of the old anime
+            Anime->GetUserInfo()->SetEpisodesWatched(OldAnime->GetUserInfo()->GetEpisodesWatched());
         }
+
     }
 
     //replace the old anime

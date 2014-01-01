@@ -19,9 +19,11 @@
 #ifndef DIALOG_HISTORY_H
 #define DIALOG_HISTORY_H
 
+//*********************************************************************************************************
 #define HISTORY_HEADER_TITLE 0
 #define HISTORY_HEADER_ACTION 1
 #define HISTORY_HEADER_TIME 2
+//*********************************************************************************************************
 
 #include <QDialog>
 

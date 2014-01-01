@@ -87,7 +87,7 @@ void Dialog_History::ShowCustomContextMenu(const QPoint &Pos)
     QModelIndex Index = ui->HistoryTreeWidget->indexAt(Pos);
     if(Index.row() < 0) return;
 
-    QMenu Menu;
+    QMenu Menu(this);
 
     //Add the items
     Menu.addAction("Remove item")->setData(HistoryMenu_Remove);

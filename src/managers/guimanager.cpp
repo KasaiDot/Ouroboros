@@ -24,11 +24,11 @@
 #include <QToolBar>
 
 #include "dialog_search.h"
-#include "filemanager.h"
-#include "queuemanager.h"
 #include "dialog_animeinformation.h"
-#include "historymanager.h"
+#include "filemanager.h"
 #include "mediamanager.h"
+#include "queuemanager.h"
+#include "historymanager.h"
 
 using namespace Manager;
 GUIManager GUI_Manager;
@@ -93,8 +93,10 @@ void GUIManager::SetUpSearchBox(CustomGui::EraseableLineEdit *SearchBox)
 
     //Add a spacer widget so the search box is at the end of the toolbar
     QWidget *Spacer = new QWidget(MainWindow);
+    Spacer->setMaximumHeight(20);
     Spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     Spacer->setVisible(true);
+    Spacer->setObjectName("ToolBarFiller");
     MainWindow->GetMainToolBar()->addWidget(Spacer);
 
     //add it to the toolbar
@@ -117,8 +119,6 @@ void GUIManager::SetUpSearchBox(CustomGui::EraseableLineEdit *SearchBox)
 
 /********************************************
  * Populates the model with anime entities
- * May have ot be used in conjunction with a
- * thread to stop GUI freezing
  ********************************************/
 void GUIManager::PopulateModel()
 {
@@ -255,8 +255,9 @@ void GUIManager::SetAnimeItemData(QStandardItem *Item_Name, QStandardItem *Item_
     Item_Rating->setText(ItemRating);
     Item_Type->setText(Entity->GetAnimeShowType());
 
-    Item_Rating->setTextAlignment(Qt::AlignHCenter);
-    Item_Type->setTextAlignment(Qt::AlignHCenter);
+    //Set alignment
+    Item_Rating->setTextAlignment(Qt::AlignCenter);
+    Item_Type->setTextAlignment(Qt::AlignCenter);
 }
 
 /************************************************************************************************************
@@ -388,9 +389,9 @@ void GUIManager::SetModelHeaders()
     Headers << "Name" << "Progress" << "Rating" << "Type";
 
     DataModel->setHorizontalHeaderLabels(Headers);
-    DataModel->horizontalHeaderItem(HEADER_RATING)->setTextAlignment(Qt::AlignHCenter);
-    DataModel->horizontalHeaderItem(HEADER_SHOW_TYPE)->setTextAlignment(Qt::AlignHCenter);
-    DataModel->horizontalHeaderItem(HEADER_PROGRESS)->setTextAlignment(Qt::AlignHCenter);
+    DataModel->horizontalHeaderItem(HEADER_RATING)->setTextAlignment(Qt::AlignCenter);
+    DataModel->horizontalHeaderItem(HEADER_SHOW_TYPE)->setTextAlignment(Qt::AlignCenter);
+    DataModel->horizontalHeaderItem(HEADER_PROGRESS)->setTextAlignment(Qt::AlignCenter);
 
     if(!isMainWindowSet) return;
 
@@ -562,10 +563,17 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
     //Get the anime slug
     Anime::AnimeEntity *Entity = Anime_Database.GetAnime(Slug);
 
-    //Constuct the menu
-    QMenu Menu;
-    QMenu EditMenu;
+    //Construct the menus with mainwindow as the parent so that they inherit stylesheets
+    QMenu Menu(MainWindow);
+    \
+    QMenu EditMenu(MainWindow);
     EditMenu.setTitle("Edit");
+
+    QMenu StatusMenu(MainWindow);
+    StatusMenu.setTitle("Status");
+
+    QMenu RatingMenu(MainWindow);
+    RatingMenu.setTitle("Rating");
 
     //Menu data
     QString Data_Information = "Information";
@@ -581,10 +589,7 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
     //Edit user episodes
     EditMenu.addAction(MainWindow->GetAction(Ouroboros::EditUserEpisodes)->icon(),MainWindow->GetAction(Ouroboros::EditUserEpisodes)->text())->setData(Data_EditEpisode);
 
-    //Edit status
-    QMenu StatusMenu;
-    StatusMenu.setTitle("Status");
-
+    /*********** Status Menu ****************************/
     QActionGroup *StatusGroup = new QActionGroup(this);
     StatusGroup->setExclusive(true);
 
@@ -645,11 +650,8 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
 
     EditMenu.addMenu(&StatusMenu);
 
-    //Edit rating
+    /********** Rating menu ******************/
     float UserRating = Entity->GetUserInfo()->GetRatingValue();
-
-    QMenu RatingMenu;
-    RatingMenu.setTitle("Rating");
 
     QActionGroup *RatingGroup = new QActionGroup(this);
     RatingGroup->addAction("0")->setCheckable(true);
@@ -675,7 +677,7 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
     RatingMenu.addActions(RatingGroup->actions());
     EditMenu.addMenu(&RatingMenu);
 
-    //****** Main menu
+    /*********** Main menu ******************/
 
     //Add edit menu
     Menu.addMenu(&EditMenu);

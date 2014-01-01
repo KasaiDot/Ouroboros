@@ -19,13 +19,16 @@
 #ifndef ANIMEDATABASE_H
 #define ANIMEDATABASE_H
 
+//*********************************************************************************************************
 #define ANIMEDATABASE_UKNOWN_SLUG "Unknown Slug"
+//*********************************************************************************************************
 
 #include <QObject>
 #include <QMap>
 
 #include "animeentity.h"
 #include "animeepisode.h"
+#include "globals.h"
 
 namespace Anime
 {

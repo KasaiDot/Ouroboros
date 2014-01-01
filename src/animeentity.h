@@ -19,9 +19,11 @@
 #ifndef ANIMEENTITY_H
 #define ANIMEENTITY_H
 
+//*********************************************************************************************************
 #define ANIMEENTITY_UNKNOWN_ANIME_EPISODE 0
 #define ANIMEENTITY_UNKNOWN_USER_EPISODE -1
 #define ANIMEENTITY_DATE_FORMAT "yyyy-MM-ddThh:mm:ssZ"
+//*********************************************************************************************************
 
 #include <QObject>
 #include <QStringList>
@@ -49,8 +51,10 @@ public:
     bool IsUpdateAllowed(AnimeEpisode &Episode, bool IgnoreUpdateTime);
 
     //****************************************** Setters and Getter methods *********************************************************************/
+
     inline void UpdateLastWatched() { SetLastWatched(QDateTime::currentDateTimeUtc());}
 
+    //***************************************************************************************************************/
     int GetEpisodesWatched() const { return EpisodesWatched; }
     inline void SetEpisodesWatched(int EpisodeCount, bool UpdateWatched = false)
     {
@@ -78,6 +82,8 @@ public:
         if(EpisodesWatched - 1 >= 0) EpisodesWatched--;
         UpdateLastWatched();
     }
+
+    //***************************************************************************************************************/
 
     QDateTime GetLastWatched() const { return LastWatched; }
     inline void SetLastWatched(QDateTime Time) { LastWatched = Time; }
@@ -126,29 +132,45 @@ public:
         return false;
     }
 
+    //***************************************************************************************************************/
+
     int GetRewatchedTimes() const { return RewatchedTimes; }
     inline void SetRewatchedTimes(int Amount) { RewatchedTimes = Amount;}
+
+    //***************************************************************************************************************/
 
     QString GetNotes() const { return Notes;}
     inline void SetNotes(QString NoteString) { Notes = NoteString; }
 
+    //***************************************************************************************************************/
+
     bool isNotePresent() const { return NotesPresent; }
     inline void SetNotePresent(bool Present) { NotesPresent = Present; }
+
+    //***************************************************************************************************************/
 
     QString GetStatus() const { return Status; }
     inline void SetStatus(QString Status) { this->Status = Status; }
 
+    //***************************************************************************************************************/
+
     bool isPrivate() const { return Private; }
     inline void SetPrivate(bool isPrivate) { Private = isPrivate; }
 
+    //***************************************************************************************************************/
+
     bool isRewatching() const { return Rewatching; }
     inline void SetRewatching(bool isRewatching) { Rewatching = isRewatching; }
+
+    //***************************************************************************************************************/
 
     QString GetRatingType() const { return RatingType; }
     inline void SetRatingType(QString Type) { RatingType = Type; }
 
     float GetRatingValue() const { return RatingValue; }
     inline void SetRatingValue(float Rating) { RatingValue = Rating; }
+
+    //***************************************************************************************************************/
 
     inline void SetAnimeEpisodes(int Count) { AnimeEpisodes = Count; }
 
@@ -212,15 +234,23 @@ public:
             UserInfo.SetEpisodesWatched(GetAnimeEpisodeCount());
     }
 
+    //***************************************************************************************************************/
+
 
     QString GetAnimeSlug() const { return AnimeSlug; }
     inline void SetAnimeSlug(QString Slug) { AnimeSlug = Slug; }
 
+    //***************************************************************************************************************/
+
     QString GetAnimeStatus() const { return AnimeStatus; }
     inline void SetAnimeStatus(QString Status) { AnimeStatus = Status; }
 
+    //***************************************************************************************************************/
+
     QString GetAnimeUrl() const { return AnimeUrl; }
     inline void SetAnimeUrl(QString Url) { AnimeUrl = Url; }
+
+    //***************************************************************************************************************/
 
     QString GetAnimeTitle() const { return AnimeTitle; }
     inline void SetAnimeTitle(QString Title) { AnimeTitle = Title; CleanAllTitles(); }
@@ -228,30 +258,44 @@ public:
     QString GetAnimeAlternateTitle() const { return AnimeAlternateTitle; }
     inline void SetAnimeAlternateTitle(QString AlternateTitle) {  AnimeAlternateTitle = AlternateTitle; CleanAllTitles(); }
 
+    //***************************************************************************************************************/
+
     int GetAnimeEpisodeCount() const { return AnimeEpisodeCount; }
     inline void SetAnimeEpisodeCount(int EpisodeCount) { if(EpisodeCount >= 0) AnimeEpisodeCount = EpisodeCount; }
+
+    //***************************************************************************************************************/
 
     QString GetAnimeImage() const { return AnimeImage; }
     inline void SetAnimeImage(QString Image) { AnimeImage = Image; }
 
+    //***************************************************************************************************************/
+
     QString GetAnimeSynopsis() const { return AnimeSynopsis; }
     inline void SetAnimeSynopsis(QString Synopsis) { AnimeSynopsis = Synopsis; }
 
+    //***************************************************************************************************************/
+
     QString GetAnimeShowType() const { return AnimeShowType; }
     inline void SetAnimeShowType(QString ShowType) { AnimeShowType = ShowType; }
+
+    //***************************************************************************************************************/
 
     QStringList GetAnimeGenres() const { return AnimeGenres; }
     inline void SetAnimeGenres(QStringList Genres) { AnimeGenres = Genres; }
     inline void AddAnimeGenre(QString Genre) { if(!Genre.isEmpty()) AnimeGenres.append(Genre); }
 
+    //***************************************************************************************************************/
+
     bool isUserInfoSet() const { return UserInfoSet; }
 
-    //Recognition
+    //******************************************* Recognition **************************************************************/
     void CleanAllTitles();
     inline QStringList GetCleanTitles() const { return CleanTitles; }
 
     inline void SetRecognitionTitles(QStringList List) { RecognitionTitles = List; CleanAllTitles(); }
     inline QStringList GetRecognitionTitles() const { return RecognitionTitles; }
+
+    //***************************************************************************************************************/
 
 
 private:

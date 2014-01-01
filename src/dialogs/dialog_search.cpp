@@ -22,10 +22,10 @@
 #include <QDebug>
 #include <QMenu>
 
-#include "user.h"
 #include "guimanager.h"
-#include "animedatabase.h"
 #include "queuemanager.h"
+#include "user.h"
+#include "animedatabase.h"
 
 Dialog_Search::Dialog_Search(QWidget *parent) :
     QDialog(parent),
@@ -187,14 +187,14 @@ void Dialog_Search::ShowCustomContextMenu(const QPoint &Pos)
     if(!AnimeList.contains(Slug)) return;
     Anime::AnimeEntity Entity = AnimeList.value(Slug);
 
-    QMenu Menu;
+    QMenu Menu(this);
 
     //Add the items
     Menu.addAction("View Information")->setData(SearchMenuAction_ViewInformation);
     Menu.addSeparator();
 
     //add to list menu
-    QMenu AddToListMenu("Add to list");
+    QMenu AddToListMenu("Add to list", this);
     AddToListMenu.addAction("Currently watching")->setData(SearchMenuAction_CurrentlyWatching);
     AddToListMenu.addAction("Completed")->setData(SearchMenuAction_Completed);
     AddToListMenu.addAction("On hold")->setData(SearchMenuAction_OnHold);

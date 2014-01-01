@@ -19,6 +19,7 @@
 #ifndef RECOGNITIONENGINE_H
 #define RECOGNITIONENGINE_H
 
+//*********************************************************************************************************
 #define RECOGNITION_KEYWORD_AUDIO             "2CH, 5.1CH, 5.1, AAC, AC3, DTS, DTS5.1, DTS-ES, DUALAUDIO, DUAL AUDIO, FLAC, MP3, OGG, TRUEHD5.1, VORBIS"
 #define RECOGNITION_KEYWORD_EXTRA             "ASS, BATCH, BD, BLURAY, BLU-RAY, COMPLETE, DIRECTOR'S CUT, DVD, DVD5, DVD9, DVD-R2J, DVDRIP, ENG, ENGLISH, HARDSUB, PS3, R2DVD, R2J, R2JDVD, RAW, REMASTERED, SOFTSUB, SUBBED, SUB, UNCENSORED, UNCUT, VOSTFR, WEBCAST, WIDESCREEN, WS"
 #define RECOGNITION_KEYWORD_EXTRA_UNSAFE      "END, FINAL, OAV, ONA, OVA"
@@ -27,6 +28,7 @@
 #define RECOGNITION_KEYWORD_VIDEO             "8BIT, 10BIT, AVI, DIVX, H264, H.264, HD, HDTV, HI10P, HQ, LQ, RMVB, SD, TS, VFR, WMV, X264, X.264, XVID"
 #define RECOGNITION_KEYWORD_EPISODE           "EPISODE, EP., EP, VOLUME, VOL., VOL, EPS., EPS"
 #define RECOGNITION_KEYWORD_EPISODE_PREFIX    "EP., EP, E, VOL., VOL, EPS."
+//*********************************************************************************************************
 
 #include <QString>
 #include <QChar>

@@ -73,9 +73,8 @@ public slots:
     void QueueItemFinished(QueueItem *Item);
 
     //Basic list functions
-    void AddItem(QueueItem* Item);
+    void AddItem(QueueItem* Item, bool PushFront = false);
     void DeleteItem(QueueItem* Item);
-    //Pushes the item to the back of the queue
     void RePushItem(QueueItem* Item);
     void UpdateFailed(QueueItem* Item);
 

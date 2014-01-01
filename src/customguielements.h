@@ -60,7 +60,7 @@ public:
         //First we check if mouse is hovering above the item
         bool isHovering = ((Option.state & QStyle::State_MouseOver) == QStyle::State_MouseOver);
 
-        //progress bar valies
+        //progress bar values
         int MinValue = 0;
         int CurrentValue = 0;
         int MaxValue = 500;
@@ -89,16 +89,17 @@ public:
             UserEpisodeCount = MinValue;
         }
 
-        //Do this so we don't divide by zero
+        //Do this so we don't divide by zero when displaying completed list
         CurrentValue = UserEpisodeCount;
-        if(CurrentValue == 0 && AnimeEpisodeCount <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE)
-            CurrentValue = 1;
 
         //Fill in whole bar if unknown anime episode and completed
         if(Index.data(ROLE_USER_STATUS).toString() == STATUS_COMPLETED)
         {
             if(AnimeEpisodeCount <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE)
+            {
+                CurrentValue = 1;
                 MaxValue = CurrentValue;
+            }
         }
 
         QString UserEpisodeText = QString::number(UserEpisodeCount);
@@ -256,6 +257,7 @@ public:
         CrossHeight = 16;
 
         ClearButton = new QToolButton(this);
+        ClearButton->setObjectName("ClearButton");
         ClearButton->setIcon(CrossIcon);
         ClearButton->setIconSize(QSize(CrossWidth,CrossHeight));
         ClearButton->setCursor(Qt::PointingHandCursor);

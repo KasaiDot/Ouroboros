@@ -34,6 +34,8 @@ public:
     explicit Dialog_AnimeInformation(QWidget *parent = 0);
     ~Dialog_AnimeInformation();
     void ParseAnime(Anime::AnimeEntity &Entity, bool ShowMyInfo = true);
+
+    /************************************* Converter functions *********************************/
     inline QString GetStatusName(int Index)
     {
         switch (Index)

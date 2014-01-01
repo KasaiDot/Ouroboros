@@ -652,9 +652,7 @@ Token::Token() :
     Encloser('\0'),
     Separator('\0'),
     Virgin(true)
-{
-
-}
+{}
 
 
 

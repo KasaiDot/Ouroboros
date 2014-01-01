@@ -22,16 +22,16 @@
 #include <QTimer>
 #include <QDebug>
 
-#include "appinfo.h"
-#include "dialog_settings.h"
-#include "dialog_about.h"
-#include "animeentity.h"
-#include "settings.h"
 #include "filemanager.h"
 #include "queuemanager.h"
 #include "guimanager.h"
 #include "historymanager.h"
 #include "mediamanager.h"
+#include "dialog_settings.h"
+#include "dialog_about.h"
+#include "appinfo.h"
+#include "animeentity.h"
+#include "settings.h"
 #include "recognitionengine.h"
 
 //Class which contains a definition APP_DEBUG to indicate whether we are debugging or not
@@ -50,6 +50,12 @@ Ouroboros::Ouroboros(QWidget *parent) :
     QString Title = QString(APP_NAME) + " " + QString::number(APP_MAJOR_VERSION) + "." + QString::number(APP_MINOR_VERSION);
     if(APP_DEBUG) Title.append(" Debug");
     this->setWindowTitle(Title);
+
+    //Generate a random seed for other classes
+    QTime CurrentTime = QTime::currentTime();
+    qsrand((uint)CurrentTime.msec());
+
+    //setup views
     SetViewLayouts();
 
     //setup tray icon
@@ -65,23 +71,16 @@ Ouroboros::Ouroboros(QWidget *parent) :
     //Only detects on windows currently
 #ifdef WIN32
     File_Manager.SaveMedia();
-    if(Settings.Recognition.Enabled)
+    //Load Media
+    File_Manager.LoadMedia();
+    if(Media_Manager.MediaListLoaded)
     {
-        //Load Media
-        File_Manager.LoadMedia();
-        if(Media_Manager.MediaListLoaded)
-        {
-            DetectionTimer.setInterval(RECOGNITION_TIMEDELAY);
-            connect(&DetectionTimer,SIGNAL(timeout()),&Media_Manager,SLOT(DetectAnime()));
-            connect(this,SIGNAL(StopDetectionTimer()),&DetectionTimer,SLOT(stop()));
-            DetectionTimer.start();
-        }
+        DetectionTimer.setInterval(RECOGNITION_TIMEDELAY);
+        connect(&DetectionTimer,SIGNAL(timeout()),&Media_Manager,SLOT(DetectAnime()));
+        connect(this,SIGNAL(StopDetectionTimer()),&DetectionTimer,SLOT(stop()));
+        DetectionTimer.start();
     }
 #endif
-
-    //Generate a random seed
-    QTime CurrentTime = QTime::currentTime();
-    qsrand((uint)CurrentTime.msec());
 
     //Setup a timer to run the queue every 5 minutes
     QTimer *RunTimer = new QTimer(this);
@@ -171,6 +170,7 @@ void Ouroboros::SetupTrayIcon()
 
     //create the menu
     TrayMenu = new QMenu(this);
+    TrayMenu->setObjectName("TrayMenu");
     TrayMenu->addAction("Show Ouroboros")->setData(Tray_ShowOuroboros);
     TrayMenu->addSeparator();
     TrayMenu->addAction("Sync anime")->setData(Tray_Sync);

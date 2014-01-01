@@ -38,6 +38,7 @@ public:
         Item_PopulateModel
     };
 
+    //Return codes
     enum ItemReturn
     {
         ItemReturn_Success,
@@ -50,8 +51,8 @@ public:
     } Error;
 
     //Constructor
-    explicit QueueItem(QObject *parent, ItemType Type);
-    explicit QueueItem(QObject *parent, ItemType Type,QString Data);
+    QueueItem(QObject *parent, ItemType Type);
+    QueueItem(QObject *parent, ItemType Type,QString Data);
 
     inline ItemType GetItemType() const { return Type; }
     inline int GetId() const { return Id; }

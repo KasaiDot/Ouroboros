@@ -31,6 +31,7 @@ public:
     void Save();
     void ResetSettings();
 
+    /****************************************** Setting names *******************************************************************/
     //Holds string eqiv values of the settings for saving and loading
     struct SettingsNames
     {
@@ -72,7 +73,7 @@ public:
 
     }SettingsName;
 
-
+    /****************************************** Settings *******************************************************************/
     //Application settings
     struct ApplicationSettings
     {
@@ -104,6 +105,8 @@ public:
         QColor Dropped;
 
     } ProgressDelegate;
+
+    /****************************************** Defaults *******************************************************************/
 
     //Default settings
     struct DefaultSettings

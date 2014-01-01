@@ -474,7 +474,7 @@
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>16</width>
+                   <width>70</width>
                    <height>16</height>
                   </size>
                  </property>
@@ -534,7 +534,7 @@
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>16</width>
+                   <width>70</width>
                    <height>16</height>
                   </size>
                  </property>
@@ -591,7 +591,7 @@
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>16</width>
+                   <width>70</width>
                    <height>16</height>
                   </size>
                  </property>
@@ -648,7 +648,7 @@
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>16</width>
+                   <width>70</width>
                    <height>16</height>
                   </size>
                  </property>
@@ -705,7 +705,7 @@
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>16</width>
+                   <width>70</width>
                    <height>16</height>
                   </size>
                  </property>
@@ -762,7 +762,7 @@
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>16</width>
+                   <width>70</width>
                    <height>16</height>
                   </size>
                  </property>
@@ -819,7 +819,7 @@
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>16</width>
+                   <width>70</width>
                    <height>16</height>
                   </size>
                  </property>

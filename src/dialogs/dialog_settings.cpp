@@ -26,9 +26,9 @@
 #include "apimanager.h"
 #include "queuemanager.h"
 #include "filemanager.h"
+#include "guimanager.h"
 #include "settings.h"
 #include "animedatabase.h"
-#include "guimanager.h"
 
 Dialog_Settings::Dialog_Settings(QWidget *parent) :
     QDialog(parent),

@@ -19,8 +19,10 @@
 #ifndef HISTORYMANAGER_H
 #define HISTORYMANAGER_H
 
-#define HISTORY_MAXSIZE 500
+//*********************************************************************************************************
+#define HISTORY_MAXSIZE 1500
 #define HISTORY_DATEFORMAT "hh:mm:ss dd/MM/yy"
+//*********************************************************************************************************
 
 #include <QObject>
 #include <QStack>

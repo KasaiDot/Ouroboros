@@ -50,18 +50,21 @@ QueueItem::QueueItem(QObject *parent, QueueItem::ItemType Type, QString Data) :
  ************************************/
 void QueueItem::Run()
 {
-    int ReturnCode = Manager::ApiManager::Api_Success;
+    //the default return code is success
+    int ApiReturnCode = Manager::ApiManager::Api_Success;
+
+    //by default we have no errors when calling the run function
     Error = ItemReturn_Success;
 
     switch(Type)
     {
         case Item_Auth:
-            ReturnCode = Api_Manager.Authenticate();
+            ApiReturnCode = Api_Manager.Authenticate();
         break;
 
         case Item_GetLibrary:
             if(isDataSet())
-                ReturnCode = Api_Manager.GetLibrary(Data);
+                ApiReturnCode = Api_Manager.GetLibrary(Data);
             else
                 Error = ItemReturn_NoData;
         break;
@@ -70,7 +73,7 @@ void QueueItem::Run()
             if(isDataSet())
             {
                 if(Anime_Database.GetAnime(Data)->GetUserInfo()->GetEpisodesWatched() > ANIMEENTITY_UNKNOWN_USER_EPISODE)
-                    ReturnCode = Api_Manager.UpdateLibrary(Data);
+                    ApiReturnCode = Api_Manager.UpdateLibrary(Data);
             }
             else
                 Error = ItemReturn_NoData;
@@ -81,21 +84,23 @@ void QueueItem::Run()
         break;
     }
 
-    if(ReturnCode == Manager::ApiManager::Reply_UnknownError)
+    //Error checking
+    if(ApiReturnCode == Manager::ApiManager::Reply_UnknownError)
         Error = ItemReturn_ReplyUnknownError;
 
-    if(ReturnCode == Manager::ApiManager::Api_NotAuthed)
+    if(ApiReturnCode == Manager::ApiManager::Api_NotAuthed)
         Error = ItemReturn_NotAuthed;
 
-    if(ReturnCode == Manager::ApiManager::Api_InvalidCredentials)
+    if(ApiReturnCode == Manager::ApiManager::Api_InvalidCredentials)
         Error = ItemReturn_AuthFail;
 
-    if(ReturnCode == Manager::ApiManager::Api_Failure)
+    if(ApiReturnCode == Manager::ApiManager::Api_Failure)
         Error = ItemReturn_ApiFail;
 
-    if(ReturnCode == Manager::ApiManager::Reply_Error || ReturnCode == Manager::ApiManager::Reply_Timeout)
+    if(ApiReturnCode == Manager::ApiManager::Reply_Error || ApiReturnCode == Manager::ApiManager::Reply_Timeout)
         Error = ItemReturn_Fail;
 
+    //we have now finished
     emit Finished(this);
 }
 

@@ -26,8 +26,8 @@
 #include <QSystemTrayIcon>
 
 #include "threadmanager.h"
-#include "animedatabase.h"
 #include "apimanager.h"
+#include "animedatabase.h"
 #include "globals.h"
 
 namespace Ui {
@@ -43,6 +43,7 @@ public:
     explicit Ouroboros(QWidget *parent = 0);
     ~Ouroboros();
 
+    /******************************************* Recognition *******************************************/
     enum Play_Status
     {
       PLAYSTATUS_STOPPED,
@@ -50,7 +51,7 @@ public:
       PLAYSTATUS_UPDATED
     }PlayStatus;
 
-    //Views
+    /******************************************** UI ***********************************************/
     enum Views
     {
         CurrentlyWatching,
@@ -75,6 +76,7 @@ public:
         Tray_Exit
     };
 
+    /********************************************* Functions *******************************************/
     //Fills the tabs with the view
     void SetViewLayouts();
 
@@ -107,6 +109,7 @@ protected:
 public slots:
     void ChangeStatus(QString Status, int Timeout = 0);
     void RecievedMessageFromInstance(QStringList Messages);
+
 private slots:
     void on_Action_Synchronize_Anime_triggered();
     void on_Action_ChangeSettings_triggered();

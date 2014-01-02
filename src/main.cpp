@@ -1,6 +1,6 @@
 /*
 **  Ouroboros, Hummingbird.me Desktop App
-**  Copyright (C) 2013, Mikunj Varsani
+**  Copyright (C) 2014, Mikunj Varsani
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,7 +16,6 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include <QApplication>
 #include <QDebug>
 #include <QProcess>
@@ -26,7 +25,9 @@
 #include "ouroboros/appinfo.h"
 #include "ouroboros/globals.h"
 #include "ouroboros/ouroboros.h"
+#include "AutoTest.h"
 #include "singleapplication.h"
+
 
 //Class which contains a definition APP_DEBUG to indicate whether we are debugging or not
 //this is in a seperate header to minimize build times
@@ -136,7 +137,7 @@ int main(int argc, char *argv[])
             Args = true;
             QString UpdaterPath = QApplication::applicationDirPath() + QDir::separator() + APP_UPDATER;
 
-            /* Check if an updater exists */
+            // Check if an updater exists
             QFile Updater(UpdaterPath);
             if(!Updater.exists())
             {
@@ -150,6 +151,12 @@ int main(int argc, char *argv[])
 
     if(!Args)
     {
+        //run tests
+        if(APP_DEBUG)
+        {
+            AutoTest::run(argc,argv);
+        }
+        //run the application
         Ouroboros Window;
         Window.show();
         Window.raise();

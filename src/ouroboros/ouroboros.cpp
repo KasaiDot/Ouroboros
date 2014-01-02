@@ -1,6 +1,6 @@
 /*
 **  Ouroboros, Hummingbird.me Desktop App
-**  Copyright (C) 2013, Mikunj Varsani
+**  Copyright (C) 2014, Mikunj Varsani
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@
 #include "recognition/mediamanager.h"
 #include "ouroboros/appinfo.h"
 #include "ouroboros/settings.h"
-#include "ui/dialog/dialog_about.h"
-#include "ui/dialog/dialog_settings.h"
+#include "ui/dialog_about.h"
+#include "ui/dialog_settings.h"
 
 //Class which contains a definition APP_DEBUG to indicate whether we are debugging or not
 //this is in a seperate header to minimize build times

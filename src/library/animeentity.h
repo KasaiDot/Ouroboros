@@ -1,6 +1,6 @@
 /*
 **  Ouroboros, Hummingbird.me Desktop App
-**  Copyright (C) 2013, Mikunj Varsani
+**  Copyright (C) 2014, Mikunj Varsani
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -89,7 +89,7 @@ public:
     inline void SetLastWatched(QDateTime Time) { LastWatched = Time; }
 
     //qt's datetime > operator is not very accurate, hence we create our own function
-    inline bool LastWatchedLaterThan(QDateTime Time)
+    inline bool LastWatchedLaterThan(QDateTime &Time)
     {
         QDate CurDate = GetLastWatched().date();
         QDate ArgDate = Time.date();

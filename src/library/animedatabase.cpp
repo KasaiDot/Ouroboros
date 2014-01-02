@@ -1,6 +1,6 @@
 /*
 **  Ouroboros, Hummingbird.me Desktop App
-**  Copyright (C) 2013, Mikunj Varsani
+**  Copyright (C) 2014, Mikunj Varsani
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -67,8 +67,10 @@ void AnimeDatabase::AddAnime(AnimeEntity *Anime)
         //get the old anime from the database since we haven't replaced it
         AnimeEntity *OldAnime = GetAnime(Anime->GetAnimeSlug());
 
+        QDateTime NewDateTime = Anime->GetUserInfo()->GetLastWatched();
+
         //check if the old informations' last watched was later than the last watched returned by the api
-        if(OldAnime->GetUserInfo()->LastWatchedLaterThan(Anime->GetUserInfo()->GetLastWatched()))
+        if(OldAnime->GetUserInfo()->LastWatchedLaterThan(NewDateTime))
         {
             //Move the userinfo of the old anime to the new one, incase the anime information (not user information) has been updated
             UserAnimeInformation *OldInfo = OldAnime->GetUserInfo();

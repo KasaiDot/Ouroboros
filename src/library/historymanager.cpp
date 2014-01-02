@@ -1,6 +1,6 @@
 /*
 **  Ouroboros, Hummingbird.me Desktop App
-**  Copyright (C) 2013, Mikunj Varsani
+**  Copyright (C) 2014, Mikunj Varsani
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 #include <QJsonValue>
 #include <QVariant>
 
-#include "ui/dialog/dialog_history.h"
+#include "ui/dialog_history.h"
 
 using namespace Manager;
 HistoryManager History_Manager;

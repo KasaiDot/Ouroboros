@@ -1,6 +1,6 @@
 /*
 **  Ouroboros, Hummingbird.me Desktop App
-**  Copyright (C) 2013, Mikunj Varsani
+**  Copyright (C) 2014, Mikunj Varsani
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -27,8 +27,8 @@
 #include "library/historymanager.h"
 #include "manager/filemanager.h"
 #include "recognition/mediamanager.h"
-#include "ui/dialog/dialog_search.h"
-#include "ui/dialog/dialog_animeinformation.h"
+#include "ui/dialog_search.h"
+#include "ui/dialog_animeinformation.h"
 
 using namespace Manager;
 GUIManager GUI_Manager;

@@ -138,7 +138,7 @@ For more detail on static building visit https://qt-project.org/doc/qt-5.0/qtdoc
 Copyright info
 ==================================================================
 
-Copyright (C) 2010-2013 Mikunj Varsani
+Copyright (C) 2010-2014 Mikunj Varsani
 
 Ouroboros is free software. This means that the source code is available to public, 
 anyone is welcome to research how the application works, participate in its development, 

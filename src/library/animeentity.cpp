@@ -37,7 +37,6 @@ AnimeEntity::AnimeEntity():
     AnimeImage(""),
     AnimeSynopsis(""),
     AnimeShowType(""),
-    UserInfo(UserAnimeInformation()),
     UserInfoSet(false)
 {
 }
@@ -128,10 +127,13 @@ bool AnimeEntity::ParseAnimeJson(QByteArray Data, bool ContainsUserInfo)
     SetAnimeUrl(AnimeInfoMap.value("url","").toString());
     SetAnimeTitle(AnimeInfoMap.value("title","").toString());
     SetAnimeAlternateTitle(AnimeInfoMap.value("alternate_title","").toString());
-    SetAnimeEpisodeCount(AnimeInfoMap.value("episode_count",ANIMEENTITY_UNKNOWN_ANIME_EPISODE).toInt());
     SetAnimeImage(AnimeInfoMap.value("cover_image","").toString());
     SetAnimeSynopsis(AnimeInfoMap.value("synopsis","").toString());
     SetAnimeShowType(AnimeInfoMap.value("show_type","").toString());
+    SetAnimeEpisodeCount(AnimeInfoMap.value("episode_count",ANIMEENTITY_UNKNOWN_ANIME_EPISODE).toInt());
+
+    //Wierd bug which defaults all anime episodes above 32 episodes to 0, to fix this we just make a call to a qdebug
+    qDebug() << "";
 
     if(AnimeInfoMap.contains("recognition"))
     {

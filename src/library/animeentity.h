@@ -89,7 +89,7 @@ public:
     inline void SetLastWatched(QDateTime Time) { LastWatched = Time; }
 
     //qt's datetime > operator is not very accurate, hence we create our own function
-    inline bool LastWatchedLaterThan(QDateTime &Time)
+    inline bool LastWatchedLaterThan(QDateTime Time)
     {
         QDate CurDate = GetLastWatched().date();
         QDate ArgDate = Time.date();
@@ -323,5 +323,6 @@ private:
 };
 
 }
+
 
 #endif // ANIMEENTITY_H

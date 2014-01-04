@@ -26,51 +26,49 @@
 
 namespace AutoTest
 {
-    typedef QList<QObject*> TestList;
+typedef QList<QObject*> TestList;
 
-    inline TestList& testList()
+inline TestList& testList()
+{
+    static TestList list;
+    return list;
+}
+
+inline bool findObject(QObject* object)
+{
+    TestList& list = testList();
+    if (list.contains(object))
     {
-	static TestList list;
-	return list;
+        return true;
     }
-
-    inline bool findObject(QObject* object)
+    foreach (QObject* test, list)
     {
-	TestList& list = testList();
-	if (list.contains(object))
-	{
-	    return true;
-	}
-	foreach (QObject* test, list)
-	{
-	    if (test->objectName() == object->objectName())
-	    {
-		return true;
-	    }
-	}
-	return false;
+        if (test->objectName() == object->objectName())
+        {
+            return true;
+        }
     }
+    return false;
+}
 
-    inline void addTest(QObject* object)
+inline void addTest(QObject* object)
+{
+    TestList& list = testList();
+    if (!findObject(object))
     {
-	TestList& list = testList();
-	if (!findObject(object))
-	{
-	    list.append(object);
-	}
+        list.append(object);
     }
+}
 
-    inline int run(int argc, char *argv[])
+inline int run(int argc, char *argv[])
+{
+    int ret = 0;
+    foreach (QObject* test, testList())
     {
-	int ret = 0;
-
-	foreach (QObject* test, testList())
-	{
-	    ret += QTest::qExec(test, argc, argv);
-	}
-
-	return ret;
+        ret += QTest::qExec(test, argc, argv);
     }
+    return ret;
+}
 }
 
 template <class T>
@@ -79,10 +77,11 @@ class Test
 public:
     QSharedPointer<T> child;
 
-    Test(const QString& name) : child(new T)
+    Test(const QString& name)
     {
-	child->setObjectName(name);
-	AutoTest::addTest(child.data());
+        child = QSharedPointer<T>::create();
+        child->setObjectName(name);
+        AutoTest::addTest(child.data());
     }
 };
 
@@ -90,8 +89,8 @@ public:
 
 #define TEST_MAIN \
     int main(int argc, char *argv[]) \
-    { \
-      return AutoTest::run(argc, argv); \
+{ \
+    return AutoTest::run(argc, argv); \
     }
 
 #endif // AUTOTEST_H

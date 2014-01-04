@@ -169,14 +169,20 @@ void Dialog_AnimeInformation::on_MainButtonBox_accepted()
     QStringList RecognitionNames = ui->AlternateRecognitionTitles->text().split(",");
     Entity->SetRecognitionTitles(RecognitionNames);
 
-    if(ShowMyInfo && (ui->EpisodeSpinBox->value() != Episode || ui->RewatchingCheckBox->isChecked() != Rewatching ||
-                      GetStatusName(ui->StatusComboBox->currentIndex()) != Status || (ui->ScoreComboBox->currentIndex() / 2) != Score))
+    if(ShowMyInfo)
     {
         //Set user info
-        Entity->GetUserInfo()->SetRewatching(ui->RewatchingCheckBox->isChecked());
-        Entity->GetUserInfo()->SetEpisodesWatched(ui->EpisodeSpinBox->value(),true);
-        Entity->GetUserInfo()->SetStatus(GetStatusName(ui->StatusComboBox->currentIndex()));
-        Entity->GetUserInfo()->SetRatingValue(ui->ScoreComboBox->currentIndex() / 2);
+        if(ui->RewatchingCheckBox->isChecked() != Rewatching)
+            Entity->GetUserInfo()->SetRewatching(ui->RewatchingCheckBox->isChecked());
+
+        if(ui->EpisodeSpinBox->value() != Episode)
+            Entity->GetUserInfo()->SetEpisodesWatched(ui->EpisodeSpinBox->value(),true);
+
+        if(GetStatusName(ui->StatusComboBox->currentIndex()) != Status)
+            Entity->GetUserInfo()->SetStatus(GetStatusName(ui->StatusComboBox->currentIndex()));
+
+        if(static_cast<float>(ui->ScoreComboBox->currentIndex()) / 2 != Score)
+            Entity->GetUserInfo()->SetRatingValue(static_cast<float>(ui->ScoreComboBox->currentIndex()) / 2);
 
         emit UpdateAnime(Entity);
     }

@@ -152,9 +152,10 @@ int main(int argc, char *argv[])
     if(!Args)
     {
         //run tests
-        if(APP_DEBUG)
+        if(APP_DEBUG && APP_TEST)
         {
             AutoTest::run(argc,argv);
+            return 0;
         }
         //run the application
         Ouroboros Window;

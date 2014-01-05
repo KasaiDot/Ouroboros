@@ -67,53 +67,6 @@ void Dialog_Settings::SetSettings()
     ui->Recogntion_MPFocus->setChecked(Settings.Recognition.MPFocus);
     ui->Recogntion_NotifyRecognised->setChecked(Settings.Recognition.NotifyEpisodeRecognised);
     ui->Recogntion_NotifyNotRecognised->setChecked(Settings.Recognition.NotifyEpisodeNotRecognised);
-
-    //set progress button colors
-    SetButtonColor(ui->ProgressBar_BackgroundColorButton,Settings.ProgressDelegate.Background);
-    SetButtonColor(ui->ProgressBar_OutlineColorButton,Settings.ProgressDelegate.Outline);
-    SetButtonColor(ui->ProgressBar_TextColorButton,Settings.ProgressDelegate.TextColor);
-    SetButtonColor(ui->ProgressBar_CurrentlyWatchingColorButton,Settings.ProgressDelegate.CurrentlyWatching);
-    SetButtonColor(ui->ProgressBar_CompletedColorButton,Settings.ProgressDelegate.Completed);
-    SetButtonColor(ui->ProgressBar_OnHoldColorButton,Settings.ProgressDelegate.OnHold);
-    SetButtonColor(ui->ProgressBar_DroppedColorButton,Settings.ProgressDelegate.Dropped);
-
-}
-
-/***********************************
- * Changes the color of the button
- **********************************/
-void Dialog_Settings::ChangeColor(QPushButton *ColorButton)
-{
-    QColorDialog ColorDialog;
-
-    QColor SelectedColor = ColorDialog.getColor(ColorButton->palette().background().color(),this);
-    if(!SelectedColor.isValid()) return;
-
-    SetButtonColor(ColorButton,SelectedColor);
-}
-
-/***********************************************************
- * Sets the color of the button
- * where ColorVar is a variable that you set the color of
- ***********************************************************/
-void Dialog_Settings::SetButtonColor(QPushButton *ColorButton,QColor &ColorVar)
-{
-    QPalette NewPalette = ColorButton->palette();
-    NewPalette.setColor(QPalette::Background,ColorVar);
-
-    ColorButton->setPalette(NewPalette);
-
-    //Draw color
-    ColorButton->setStyleSheet("border:1px solid #000000; background-color:" + ColorVar.name() + ";");
-}
-
-/******************************
- * Saves button color globally
- ******************************/
-void Dialog_Settings::SaveButtonColor(QPushButton *ColorButton, QColor &ColorVar)
-{
-    QColor ButtonColor = ColorButton->palette().background().color();
-    ColorVar = ButtonColor;
 }
 
 /************************
@@ -202,17 +155,6 @@ void Dialog_Settings::on_buttonBox_accepted()
     Settings.Recognition.NotifyEpisodeRecognised = ui->Recogntion_NotifyRecognised->isChecked();
     Settings.Recognition.WaitForMPClose = ui->Recogntion_MPClose->isChecked();
 
-    //save progress colors
-    SaveButtonColor(ui->ProgressBar_TextColorButton,Settings.ProgressDelegate.TextColor);
-    SaveButtonColor(ui->ProgressBar_OutlineColorButton,Settings.ProgressDelegate.Outline);
-    SaveButtonColor(ui->ProgressBar_BackgroundColorButton,Settings.ProgressDelegate.Background);
-    SaveButtonColor(ui->ProgressBar_CurrentlyWatchingColorButton,Settings.ProgressDelegate.CurrentlyWatching);
-    SaveButtonColor(ui->ProgressBar_CompletedColorButton,Settings.ProgressDelegate.Completed);
-    SaveButtonColor(ui->ProgressBar_OnHoldColorButton,Settings.ProgressDelegate.OnHold);
-    SaveButtonColor(ui->ProgressBar_DroppedColorButton,Settings.ProgressDelegate.Dropped);
-
-    //save application settings
-
     Settings.Save();
 }
 
@@ -230,11 +172,3 @@ void Dialog_Settings::on_DefaultSettingsButton_clicked()
     }
 }
 
-/************************** Progress bar color buttons clicked ************************************/
-void Dialog_Settings::on_ProgressBar_TextColorButton_clicked() { ChangeColor(ui->ProgressBar_TextColorButton); }
-void Dialog_Settings::on_ProgressBar_OutlineColorButton_clicked() { ChangeColor(ui->ProgressBar_OutlineColorButton); }
-void Dialog_Settings::on_ProgressBar_BackgroundColorButton_clicked() { ChangeColor(ui->ProgressBar_BackgroundColorButton); }
-void Dialog_Settings::on_ProgressBar_CurrentlyWatchingColorButton_clicked() { ChangeColor(ui->ProgressBar_CurrentlyWatchingColorButton); }
-void Dialog_Settings::on_ProgressBar_CompletedColorButton_clicked() { ChangeColor(ui->ProgressBar_CompletedColorButton); }
-void Dialog_Settings::on_ProgressBar_OnHoldColorButton_clicked() { ChangeColor(ui->ProgressBar_OnHoldColorButton); }
-void Dialog_Settings::on_ProgressBar_DroppedColorButton_clicked() { ChangeColor(ui->ProgressBar_DroppedColorButton); }

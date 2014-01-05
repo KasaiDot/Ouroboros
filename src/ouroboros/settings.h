@@ -55,21 +55,6 @@ public:
             QString NotifyEpisodeNotRecognised;
         }Recognition;
 
-        //progressbar
-        struct ProgressBarNames
-        {
-            QString GroupName;
-            QString TextColor;
-            QString OutlineColor;
-            QString BackgroundColor;
-            QString CurrentlyWatching;
-            QString Completed;
-            QString OnHold;
-            QString Dropped;
-
-        }ProgressBar;
-
-
 
     }SettingsName;
 
@@ -92,27 +77,12 @@ public:
         bool NotifyEpisodeNotRecognised;
     }Recognition;
 
-    //Since we can't apply a stylesheet to the progress delegate,
-    //we get the colors the user sets
-    struct ProgressDelegateSettings
-    {
-        QColor TextColor;
-        QColor Outline;
-        QColor Background;
-        QColor CurrentlyWatching;
-        QColor Completed;
-        QColor OnHold;
-        QColor Dropped;
-
-    } ProgressDelegate;
-
     /****************************************** Defaults *******************************************************************/
 
     //Default settings
     struct DefaultSettings
     {
         ApplicationSettings Application;
-        ProgressDelegateSettings ProgressDelegate;
         RecognitionSettings Recognition;
     }Default;
 

@@ -28,7 +28,7 @@
    <string>Ouroboros</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="Resources.qrc">
+   <iconset resource="../Resources.qrc">
     <normaloff>:/Resources/Icon.png</normaloff>:/Resources/Icon.png</iconset>
   </property>
   <property name="toolButtonStyle">
@@ -662,7 +662,7 @@
   </action>
   <action name="Action_Synchronize_Anime">
    <property name="icon">
-    <iconset resource="Resources.qrc">
+    <iconset resource="../Resources.qrc">
      <normaloff>:/Resources/Sync.png</normaloff>
      <normalon>:/Resources/Sync-Icon.png</normalon>:/Resources/Sync.png</iconset>
    </property>
@@ -675,7 +675,7 @@
   </action>
   <action name="Action_ChangeSettings">
    <property name="icon">
-    <iconset resource="Resources.qrc">
+    <iconset resource="../Resources.qrc">
      <normaloff>:/Resources/Settings.png</normaloff>:/Resources/Settings.png</iconset>
    </property>
    <property name="text">
@@ -687,7 +687,7 @@
   </action>
   <action name="Action_ViewHistory">
    <property name="icon">
-    <iconset resource="Resources.qrc">
+    <iconset resource="../Resources.qrc">
      <normaloff>:/Resources/History.png</normaloff>:/Resources/History.png</iconset>
    </property>
    <property name="text">
@@ -699,7 +699,7 @@
   </action>
   <action name="Action_ViewSearch">
    <property name="icon">
-    <iconset resource="Resources.qrc">
+    <iconset resource="../Resources.qrc">
      <normaloff>:/Resources/Search.png</normaloff>:/Resources/Search.png</iconset>
    </property>
    <property name="text">
@@ -720,7 +720,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="Resources.qrc"/>
+  <include location="../Resources.qrc"/>
  </resources>
  <connections/>
 </ui>

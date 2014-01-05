@@ -466,8 +466,12 @@ void GUIManager::SetUpFilters()
  ***********************************************/
 void GUIManager::SetUpDelegates()
 {
+    //Setup progressbar style, we check if it's null so that we don't get duplicate copies
+    if(AnimeProgressStyle == nullptr)
+        AnimeProgressStyle = new CustomGui::AnimeProgressBar(MainWindow);
+
     //Progress bar
-    CustomGui::ProgressDelegate *ProgressBar = new CustomGui::ProgressDelegate(this);
+    CustomGui::ProgressDelegate *ProgressBar = new CustomGui::ProgressDelegate(this, AnimeProgressStyle);
 
     MainWindow->GetView(Ouroboros::CurrentlyWatching)->setItemDelegateForColumn(HEADER_PROGRESS,ProgressBar);
     MainWindow->GetView(Ouroboros::OnHold)->setItemDelegateForColumn(HEADER_PROGRESS,ProgressBar);

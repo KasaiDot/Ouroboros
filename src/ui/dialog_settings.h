@@ -45,15 +45,6 @@ private slots:
     //Ok button pressed
     void on_buttonBox_accepted();
 
-    //Progress bar color buttons pressed
-    void on_ProgressBar_TextColorButton_clicked();
-    void on_ProgressBar_OutlineColorButton_clicked();
-    void on_ProgressBar_BackgroundColorButton_clicked();
-    void on_ProgressBar_CurrentlyWatchingColorButton_clicked();
-    void on_ProgressBar_CompletedColorButton_clicked();
-    void on_ProgressBar_OnHoldColorButton_clicked();
-    void on_ProgressBar_DroppedColorButton_clicked();
-
     void on_DefaultSettingsButton_clicked();
 
 private:
@@ -61,11 +52,6 @@ private:
 
     //used for the test button
     User CurrentUserCopy;
-
-    //Color options
-    void ChangeColor(QPushButton *ColorButton);
-    void SetButtonColor(QPushButton *ColorButton, QColor &ColorVar);
-    void SaveButtonColor(QPushButton *ColorButton,QColor &ColorVar);
 
 };
 

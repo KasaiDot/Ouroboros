@@ -132,8 +132,8 @@ bool AnimeEntity::ParseAnimeJson(QByteArray Data, bool ContainsUserInfo)
     SetAnimeShowType(AnimeInfoMap.value("show_type","").toString());
     SetAnimeEpisodeCount(AnimeInfoMap.value("episode_count",ANIMEENTITY_UNKNOWN_ANIME_EPISODE).toInt());
 
-    //Wierd bug which defaults all anime episodes above 32 episodes to 0, to fix this we just make a call to a qdebug
-    qDebug() << "";
+    //Wierd bug which defaults all anime episodes above 32 episodes to 0, to fix this we just make a call to a qt function
+    qPrintable("");
 
     if(AnimeInfoMap.contains("recognition"))
     {

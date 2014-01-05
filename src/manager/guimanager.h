@@ -56,6 +56,7 @@
 #include "ouroboros/globals.h"
 #include "ouroboros/ouroboros.h"
 #include "ouroboros/settings.h"
+#include "ui/animeprogressbar.h"
 #include "ui/customguielements.h"
 
 namespace Manager
@@ -154,6 +155,10 @@ private:
 
     //Search box
     CustomGui::EraseableLineEdit *SearchBox;
+
+    //Progress delegate
+    //Note: AnimeProgressBar is the styling class only
+    CustomGui::AnimeProgressBar *AnimeProgressStyle;
 
     //Functions
     void SetModelHeaders();

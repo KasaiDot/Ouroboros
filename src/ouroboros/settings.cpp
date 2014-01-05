@@ -45,16 +45,6 @@ OuroborosSettings::OuroborosSettings()
     SettingsName.Recognition.NotifyEpisodeNotRecognised = "NotifyEpisodeNotRecognised";
     SettingsName.Recognition.WaitForMPClose = "WaitForMediaPlayerClose";
 
-    //Progress bar
-    SettingsName.ProgressBar.GroupName = "Progress_Bar";
-    SettingsName.ProgressBar.TextColor = "TextColor";
-    SettingsName.ProgressBar.OutlineColor = "OutlineColor";
-    SettingsName.ProgressBar.BackgroundColor = "BackgroundColor";
-    SettingsName.ProgressBar.CurrentlyWatching = "BarColor_CurrentlyWatching";
-    SettingsName.ProgressBar.Completed = "BarColor_Completed";
-    SettingsName.ProgressBar.OnHold = "BarColor_OnHold";
-    SettingsName.ProgressBar.Dropped = "BarColor_Dropped";
-
     //*********************** Set the default values ******************************************//
 
     //Application
@@ -69,15 +59,6 @@ OuroborosSettings::OuroborosSettings()
     Default.Recognition.NotifyEpisodeRecognised = true;
     Default.Recognition.NotifyEpisodeNotRecognised = false;
 
-    //Progress bar
-    Default.ProgressDelegate.TextColor = Qt::black;
-    Default.ProgressDelegate.Outline = QColor(160,160,160);
-    Default.ProgressDelegate.Background = QColor(250,250,250);
-    Default.ProgressDelegate.CurrentlyWatching = QColor(92,213,0);
-    Default.ProgressDelegate.Completed = QColor(51,153,255);
-    Default.ProgressDelegate.OnHold = QColor(255,230,0);
-    Default.ProgressDelegate.Dropped = QColor(255,86,60);
-
 }
 
 /********************************
@@ -89,7 +70,6 @@ void OuroborosSettings::Load()
     QSettings Settings(Filepath,QSettings::IniFormat);
 
     SettingsNames::ApplicationNames ApplicationName = SettingsName.Application;
-    SettingsNames::ProgressBarNames ProgressBarName = SettingsName.ProgressBar;
     SettingsNames::RecognitionNames RecognitionNames = SettingsName.Recognition;
 
     //Application settings
@@ -107,17 +87,6 @@ void OuroborosSettings::Load()
     Recognition.NotifyEpisodeRecognised = Settings.value(RecognitionNames.NotifyEpisodeRecognised,Default.Recognition.NotifyEpisodeRecognised).toBool();
     Recognition.NotifyEpisodeNotRecognised = Settings.value(RecognitionNames.NotifyEpisodeNotRecognised,Default.Recognition.NotifyEpisodeNotRecognised).toBool();
     Settings.endGroup();
-
-    //Progressbar colors
-    Settings.beginGroup(ProgressBarName.GroupName);
-    ProgressDelegate.TextColor.setNamedColor(Settings.value(ProgressBarName.TextColor,Default.ProgressDelegate.TextColor.name()).toString());
-    ProgressDelegate.Outline.setNamedColor(Settings.value(ProgressBarName.OutlineColor,Default.ProgressDelegate.Outline.name()).toString());
-    ProgressDelegate.Background.setNamedColor(Settings.value(ProgressBarName.BackgroundColor,Default.ProgressDelegate.Background.name()).toString());
-    ProgressDelegate.CurrentlyWatching.setNamedColor(Settings.value(ProgressBarName.CurrentlyWatching,Default.ProgressDelegate.CurrentlyWatching.name()).toString());
-    ProgressDelegate.Completed.setNamedColor(Settings.value(ProgressBarName.Completed,Default.ProgressDelegate.Completed.name()).toString());
-    ProgressDelegate.OnHold.setNamedColor(Settings.value(ProgressBarName.OnHold,Default.ProgressDelegate.OnHold.name()).toString());
-    ProgressDelegate.Dropped.setNamedColor(Settings.value(ProgressBarName.Dropped,Default.ProgressDelegate.Dropped.name()).toString());
-    Settings.endGroup();
 }
 
 /*********************************
@@ -129,7 +98,6 @@ void OuroborosSettings::Save()
     QSettings Settings(Filepath,QSettings::IniFormat);
 
     SettingsNames::ApplicationNames ApplicationName = SettingsName.Application;
-    SettingsNames::ProgressBarNames ProgressBarName = SettingsName.ProgressBar;
     SettingsNames::RecognitionNames RecognitionNames = SettingsName.Recognition;
 
     //Application
@@ -148,17 +116,6 @@ void OuroborosSettings::Save()
     Settings.setValue(RecognitionNames.NotifyEpisodeNotRecognised,Recognition.NotifyEpisodeNotRecognised);
     Settings.endGroup();
 
-    //Progress bar
-    Settings.beginGroup(ProgressBarName.GroupName);
-    Settings.setValue(ProgressBarName.TextColor,ProgressDelegate.TextColor.name());
-    Settings.setValue(ProgressBarName.OutlineColor,ProgressDelegate.Outline.name());
-    Settings.setValue(ProgressBarName.BackgroundColor,ProgressDelegate.Background.name());
-    Settings.setValue(ProgressBarName.CurrentlyWatching,ProgressDelegate.CurrentlyWatching.name());
-    Settings.setValue(ProgressBarName.Completed,ProgressDelegate.Completed.name());
-    Settings.setValue(ProgressBarName.OnHold,ProgressDelegate.OnHold.name());
-    Settings.setValue(ProgressBarName.Dropped,ProgressDelegate.Dropped.name());
-    Settings.endGroup();
-
     Settings.sync();
 }
 
@@ -167,8 +124,6 @@ void OuroborosSettings::Save()
  **********************************/
 void OuroborosSettings::ResetSettings()
 {
-    //progressbar
-    ProgressDelegate = Default.ProgressDelegate;
     Application = Default.Application;
     Recognition = Default.Recognition;
 }

@@ -23,7 +23,7 @@
    <string>Search</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="Resources.qrc">
+   <iconset resource="../Resources.qrc">
     <normaloff>:/Resources/Search.png</normaloff>:/Resources/Search.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -119,7 +119,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="Resources.qrc"/>
+  <include location="../Resources.qrc"/>
  </resources>
  <connections>
   <connection>

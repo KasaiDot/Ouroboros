@@ -16,7 +16,21 @@ class AnimeProgressBar : public QWidget
     Q_OBJECT
 
     //Properties for progressdelegate (trying to stick to css standards)
+    /****************************************************************************************
+     *  How to use in stylesheet:
+     *
+     *  CustomGui--AnimeProgressBar
+     *  {
+     *      //every property creates must be started with a qproperty-<property name>
+     *       qproperty-borderRadius: 3; //Note do not use px at the end
+     *       qproperty-color: rgb(255,255,255);
+     *      //... etc
+     *
+     *  }
+     *
+     ***************************************************************************************/
     Q_PROPERTY(float borderRadius READ GetOutlineRadius WRITE SetOutlineRadius DESIGNABLE true SCRIPTABLE true)
+    Q_PROPERTY(float progressbarRadius READ GetProgressbarRadius WRITE SetProgressbarRadius DESIGNABLE true SCRIPTABLE true)
     Q_PROPERTY(QColor color READ GetTextColor WRITE SetTextColor DESIGNABLE true SCRIPTABLE true)
     Q_PROPERTY(QColor borderColor READ GetOutlineColor WRITE SetOutlineColor DESIGNABLE true SCRIPTABLE true)
     Q_PROPERTY(QColor background READ GetBackgroundColor WRITE SetBackgroundColor DESIGNABLE true SCRIPTABLE true)
@@ -29,6 +43,7 @@ public:
         inline AnimeProgressBar(QWidget* parent = 0) :
         QWidget(parent),
         OutlineRadius(0),
+        ProgressbarRadius(0),
         TextColor(QColor(0,0,0)),
         OutlineColor(QColor(160,160,160)),
         BackgroundColor(QColor(250,250,250)),
@@ -40,7 +55,10 @@ public:
 
     // *********************************** Set and get methods ************************************
     float GetOutlineRadius() const { return OutlineRadius; }
-    void SetOutlineRadius(float Radius) { OutlineRadius = Radius; }
+    void SetOutlineRadius(float Radius) { OutlineRadius = Radius / 2; } //More precise rounding
+
+    float GetProgressbarRadius() const { return ProgressbarRadius; }
+    void SetProgressbarRadius(float Radius) { ProgressbarRadius = Radius / 2; } //More precise rounding
 
     QColor GetTextColor() const { return TextColor; }
     void SetTextColor(QColor Color) { TextColor = Color; }
@@ -67,6 +85,7 @@ private:
 
     //Progress Delegate properties
     float OutlineRadius;
+    float ProgressbarRadius;
     QColor TextColor;
     QColor OutlineColor;
     QColor BackgroundColor;

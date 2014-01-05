@@ -45,7 +45,7 @@ class ProgressDelegate : public QStyledItemDelegate
     Q_OBJECT
 
 public:
-    ProgressDelegate(QObject *parent, AnimeProgressBar *Style);
+    ProgressDelegate(QObject *parent, const CustomGui::AnimeProgressBar &Style);
     //Button types
     enum Button
     {
@@ -65,7 +65,7 @@ signals:
 
 private:
 
-    CustomGui::AnimeProgressBar *Style;
+    const CustomGui::AnimeProgressBar &Style;
 
 };
 

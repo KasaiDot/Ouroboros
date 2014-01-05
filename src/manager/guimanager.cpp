@@ -248,7 +248,7 @@ void GUIManager::SetAnimeItemData(QStandardItem *Item_Name, QStandardItem *Item_
     Item_Progress->setData(Entity->GetAnimeEpisodeCount(),ROLE_ANIME_EPISODES);
     Item_Progress->setData(Entity->GetUserInfo()->GetEpisodesWatched(),ROLE_USER_EPISODES);
 
-    //set the displa text
+    //set the display text
     QString ItemRating = (Entity->GetUserInfo()->GetRatingValue() <= 0) ? "-" : QString::number(Entity->GetUserInfo()->GetRatingValue());
 
     Item_Name->setText(Entity->GetAnimeTitle());
@@ -258,6 +258,10 @@ void GUIManager::SetAnimeItemData(QStandardItem *Item_Name, QStandardItem *Item_
     //Set alignment
     Item_Rating->setTextAlignment(Qt::AlignCenter);
     Item_Type->setTextAlignment(Qt::AlignCenter);
+
+    //hide text in progress bar column
+    Item_Progress->font().setPixelSize(1);
+    Item_Progress->setTextAlignment(Qt::AlignCenter);
 }
 
 /************************************************************************************************************
@@ -466,12 +470,8 @@ void GUIManager::SetUpFilters()
  ***********************************************/
 void GUIManager::SetUpDelegates()
 {
-    //Setup progressbar style, we check if it's null so that we don't get duplicate copies
-    if(AnimeProgressStyle == nullptr)
-        AnimeProgressStyle = new CustomGui::AnimeProgressBar(MainWindow);
-
     //Progress bar
-    CustomGui::ProgressDelegate *ProgressBar = new CustomGui::ProgressDelegate(this, AnimeProgressStyle);
+    CustomGui::ProgressDelegate *ProgressBar = new CustomGui::ProgressDelegate(this, MainWindow->AnimeProgressStyle);
 
     MainWindow->GetView(Ouroboros::CurrentlyWatching)->setItemDelegateForColumn(HEADER_PROGRESS,ProgressBar);
     MainWindow->GetView(Ouroboros::OnHold)->setItemDelegateForColumn(HEADER_PROGRESS,ProgressBar);
@@ -482,7 +482,6 @@ void GUIManager::SetUpDelegates()
 
     //connect signals and slots
     connect(ProgressBar,SIGNAL(ButtonClicked(QString,CustomGui::ProgressDelegate::Button)),this,SLOT(ProgressBarButtonClicked(QString,CustomGui::ProgressDelegate::Button)));
-
 }
 
 /*********************************************************

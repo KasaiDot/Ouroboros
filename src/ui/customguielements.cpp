@@ -3,10 +3,10 @@
 
 /*************************************************** Progress bar ****************************************************************/
 
-CustomGui::ProgressDelegate::ProgressDelegate(QObject *parent, AnimeProgressBar *Style) :
-    QStyledItemDelegate(parent)
+CustomGui::ProgressDelegate::ProgressDelegate(QObject *parent, const AnimeProgressBar &Style) :
+    QStyledItemDelegate(parent),
+    Style(Style)
 {
-    this->Style = Style;
 }
 
 //Paint the actual progress bar
@@ -65,10 +65,10 @@ void CustomGui::ProgressDelegate::paint(QPainter *Painter, const QStyleOptionVie
     //progressbar Colors
     QColor ProgressBarColor = Qt::gray;
     QString CurrentStatus = Index.data(ROLE_USER_STATUS).toString();
-    if(CurrentStatus == STATUS_CURRENTLY_WATCHING || STATUS_PLAN_TO_WATCH) ProgressBarColor = Style->GetProgressbar_Current();
-    if(CurrentStatus == STATUS_COMPLETED) ProgressBarColor = Style->GetProgressbar_Completed();
-    if(CurrentStatus == STATUS_ON_HOLD) ProgressBarColor = Style->GetProgressbar_OnHold();
-    if(CurrentStatus == STATUS_DROPPED) ProgressBarColor = Style->GetProgressbar_Dropped();
+    if(CurrentStatus == STATUS_CURRENTLY_WATCHING || STATUS_PLAN_TO_WATCH) ProgressBarColor = Style.GetProgressbar_Current();
+    if(CurrentStatus == STATUS_COMPLETED) ProgressBarColor = Style.GetProgressbar_Completed();
+    if(CurrentStatus == STATUS_ON_HOLD) ProgressBarColor = Style.GetProgressbar_OnHold();
+    if(CurrentStatus == STATUS_DROPPED) ProgressBarColor = Style.GetProgressbar_Dropped();
 
 
     //create the text rect
@@ -79,7 +79,7 @@ void CustomGui::ProgressDelegate::paint(QPainter *Painter, const QStyleOptionVie
     Painter->save();
     Painter->setRenderHint(QPainter::Antialiasing);
     Painter->setBrush(Qt::transparent);
-    Painter->setPen(Style->GetTextColor());
+    Painter->setPen(Style.GetTextColor());
     Painter->drawText(TextRect,ProgressText);
     Painter->restore();
 
@@ -88,18 +88,18 @@ void CustomGui::ProgressDelegate::paint(QPainter *Painter, const QStyleOptionVie
     QRect ProgressBarOutlineRect(Option.rect.left() + 3,Option.rect.top() + 4,Option.rect.width() - MaxTextPixelSize - 6,Option.rect.height() - 8);
     Painter->save();
     Painter->setRenderHint(QPainter::Antialiasing);
-    Painter->setBrush(Style->GetOutlineColor());
+    Painter->setBrush(Style.GetOutlineColor());
     Painter->setPen(QColor(Qt::transparent));
-    Painter->drawRoundedRect(ProgressBarOutlineRect,Style->GetOutlineRadius(),Style->GetOutlineRadius());
+    Painter->drawRoundedRect(ProgressBarOutlineRect,Style.GetOutlineRadius(),Style.GetOutlineRadius());
     Painter->restore();
 
     //Paint the progressbar background
     QRect ProgressBarBackgroundRect(ProgressBarOutlineRect.left() + 1, ProgressBarOutlineRect.top() + 1,ProgressBarOutlineRect.width() - 2, ProgressBarOutlineRect.height() - 2);
     Painter->save();
     Painter->setRenderHint(QPainter::Antialiasing);
-    Painter->setBrush(Style->GetBackgroundColor());
+    Painter->setBrush(Style.GetBackgroundColor());
     Painter->setPen(QColor(Qt::transparent));
-    Painter->drawRoundedRect(ProgressBarBackgroundRect,Style->GetOutlineRadius(),Style->GetOutlineRadius());
+    Painter->drawRoundedRect(ProgressBarBackgroundRect,Style.GetOutlineRadius(),Style.GetOutlineRadius());
     Painter->restore();
 
     //Paint the progressbar
@@ -111,7 +111,7 @@ void CustomGui::ProgressDelegate::paint(QPainter *Painter, const QStyleOptionVie
         Painter->setRenderHint(QPainter::Antialiasing);
         Painter->setBrush(ProgressBarColor);
         Painter->setPen(QColor(Qt::transparent));
-        Painter->drawRoundedRect(ProgressBarRect,Style->GetOutlineRadius(),Style->GetOutlineRadius());
+        Painter->drawRoundedRect(ProgressBarRect,Style.GetProgressbarRadius(),Style.GetProgressbarRadius());
         Painter->restore();
 
     }
@@ -148,6 +148,7 @@ void CustomGui::ProgressDelegate::paint(QPainter *Painter, const QStyleOptionVie
         QApplication::style()->drawControl(QStyle::CE_PushButtonLabel,&Plus,Painter);
 
     }
+
 }
 
 //Check for click events

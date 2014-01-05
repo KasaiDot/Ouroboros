@@ -29,6 +29,7 @@
 #include "library/animedatabase.h"
 #include "manager/threadmanager.h"
 #include "ouroboros/globals.h"
+#include "ui/animeprogressbar.h"
 
 namespace Ui {
 class Ouroboros;
@@ -75,6 +76,9 @@ public:
         Tray_Settings,
         Tray_Exit
     };
+
+    //Style classes
+    CustomGui::AnimeProgressBar AnimeProgressStyle;
 
     /********************************************* Functions *******************************************/
     //Fills the tabs with the view

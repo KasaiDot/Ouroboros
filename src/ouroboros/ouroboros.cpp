@@ -41,6 +41,7 @@
 Ouroboros::Ouroboros(QWidget *parent) :
     QMainWindow(parent),
     PlayStatus(PLAYSTATUS_STOPPED),
+    AnimeProgressStyle(this), //assign this as parent so that stylesheet get inherited
     ui(new Ui::Ouroboros)
 {
     ui->setupUi(this);\

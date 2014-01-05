@@ -80,7 +80,8 @@ void ErasePunctuation(QString &String, bool KeepTrailing)
     {
       return !(c == L'!' || // "Hayate no Gotoku!", "K-ON!"...
                c == L'+' || // "Needless+"
-               c == L'\''); // "Gintama'"
+               c == L'\''|| // "Gintama'"
+               c == L'*'); // "Seitokai Yakuindomo*"
     });
   }
 

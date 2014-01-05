@@ -31,6 +31,9 @@
    <iconset resource="../Resources.qrc">
     <normaloff>:/Resources/Icon.png</normaloff>:/Resources/Icon.png</iconset>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonIconOnly</enum>
   </property>

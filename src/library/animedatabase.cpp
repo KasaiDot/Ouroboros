@@ -68,13 +68,24 @@ void AnimeDatabase::AddAnime(AnimeEntity *Anime)
         AnimeEntity *OldAnime = GetAnime(Anime->GetAnimeSlug());
 
         //check if the old informations' last watched was later than the last watched returned by the api
-        if(OldAnime->GetUserInfo()->LastWatchedLaterThan(Anime->GetUserInfo()->GetLastWatched()))
+        if(OldAnime->GetUserInfo()->isLastWatchedRecentThan(Anime->GetUserInfo()->GetLastWatched()))
         {
             //Move the userinfo of the old anime to the new one, incase the anime information (not user information) has been updated
             UserAnimeInformation *OldInfo = OldAnime->GetUserInfo();
             QStringList RecognitionTitles = OldAnime->GetRecognitionTitles();
             Anime->SetUserInfo(*OldInfo);
             Anime->SetRecognitionTitles(RecognitionTitles);
+
+            //Check if the new anime episode count increased compared to old one, if so move that anime to currently watching
+            if(OldInfo->GetStatus() == STATUS_COMPLETED)
+            {
+                if((Anime->GetAnimeEpisodeCount() > OldAnime->GetAnimeEpisodeCount()) &&
+                        (Anime->GetAnimeEpisodeCount() != ANIMEENTITY_UNKNOWN_ANIME_EPISODE || OldAnime->GetAnimeEpisodeCount() != ANIMEENTITY_UNKNOWN_ANIME_EPISODE))
+                {
+                    //move the anime to currently watching list
+                    Anime->GetUserInfo()->SetStatus(STATUS_CURRENTLY_WATCHING);
+                }
+            }
 
             //Save the new anime
             File_Manager.SaveAnimeEntity(Anime);

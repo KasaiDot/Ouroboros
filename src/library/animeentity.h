@@ -56,32 +56,9 @@ public:
 
     //***************************************************************************************************************/
     int GetEpisodesWatched() const { return EpisodesWatched; }
-    inline void SetEpisodesWatched(int EpisodeCount, bool UpdateWatched = false)
-    {
-        if(((EpisodeCount <= AnimeEpisodes) && (EpisodeCount >= 0)) || (AnimeEpisodes <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE))
-            EpisodesWatched = EpisodeCount;
-        if(UpdateWatched)
-            UpdateLastWatched();
-    }
-
-    inline void IncrementEpisodeCount()
-    {
-        if(EpisodesWatched + 1 <= AnimeEpisodes || AnimeEpisodes <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE)
-        {
-            //if user is planing to watch and increments episode, then we move it to currently watching
-            if(GetStatus() == STATUS_PLAN_TO_WATCH)
-                SetStatus(STATUS_CURRENTLY_WATCHING);
-
-            EpisodesWatched++;
-            UpdateLastWatched();
-        }
-    }
-
-    inline void DecrementEpisodeCount()
-    {
-        if(EpisodesWatched - 1 >= 0) EpisodesWatched--;
-        UpdateLastWatched();
-    }
+    void SetEpisodesWatched(int EpisodeCount, bool UpdateWatched = false);
+    void IncrementEpisodeCount();
+    void DecrementEpisodeCount();
 
     //***************************************************************************************************************/
 
@@ -89,48 +66,7 @@ public:
     inline void SetLastWatched(QDateTime Time) { LastWatched = Time; }
 
     //qt's datetime > operator is not very accurate, hence we create our own function
-    inline bool LastWatchedLaterThan(QDateTime Time)
-    {
-        QDate CurDate = GetLastWatched().date();
-        QDate ArgDate = Time.date();
-        QTime CurTime = GetLastWatched().time();
-        QTime ArgTime = Time.time();
-
-        //Check if the current date is later than the argument date, if it is then we are 100% sure it is later
-        bool DateGreater = (CurDate > ArgDate);
-        if(DateGreater)
-            return true;
-
-        //Since the date isn't greater, we check to see if it is the current day, in which case we compare the times then
-        if(CurDate == ArgDate)
-        {
-            bool HourGreater = CurTime.hour() >= ArgTime.hour();
-            bool HourEqual = CurTime.hour() == ArgTime.hour();
-
-            bool MinuteGreater = CurTime.minute() >= ArgTime.minute();
-            bool MinuteEqual = CurTime.minute() == ArgTime.minute();
-
-            bool SecondsGreater = CurTime.second() > ArgTime.second();
-
-            if(!HourGreater)
-                return false;
-            if(HourGreater && !HourEqual)
-                return true;
-            if(HourGreater && HourEqual)
-            {
-                if(!MinuteGreater)
-                    return false;
-                if(MinuteGreater && !MinuteEqual)
-                    return true;
-                if(MinuteGreater && MinuteEqual)
-                    if(SecondsGreater)
-                        return true;
-            }
-        }
-
-        //Neither date or time is later than arg time
-        return false;
-    }
+    bool isLastWatchedRecentThan(QDateTime Time);
 
     //***************************************************************************************************************/
 
@@ -172,7 +108,7 @@ public:
 
     //***************************************************************************************************************/
 
-    inline void SetAnimeEpisodes(int Count) { AnimeEpisodes = Count; }
+    inline void SetAnimeEpisodes(int Count) { AnimeEpisodeCount = Count; }
 
 private:
 
@@ -190,7 +126,7 @@ private:
     float RatingValue;
 
     //Number of anime episodes
-    int AnimeEpisodes;
+    int AnimeEpisodeCount;
 };
 
 class AnimeEntity
@@ -218,22 +154,9 @@ public:
 
     //****************************************** Setters and Getter methods *********************************************************************/
 
-    UserAnimeInformation &GetUserInfoRef() { return UserInfo; }
     UserAnimeInformation *GetUserInfo() { return &UserInfo; } //Return a pointer as to not make a copy of the information
     const UserAnimeInformation *GetConstUserInfo() const { return &UserInfo; }
-    inline void SetUserInfo(UserAnimeInformation const &Info)
-    {
-        UserInfo = Info;
-        UserInfoSet = true;
-
-        //Set the anime episode count of the information
-        if(GetAnimeEpisodeCount() <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE) return;
-        UserInfo.SetAnimeEpisodes(GetAnimeEpisodeCount());
-
-        //Check that the current episode is less than the anime episodes
-        if(UserInfo.GetEpisodesWatched() > GetAnimeEpisodeCount())
-            UserInfo.SetEpisodesWatched(GetAnimeEpisodeCount());
-    }
+    inline void SetUserInfo(UserAnimeInformation const &Info);
 
     //***************************************************************************************************************/
 

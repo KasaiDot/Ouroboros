@@ -307,6 +307,23 @@ QJsonObject AnimeEntity::ConstructUpdateJsonObject()
     return Object;
 }
 
+/******************************
+ * Sets the user information
+ * ***************************/
+void AnimeEntity::SetUserInfo(const UserAnimeInformation &Info)
+{
+    UserInfo = Info;
+    UserInfoSet = true;
+
+    //Set the anime episode count of the information
+    if(GetAnimeEpisodeCount() <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE) return;
+    UserInfo.SetAnimeEpisodes(GetAnimeEpisodeCount());
+
+    //Check that the current episode is less than the anime episodes
+    if(UserInfo.GetEpisodesWatched() > GetAnimeEpisodeCount())
+        UserInfo.SetEpisodesWatched(GetAnimeEpisodeCount());
+}
+
 /***********************************************************************
  * Cleans all anime titles and appends them to the cleantitles list
  ***********************************************************************/
@@ -319,7 +336,10 @@ void AnimeEntity::CleanAllTitles()
     {
         QString CleanedTitle = Title;
         CleanTitle(CleanedTitle);
-        CleanTitles << CleanedTitle;
+
+        //Make sure it is not blank or it may cause recognition errors
+        if(!(CleanedTitle.isNull() || CleanedTitle.isEmpty()))
+            CleanTitles << CleanedTitle;
     }
 
 
@@ -331,15 +351,19 @@ void AnimeEntity::CleanAllTitles()
     CleanTitle(CleanAnimeTitle);
     CleanTitle(CleanAlternateTitle);
 
-    CleanTitles << CleanAnimeTitle << CleanAlternateTitle;
+    //Add it to the clean titles
+    if((!CleanAnimeTitle.isNull() || CleanAnimeTitle.isEmpty()))
+        CleanTitles << CleanAnimeTitle;
 
+    if((!CleanAlternateTitle.isNull() || CleanAlternateTitle.isEmpty()))
+        CleanTitles << CleanAlternateTitle;
 
 }
 
 //******************************************************************************************************
 
 UserAnimeInformation::UserAnimeInformation():
-    AnimeEpisodes(ANIMEENTITY_UNKNOWN_ANIME_EPISODE),
+    AnimeEpisodeCount(ANIMEENTITY_UNKNOWN_ANIME_EPISODE),
     EpisodesWatched(ANIMEENTITY_UNKNOWN_USER_EPISODE),
     LastWatched(QDateTime::currentDateTime()),
     RewatchedTimes(-1),
@@ -408,8 +432,97 @@ bool UserAnimeInformation::IsUpdateAllowed(Anime::AnimeEpisode &Episode, bool Ig
     int EpisodeNumber = Episode.GetEpisodeNumberHigh();
 
     //Check if episode is valid
-    if ((EpisodeNumber < 0) || (EpisodeNumber < GetEpisodesWatched()) || (EpisodeNumber == GetEpisodesWatched() && AnimeEpisodes != 1) || (EpisodeNumber > AnimeEpisodes && AnimeEpisodes <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE))
+    if ((EpisodeNumber < 0) || (EpisodeNumber < GetEpisodesWatched()) || (EpisodeNumber == GetEpisodesWatched() && AnimeEpisodeCount != 1) || (EpisodeNumber > AnimeEpisodeCount && AnimeEpisodeCount <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE))
         return false;
 
     return true;
+}
+
+/******************************************************************
+ * Sets the amount of episodes watched and updates last watched
+ ******************************************************************/
+void UserAnimeInformation::SetEpisodesWatched(int EpisodeCount, bool UpdateWatched)
+{
+    if(((EpisodeCount <= AnimeEpisodeCount) && (EpisodeCount >= 0)) || (AnimeEpisodeCount <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE))
+        EpisodesWatched = EpisodeCount;
+
+    if(UpdateWatched)
+        UpdateLastWatched();
+}
+
+/*********************************
+ *  Increments episode count
+ *********************************/
+void UserAnimeInformation::IncrementEpisodeCount()
+{
+    if(EpisodesWatched + 1 <= AnimeEpisodeCount || AnimeEpisodeCount <= ANIMEENTITY_UNKNOWN_ANIME_EPISODE)
+    {
+        //if user is planing to watch(or anime is on hold) and increments episode, then we move it to currently watching
+        if(GetStatus() == STATUS_PLAN_TO_WATCH || STATUS_ON_HOLD)
+            SetStatus(STATUS_CURRENTLY_WATCHING);
+
+        EpisodesWatched++;
+        UpdateLastWatched();
+    }
+}
+
+/******************************
+ *  Decrements episode count
+ ******************************/
+void UserAnimeInformation::DecrementEpisodeCount()
+{
+    if(EpisodesWatched - 1 >= 0)
+    {
+        EpisodesWatched--;
+        UpdateLastWatched();
+    }
+}
+
+/****************************************************************************************************
+ *  Checks if the current last watched date is more recent than the time provided
+ *  This is used instead of the default > operator provided by QDateTime because of accuracy issues
+ *
+ *  TODO: Might simplify this to use time_t (seconds that have passes since 1970-01-01 00:00:00)
+ *****************************************************************************************************/
+bool UserAnimeInformation::isLastWatchedRecentThan(QDateTime Time)
+{
+    QDate CurDate = GetLastWatched().date();
+    QDate ArgDate = Time.date();
+    QTime CurTime = GetLastWatched().time();
+    QTime ArgTime = Time.time();
+
+    //Check if the current date is later than the argument date, if it is then we are 100% sure it is later
+    bool DateGreater = (CurDate > ArgDate);
+    if(DateGreater)
+        return true;
+
+    //Since the date isn't greater, we check to see if it is the current day, in which case we compare the times then
+    if(CurDate == ArgDate)
+    {
+        bool HourGreater = CurTime.hour() >= ArgTime.hour();
+        bool HourEqual = CurTime.hour() == ArgTime.hour();
+
+        bool MinuteGreater = CurTime.minute() >= ArgTime.minute();
+        bool MinuteEqual = CurTime.minute() == ArgTime.minute();
+
+        bool SecondsGreater = CurTime.second() > ArgTime.second();
+
+        if(!HourGreater)
+            return false;
+        if(HourGreater && !HourEqual)
+            return true;
+        if(HourGreater && HourEqual)
+        {
+            if(!MinuteGreater)
+                return false;
+            if(MinuteGreater && !MinuteEqual)
+                return true;
+            if(MinuteGreater && MinuteEqual)
+                if(SecondsGreater)
+                    return true;
+        }
+    }
+
+    //Neither date or time is later than arg time
+    return false;
 }

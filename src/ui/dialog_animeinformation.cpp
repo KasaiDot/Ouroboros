@@ -20,6 +20,7 @@
 #include "ui_dialog_animeinformation.h"
 
 #include "manager/filemanager.h"
+#include "manager/stylemanager.h"
 
 Dialog_AnimeInformation::Dialog_AnimeInformation(QWidget *parent) :
     QDialog(parent),
@@ -31,6 +32,13 @@ Dialog_AnimeInformation::Dialog_AnimeInformation(QWidget *parent) :
 
     connect(ui->ActionListWidget,SIGNAL(currentRowChanged(int)),ui->stackedWidget,SLOT(setCurrentIndex(int)));
     ui->ActionListWidget->setCurrentRow(0);
+
+    this->setStyleSheet(QString(Style_Manager.GetStyle()));
+
+    //Connect signals and slots
+    connect(&Style_Manager,&Manager::StyleManager::StyleChanged,[=](QByteArray NewStyle){
+        this->setStyleSheet(QString(NewStyle));
+    });
 }
 
 Dialog_AnimeInformation::~Dialog_AnimeInformation()
@@ -79,8 +87,7 @@ void Dialog_AnimeInformation::ParseAnime(Anime::AnimeEntity &Entity, bool ShowMy
 
     if(!Entity.GetAnimeUrl().isEmpty())
     {
-        QString Url = "http://hummingbird.me" + Entity.GetAnimeUrl();
-        this->ui->Url->setText(QString("<a href=\"%1\"> Click Me </a>").arg(Url));
+        this->ui->Url->setText(QString("<a href=\"%1\"> Click Me </a>").arg(Entity.GetAnimeUrl()));
     }
 
     if(!Entity.GetAnimeSynopsis().isEmpty())

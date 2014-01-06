@@ -16,28 +16,44 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "dialog_about.h"
-#include "ui_dialog_about.h"
+#ifndef STYLEMANAGER_H
+#define STYLEMANAGER_H
 
-#include "manager/stylemanager.h"
-#include "ouroboros/appinfo.h"
+#include <QObject>
+#include <QStringList>
 
-Dialog_About::Dialog_About(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::Dialog_About)
+namespace Manager
 {
-    ui->setupUi(this);
-    ui->VersionLabel->setText(QString("Version: %1.%2").arg(APP_MAJOR_VERSION).arg(APP_MINOR_VERSION));
-    setWindowFlags(this->windowFlags() |= Qt::MSWindowsFixedSizeDialogHint);
-    this->setStyleSheet(QString(Style_Manager.GetStyle()));
 
-    //Connect signals and slots
-    connect(&Style_Manager,&Manager::StyleManager::StyleChanged,[=](QByteArray NewStyle){
-        this->setStyleSheet(QString(NewStyle));
-    });
+class StyleManager : public QObject
+{
+    Q_OBJECT
+public:
+    StyleManager();
+
+public slots:
+    void LoadStyleList();
+    void LoadStyle(QString Filename);
+    inline void ClearStyle() { CurrentStyle = ""; }
+
+    QByteArray GetStyle() const { return CurrentStyle; }
+    void SetStyle(QByteArray Style) { CurrentStyle = Style; }
+
+private:
+    QByteArray CurrentStyle;
+    QString CurrentFileName;
+
+    //List of the styles
+    QStringList FileList;
+
+signals:
+    void StyleChanged(QByteArray NewStyle);
+    void StyleListLoaded();
+
+};
+
 }
 
-Dialog_About::~Dialog_About()
-{
-    delete ui;
-}
+extern Manager::StyleManager Style_Manager;
+
+#endif // STYLEMANAGER_H

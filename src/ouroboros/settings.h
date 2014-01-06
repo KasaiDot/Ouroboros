@@ -41,6 +41,7 @@ public:
             QString GroupName;
             QString CloseToTray;
             QString MinimizeToTray;
+            QString Stylesheet;
         }Application;
 
         //Recognition
@@ -64,6 +65,7 @@ public:
     {
         bool CloseToTray;
         bool MinimizeToTray;
+        QString Stylesheet;
     }Application;
 
     //Recognition

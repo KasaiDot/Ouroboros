@@ -30,7 +30,7 @@ class AnimeProgressBar : public QWidget
      *
      ***************************************************************************************/
     Q_PROPERTY(float borderRadius READ GetOutlineRadius WRITE SetOutlineRadius DESIGNABLE true SCRIPTABLE true)
-    Q_PROPERTY(float progressbarRadius READ GetProgressbarRadius WRITE SetProgressbarRadius DESIGNABLE true SCRIPTABLE true)
+    Q_PROPERTY(float progressBarRadius READ GetProgressbarRadius WRITE SetProgressbarRadius DESIGNABLE true SCRIPTABLE true)
     Q_PROPERTY(QColor color READ GetTextColor WRITE SetTextColor DESIGNABLE true SCRIPTABLE true)
     Q_PROPERTY(QColor borderColor READ GetOutlineColor WRITE SetOutlineColor DESIGNABLE true SCRIPTABLE true)
     Q_PROPERTY(QColor background READ GetBackgroundColor WRITE SetBackgroundColor DESIGNABLE true SCRIPTABLE true)

@@ -75,6 +75,10 @@ void AnimeDatabase::AddAnime(AnimeEntity *Anime)
             QStringList RecognitionTitles = OldAnime->GetRecognitionTitles();
             Anime->SetUserInfo(*OldInfo);
             Anime->SetRecognitionTitles(RecognitionTitles);
+
+            //Save the new anime
+            File_Manager.SaveAnimeEntity(Anime);
+
         //since the old information is not newer than the information we got from the api, we check to see if the anime episode count is valid
         } else if(Anime->GetUserInfo()->GetEpisodesWatched() <= ANIMEENTITY_UNKNOWN_USER_EPISODE) {
             //if the episode count returned was unknown, then we set the episode count of the old anime

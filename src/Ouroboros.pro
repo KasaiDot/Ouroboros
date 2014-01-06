@@ -25,8 +25,6 @@ SOURCES += main.cpp\
 HEADERS  += singleapplication.h \
     AutoTest.h
 
-#DEFINES += APP_DEBUG=false APP_UNITTEST=false
-
 #includes
 include(api/api.pri)
 include(library/library.pri)

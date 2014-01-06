@@ -35,6 +35,7 @@ OuroborosSettings::OuroborosSettings()
     SettingsName.Application.GroupName = "Application";
     SettingsName.Application.CloseToTray = "CloseToTray";
     SettingsName.Application.MinimizeToTray = "MinimizeToTray";
+    SettingsName.Application.Stylesheet = "Stylesheet";
 
     //Recognition
     SettingsName.Recognition.GroupName = "Recognition";
@@ -50,6 +51,7 @@ OuroborosSettings::OuroborosSettings()
     //Application
     Default.Application.CloseToTray = true;
     Default.Application.MinimizeToTray = true;
+    Default.Application.Stylesheet = "Default.css";
 
     //Recognition
     Default.Recognition.Enabled = true;
@@ -76,6 +78,7 @@ void OuroborosSettings::Load()
     Settings.beginGroup(ApplicationName.GroupName);
     Application.CloseToTray = Settings.value(ApplicationName.CloseToTray,Default.Application.CloseToTray).toBool();
     Application.MinimizeToTray = Settings.value(ApplicationName.MinimizeToTray,Default.Application.MinimizeToTray).toBool();
+    Application.Stylesheet = Settings.value(ApplicationName.Stylesheet,Default.Application.Stylesheet).toString();
     Settings.endGroup();
 
     //Recognition
@@ -104,6 +107,7 @@ void OuroborosSettings::Save()
     Settings.beginGroup(ApplicationName.GroupName);
     Settings.setValue(ApplicationName.CloseToTray,Application.CloseToTray);
     Settings.setValue(ApplicationName.MinimizeToTray,Application.MinimizeToTray);
+    Settings.setValue(ApplicationName.Stylesheet,Application.Stylesheet);
     Settings.endGroup();
 
     //Recognition

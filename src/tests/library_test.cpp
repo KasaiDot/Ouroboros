@@ -34,6 +34,9 @@ void Library_test::DatabaseAddFunction()
     QCOMPARE(Database.GetDatabaseSize(),0);
 
     Anime::AnimeEntity Entity;
+    Anime::UserAnimeInformation Info;
+    int EpisodesWatched;
+
     QCOMPARE(Entity.GetAnimeSlug(),QString(""));
 
     //Setup required variables
@@ -47,60 +50,69 @@ void Library_test::DatabaseAddFunction()
     Database.AddAnime(&Entity);
     QCOMPARE(Database.GetDatabaseSize(),0);
 
-/* This code causes segmentation faults, TODO: Fix
- *
+ /*This code causes segmentation faults, TODO: Fix
+
     //now add a slug
     Entity.SetAnimeSlug("Slug");
-    Entity.GetUserInfo()->SetLastWatched(QDateTime(Date_Early,TimeNow));
+    Info.SetLastWatched(QDateTime(Date_Early,TimeNow));
+    Entity.SetUserInfo(Info);
     Database.AddAnime(&Entity);
     QCOMPARE(Database.GetDatabaseSize(),1);
 
-    //Update the entity so that the later than date is newer
-    Entity.GetUserInfo()->SetEpisodesWatched(1);
-    Entity.GetUserInfo()->SetLastWatched(QDateTime(Date_Now,TimeNow));
+    //Update the entity so that the date is newer
+    Info.SetEpisodesWatched(1);
+    Info.SetLastWatched(QDateTime(Date_Now,TimeNow));
+    Entity.SetUserInfo(Info);
     Database.AddAnime(&Entity);
     QCOMPARE(Database.GetDatabaseSize(),1);
-    QCOMPARE(Database.GetAnime(Entity.GetAnimeSlug())->GetUserInfo()->GetEpisodesWatched(),1);
+    EpisodesWatched = Database.GetAnime(Entity.GetAnimeSlug())->GetUserInfo()->GetEpisodesWatched();
+    QCOMPARE(EpisodesWatched,1);
 
     //Check if an unknown episode will be overriden
-    Entity.GetUserInfo()->SetEpisodesWatched(ANIMEENTITY_UNKNOWN_USER_EPISODE);
-    Entity.GetUserInfo()->SetLastWatched(QDateTime(Date_Later,TimeNow));
+    Info.SetEpisodesWatched(ANIMEENTITY_UNKNOWN_USER_EPISODE);
+    Info.SetLastWatched(QDateTime(Date_Later,TimeNow));
+    Entity.SetUserInfo(Info);
     Database.AddAnime(&Entity);
     QCOMPARE(Database.GetDatabaseSize(),1);
-    QCOMPARE(Database.GetAnime(Entity.GetAnimeSlug())->GetUserInfo()->GetEpisodesWatched(),1);
+    EpisodesWatched = Database.GetAnime(Entity.GetAnimeSlug())->GetUserInfo()->GetEpisodesWatched();
+    QCOMPARE(EpisodesWatched,1);
 
-    //******** Check if it keeps old information (continued from previous test)
+    //Check if it keeps old information (continued from previous test)
 
     //new anime date is earlier than old anime date
     Anime::AnimeEntity Entity2;
     Entity2.SetAnimeSlug(Entity.GetAnimeSlug());
-    Entity2.GetUserInfo()->SetEpisodesWatched(2);
-    Entity2.GetUserInfo()->SetLastWatched(QDateTime(Date_Now,TimeNow));
+    Info.SetEpisodesWatched(2);
+    Info.SetLastWatched(QDateTime(Date_Now,TimeNow));
+    Entity2.SetUserInfo(Info);
     Database.AddAnime(&Entity2);
     QCOMPARE(Database.GetDatabaseSize(),1);
-    QCOMPARE(Database.GetAnime(Entity2.GetAnimeSlug())->GetUserInfo()->GetEpisodesWatched(),1);
+    EpisodesWatched = Database.GetAnime(Entity2.GetAnimeSlug())->GetUserInfo()->GetEpisodesWatched();
+    QCOMPARE(EpisodesWatched,1);
 
     //new anime date is a second later than the old anime date
     //since the previous test is not meant to be accepted we use date_later, as per the test before it
     Anime::AnimeEntity Entity3;
     Entity3.SetAnimeSlug(Entity.GetAnimeSlug());
-    Entity3.GetUserInfo()->SetEpisodesWatched(3);
-    Entity3.GetUserInfo()->SetLastWatched(QDateTime(Date_Later,SecondLater));
+    Info.SetEpisodesWatched(3);
+    Info.SetLastWatched(QDateTime(Date_Later,SecondLater));
+    Entity3.SetUserInfo(Info);
     Database.AddAnime(&Entity3);
     QCOMPARE(Database.GetDatabaseSize(),1);
-    QCOMPARE(Database.GetAnime(Entity3.GetAnimeSlug())->GetUserInfo()->GetEpisodesWatched(),3);
+    EpisodesWatched = Database.GetAnime(Entity3.GetAnimeSlug())->GetUserInfo()->GetEpisodesWatched();
+    QCOMPARE(EpisodesWatched,3);
 
     //new anime date is a few years earlier than the old anime date, but same time
     Anime::AnimeEntity Entity4;
     Entity4.SetAnimeSlug(Entity.GetAnimeSlug());
-    Entity4.GetUserInfo()->SetEpisodesWatched(2);
-    Entity4.GetUserInfo()->SetLastWatched(QDateTime(Date_Early,TimeNow));
+    Info.SetEpisodesWatched(4);
+    Info.SetLastWatched(QDateTime(Date_Early,TimeNow));
+    Entity4.SetUserInfo(Info);
     Database.AddAnime(&Entity4);
     QCOMPARE(Database.GetDatabaseSize(),1);
-    QCOMPARE(Database.GetAnime(Entity4.GetAnimeSlug())->GetUserInfo()->GetEpisodesWatched(),3);
-
-    */
-
+    EpisodesWatched = Database.GetAnime(Entity4.GetAnimeSlug())->GetUserInfo()->GetEpisodesWatched();
+    QCOMPARE(EpisodesWatched,3);
+*/
     //***************************************************************************
 
 }

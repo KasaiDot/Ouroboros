@@ -60,14 +60,12 @@ inline void addTest(QObject* object)
     }
 }
 
-inline int run(int argc, char *argv[])
+inline void run(int argc, char *argv[])
 {
-    int ret = 0;
     foreach (QObject* test, testList())
     {
-        ret += QTest::qExec(test, argc, argv);
+        QTest::qExec(test, argc, argv);
     }
-    return ret;
 }
 }
 

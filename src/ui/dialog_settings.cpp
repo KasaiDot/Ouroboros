@@ -28,6 +28,7 @@
 #include "library/animedatabase.h"
 #include "manager/filemanager.h"
 #include "manager/guimanager.h"
+#include "manager/stylemanager.h"
 #include "ouroboros/settings.h"
 
 Dialog_Settings::Dialog_Settings(QWidget *parent) :
@@ -44,6 +45,13 @@ Dialog_Settings::Dialog_Settings(QWidget *parent) :
     }
 
     SetSettings();
+
+    this->setStyleSheet(QString(Style_Manager.GetStyle()));
+
+    //Connect signals and slots
+    connect(&Style_Manager,&Manager::StyleManager::StyleChanged,[=](QByteArray NewStyle){
+        this->setStyleSheet(QString(NewStyle));
+    });
 }
 
 Dialog_Settings::~Dialog_Settings()

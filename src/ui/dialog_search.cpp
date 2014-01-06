@@ -26,6 +26,7 @@
 #include "library/animedatabase.h"
 #include "library/user.h"
 #include "manager/guimanager.h"
+#include "manager/stylemanager.h"
 
 Dialog_Search::Dialog_Search(QWidget *parent) :
     QDialog(parent),
@@ -37,7 +38,12 @@ Dialog_Search::Dialog_Search(QWidget *parent) :
     SetupTreeWidget();
     SetupSearchBox();
 
+    this->setStyleSheet(QString(Style_Manager.GetStyle()));
+
     //connect signals and slots
+    connect(&Style_Manager,&Manager::StyleManager::StyleChanged,[=](QByteArray NewStyle){
+        this->setStyleSheet(QString(NewStyle));
+    });
     connect(ui->SearchTreeWidget,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(HandleDoubleClick(QModelIndex)));
     connect(ui->SearchTreeWidget,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowCustomContextMenu(QPoint)));
     connect(ui->SearchButton,SIGNAL(clicked()),this,SLOT(SearchAnime()));

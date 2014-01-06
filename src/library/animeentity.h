@@ -218,6 +218,7 @@ public:
 
     //****************************************** Setters and Getter methods *********************************************************************/
 
+    UserAnimeInformation &GetUserInfoRef() { return UserInfo; }
     UserAnimeInformation *GetUserInfo() { return &UserInfo; } //Return a pointer as to not make a copy of the information
     const UserAnimeInformation *GetConstUserInfo() const { return &UserInfo; }
     inline void SetUserInfo(UserAnimeInformation const &Info)

@@ -42,6 +42,7 @@ Classes
 **RecogntionEngine** - Class which handles recognition of anime (credits erengy).  
 **Settings** - Holds all settings of Ouroboros.  
 **SingleApplication** - Class derived from QApplication that handles application instances.  
+**StyleManager** - HAndles application UI styling across all dialogs and windows.  
 **ThreadManager** - Class which handles creation and deletion of threads within the application.  
 **User** - Class which holds user information such as username and password.
 
@@ -76,6 +77,7 @@ Here is the list of classes that are global and their equivalent variable:
 * **AnimeEpisode** - CurrentEpisode  
 * **MediaManager** - Media_Manager  
 * **RecognitionEngine** - Recognition_Engine  
+* **StyleManager** - Style_Manager  
   
 You may also notice that classes have been put into namespaces. This is used to group classes based on what they are part of or what they do, E.g ApiManager is part of managers  
   

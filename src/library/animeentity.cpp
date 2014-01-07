@@ -363,7 +363,6 @@ void AnimeEntity::CleanAllTitles()
 //******************************************************************************************************
 
 UserAnimeInformation::UserAnimeInformation():
-    AnimeEpisodeCount(ANIMEENTITY_UNKNOWN_ANIME_EPISODE),
     EpisodesWatched(ANIMEENTITY_UNKNOWN_USER_EPISODE),
     LastWatched(QDateTime::currentDateTime()),
     RewatchedTimes(-1),
@@ -373,7 +372,8 @@ UserAnimeInformation::UserAnimeInformation():
     Private(false),
     Rewatching(false),
     RatingType(""),
-    RatingValue(0)
+    RatingValue(0),
+    AnimeEpisodeCount(ANIMEENTITY_UNKNOWN_ANIME_EPISODE)
 {
 }
 

@@ -43,7 +43,7 @@ void StyleManager::LoadStyleList()
  *********************************************/
 void StyleManager::LoadStyle(QString Filename)
 {
-    if(Filename.isEmpty() || Filename.isNull()) return;
+    if(Filename.isEmpty() || Filename.isNull()) ClearStyle();
 
     QByteArray Data = File_Manager.LoadStyle(Filename);
     if(Data.isNull() || Data.isEmpty()) return;

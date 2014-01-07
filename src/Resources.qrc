@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>Resources/Icon.png</file>
-        <file>Resources/Settings.png</file>
         <file>Resources/Sync.png</file>
         <file>Resources/cross.png</file>
         <file>Resources/circle-blue.png</file>
@@ -10,5 +9,6 @@
         <file>Resources/tag-red.png</file>
         <file>Resources/History.png</file>
         <file>Resources/Search.png</file>
+        <file>Resources/Settings.png</file>
     </qresource>
 </RCC>

@@ -47,11 +47,7 @@ Dialog_Settings::Dialog_Settings(QWidget *parent) :
     SetSettings();
 
     this->setStyleSheet(QString(Style_Manager.GetStyle()));
-
-    //Connect signals and slots
-    connect(&Style_Manager,&Manager::StyleManager::StyleChanged,[=](QByteArray NewStyle){
-        this->setStyleSheet(QString(NewStyle));
-    });
+    on_RefreshThemeListButton_clicked();
 }
 
 Dialog_Settings::~Dialog_Settings()
@@ -155,6 +151,10 @@ void Dialog_Settings::on_buttonBox_accepted()
     Settings.Application.CloseToTray = ui->Application_TrayClose->isChecked();
     Settings.Application.MinimizeToTray = ui->Application_TrayMinimize->isChecked();
 
+    //Apply the stylesheet
+    Settings.Application.Stylesheet = ui->ThemeComboBox->currentData().toString();
+    Style_Manager.LoadStyle(Settings.Application.Stylesheet);
+
     //recognition
     Settings.Recognition.Enabled = ui->Recognition_Enabled->isChecked();
     Settings.Recognition.Delay = ui->Recognition_DelaySpinBox->value();
@@ -164,6 +164,15 @@ void Dialog_Settings::on_buttonBox_accepted()
     Settings.Recognition.WaitForMPClose = ui->Recogntion_MPClose->isChecked();
 
     Settings.Save();
+}
+
+/*****************************
+ *  Cancel button pressed
+ *****************************/
+void Dialog_Settings::on_buttonBox_rejected()
+{
+    //Set the theme to previous theme
+    on_RefreshThemeButton_clicked();
 }
 
 /***********************************
@@ -178,5 +187,54 @@ void Dialog_Settings::on_DefaultSettingsButton_clicked()
         Settings.ResetSettings();
         SetSettings();
     }
+}
+
+/***********************************************
+ *  Populates theme combo box with theme list
+ ***********************************************/
+void Dialog_Settings::on_RefreshThemeListButton_clicked()
+{
+    Style_Manager.LoadStyleList();
+    QStringList ThemeList = Style_Manager.GetFileList();
+
+    //Clear the combo box
+    ui->ThemeComboBox->clear();
+
+    //Add themes
+    ui->ThemeComboBox->addItem("None","");
+    foreach(QString Theme, ThemeList)
+    {
+        //We set the data as the theme name, because we might want to modify the displayed text
+        QString CleanedTheme = Theme;
+        CleanedTheme = CleanedTheme.trimmed();
+        CleanedTheme.chop(4);
+        ui->ThemeComboBox->addItem(CleanedTheme,Theme);
+    }
+
+    //Set the theme: none as default
+    ui->ThemeComboBox->setCurrentIndex(0);
+
+    //Now we want to select our current theme
+    int ThemeIndex = ui->ThemeComboBox->findData(Settings.Application.Stylesheet);
+    if(ThemeIndex < 0) return;
+    ui->ThemeComboBox->setCurrentIndex(ThemeIndex);
+}
+
+/********************************
+ *  Refreshes current style
+ ********************************/
+void Dialog_Settings::on_RefreshThemeButton_clicked()
+{
+    Style_Manager.LoadStyle(Settings.Application.Stylesheet);
+    this->setStyleSheet(QString(Style_Manager.GetStyle()));
+}
+
+/*************************************
+ * Applies current theme selected
+ ************************************/
+void Dialog_Settings::on_ApplyThemeButton_clicked()
+{
+    Style_Manager.LoadStyle(ui->ThemeComboBox->currentData().toString());
+    this->setStyleSheet(QString(Style_Manager.GetStyle()));
 }
 

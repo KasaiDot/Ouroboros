@@ -22,6 +22,7 @@
 #include <QMenu>
 #include <QInputDialog>
 #include <QToolBar>
+#include <QMenuBar>
 
 #include "api/queuemanager.h"
 #include "library/historymanager.h"

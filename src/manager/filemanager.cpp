@@ -421,7 +421,7 @@ QByteArray FileManager::LoadStyle(QString Filename)
  **********************************************************/
 QStringList FileManager::GetStyleList()
 {
-    return QDir(QApplication::applicationDirPath() + FileManagerInfo.StyleFolderPath).entryList(QDir::Files);
+    return QDir(QApplication::applicationDirPath() + FileManagerInfo.StyleFolderPath).entryList(QDir::Files,QDir::Name);
 }
 
 /********************************************

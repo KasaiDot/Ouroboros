@@ -156,7 +156,7 @@ public:
 
     UserAnimeInformation *GetUserInfo() { return &UserInfo; } //Return a pointer as to not make a copy of the information
     const UserAnimeInformation *GetConstUserInfo() const { return &UserInfo; }
-    inline void SetUserInfo(UserAnimeInformation const &Info);
+    void SetUserInfo(UserAnimeInformation const &Info);
 
     //***************************************************************************************************************/
 

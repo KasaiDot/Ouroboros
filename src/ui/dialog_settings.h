@@ -45,7 +45,16 @@ private slots:
     //Ok button pressed
     void on_buttonBox_accepted();
 
+    //Cancel pressed
+    void on_buttonBox_rejected();
+
     void on_DefaultSettingsButton_clicked();
+
+    //Theme buttons
+    void on_RefreshThemeListButton_clicked();
+    void on_RefreshThemeButton_clicked();
+    void on_ApplyThemeButton_clicked();
+
 
 private:
     Ui::Dialog_Settings *ui;

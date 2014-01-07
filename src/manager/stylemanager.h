@@ -34,10 +34,12 @@ public:
 public slots:
     void LoadStyleList();
     void LoadStyle(QString Filename);
-    inline void ClearStyle() { CurrentStyle = ""; }
+    inline void ClearStyle() { CurrentStyle = ""; emit StyleChanged(CurrentStyle);}
 
     QByteArray GetStyle() const { return CurrentStyle; }
     void SetStyle(QByteArray Style) { CurrentStyle = Style; }
+
+    QStringList GetFileList() const { return FileList; }
 
 private:
     QByteArray CurrentStyle;

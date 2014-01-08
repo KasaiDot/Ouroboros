@@ -42,7 +42,7 @@ Classes
 **RecogntionEngine** - Class which handles recognition of anime (credits erengy).  
 **Settings** - Holds all settings of Ouroboros.  
 **SingleApplication** - Class derived from QApplication that handles application instances.  
-**StyleManager** - HAndles application UI styling across all dialogs and windows.  
+**ThemeManager** - HAndles application UI styling across all dialogs and windows.  
 **ThreadManager** - Class which handles creation and deletion of threads within the application.  
 **User** - Class which holds user information such as username and password.
 
@@ -77,7 +77,7 @@ Here is the list of classes that are global and their equivalent variable:
 * **AnimeEpisode** - CurrentEpisode  
 * **MediaManager** - Media_Manager  
 * **RecognitionEngine** - Recognition_Engine  
-* **StyleManager** - Style_Manager  
+* **ThemeManager** - Theme_Manager  
   
 You may also notice that classes have been put into namespaces. This is used to group classes based on what they are part of or what they do, E.g ApiManager is part of managers  
   
@@ -123,8 +123,8 @@ E.g for gcc, you go into [path to qt folder]/qtbase/mkspecs/win32-gcc++/qmake.co
 The build configuration was as follows for Windows 7:
 
 <code>configure.bat -static -release -prefix [Path to qt folder]/qtbase -nomake test -nomake examples </code>
-<code> -nomake demos -opengl desktop -platform win32-g++ -openssl -L \<openssl folder path\>\lib </code>
-<code> -I \<openssl folder path\>\include </code>
+<code> -nomake demos -opengl desktop -platform win32-g++ -openssl -L \<openssl 32bit folder path\>\lib </code>
+<code> -I \<openssl 32bit folder path\>\include </code>
   
 This configuration will allow you to statically build release versions of Ouroboros.
 Arguments such as the nomake ones are optional.

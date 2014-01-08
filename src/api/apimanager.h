@@ -22,7 +22,7 @@
 //*********************************************************************************************************
 //Api call urls
 #define API_URL_AUTH "https://hummingbirdv1.p.mashape.com/users/authenticate"
-#define API_URL_GETLIBRARY "https://hummingbirdv1.p.mashape.com/users/<username>/library?status=<status>&auth_token=<key>"
+#define API_URL_GETLIBRARY "https://hummingbirdv1.p.mashape.com/users/<username>/library?auth_token=<key>"
 #define API_URL_GETANIME "https://hummingbirdv1.p.mashape.com/anime/<slug>"
 #define API_URL_UPDATELIBRARY "https://hummingbirdv1.p.mashape.com/libraries/<slug>"
 #define API_URL_SEARCH "https://hummingbirdv1.p.mashape.com/search/anime?query=<searchtext>&auth_token=<key>"
@@ -59,7 +59,7 @@ public:
 
     //Api calls
     ApiReturnStatus Authenticate();
-    ApiReturnStatus GetLibrary(QString Status);
+    ApiReturnStatus GetLibrary();
     ApiReturnStatus GetAnime(QString Slug);
     ApiReturnStatus UpdateLibrary(QString Slug);
     QByteArray Search(QString String);

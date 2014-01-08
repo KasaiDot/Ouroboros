@@ -21,7 +21,7 @@
 #include "library/animedatabase.h"
 #include "library/animeentity.h"
 #include "library/animeepisode.h"
-#include "manager/guimanager.h"
+#include "ui/guimanager.h"
 #include "manager/filemanager.h"
 #include "recognition/recognitionengine.h"
 

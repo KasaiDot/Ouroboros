@@ -20,7 +20,7 @@
 #include "ui_dialog_animeinformation.h"
 
 #include "manager/filemanager.h"
-#include "manager/stylemanager.h"
+#include "ui/thememanager.h"
 
 Dialog_AnimeInformation::Dialog_AnimeInformation(QWidget *parent) :
     QDialog(parent),
@@ -33,16 +33,16 @@ Dialog_AnimeInformation::Dialog_AnimeInformation(QWidget *parent) :
     connect(ui->ActionListWidget,SIGNAL(currentRowChanged(int)),ui->stackedWidget,SLOT(setCurrentIndex(int)));
     ui->ActionListWidget->setCurrentRow(0);
 
-    this->setStyleSheet(QString(Style_Manager.GetStyle()));
+    this->setStyleSheet(QString(Theme_Manager.GetTheme()));
 
     //Connect signals and slots
-    connect(&Style_Manager,&Manager::StyleManager::StyleChanged,[=](QByteArray NewStyle){
-        this->setStyleSheet(QString(NewStyle));
-    });
+    connect(&Theme_Manager,SIGNAL(ThemeChanged(QString)),this,SLOT(setStyleSheet(QString)));
 }
 
 Dialog_AnimeInformation::~Dialog_AnimeInformation()
 {
+    //disconnect signals
+    disconnect(&Theme_Manager,0,this,0);
     delete ui;
 }
 

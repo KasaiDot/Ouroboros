@@ -25,7 +25,6 @@
 #include "ouroboros/appinfo.h"
 #include "ouroboros/globals.h"
 #include "ouroboros/ouroboros.h"
-#include "AutoTest.h"
 #include "singleapplication.h"
 
 
@@ -151,12 +150,6 @@ int main(int argc, char *argv[])
 
     if(!Args)
     {
-        //run tests
-        if(APP_DEBUG && APP_TEST)
-        {
-            AutoTest::run(argc,argv);
-            return 0;
-        }
         //run the application
         Ouroboros Window;
         Window.show();

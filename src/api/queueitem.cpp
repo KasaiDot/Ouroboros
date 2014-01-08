@@ -22,7 +22,7 @@
 
 #include "api/apimanager.h"
 #include "library/animedatabase.h"
-#include "manager/guimanager.h"
+#include "ui/guimanager.h"
 
 using namespace Queue;
 
@@ -63,10 +63,7 @@ void QueueItem::Run()
         break;
 
         case Item_GetLibrary:
-            if(isDataSet())
-                ApiReturnCode = Api_Manager.GetLibrary(Data);
-            else
-                Error = ItemReturn_NoData;
+             ApiReturnCode = Api_Manager.GetLibrary();
         break;
 
         case Item_UpdateLibrary:

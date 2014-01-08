@@ -50,7 +50,7 @@ public:
         QString DatabaseFolderPath;
         QString DatabaseAnimePath;
         QString DatabaseImagePath;
-        QString StyleFolderPath;
+        QString ThemeFolderPath;
     } FileManagerInfo;
 
     //Checks if directory exists, if not then it creates one
@@ -81,9 +81,9 @@ public:
     bool LoadQueue();
     bool LoadHistory();
     bool LoadMedia();
-    QByteArray LoadStyle(QString Filename);
+    QByteArray LoadTheme(QString Filename);
 
-    QStringList GetStyleList();
+    QStringList GetThemeList();
 
     void DeleteDirectory(QString Path);
 

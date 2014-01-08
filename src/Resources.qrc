@@ -10,5 +10,7 @@
         <file>Resources/History.png</file>
         <file>Resources/Search.png</file>
         <file>Resources/Settings.png</file>
+        <file>Resources/circle-grey.png</file>
+        <file>Resources/circle-red.png</file>
     </qresource>
 </RCC>

@@ -16,16 +16,16 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stylemanager.h"
+#include "thememanager.h"
 
-#include "filemanager.h"
+#include "manager/filemanager.h"
 
 using namespace Manager;
-StyleManager Style_Manager;
+ThemeManager Theme_Manager;
 
-StyleManager::StyleManager() :
+ThemeManager::ThemeManager() :
     QObject(0),
-    CurrentStyle(""),
+    CurrentTheme(""),
     CurrentFileName("")
 {
 }
@@ -33,23 +33,24 @@ StyleManager::StyleManager() :
 /************************************************
  * Loads the list of files inside theme folder
  ***********************************************/
-void StyleManager::LoadStyleList()
+void ThemeManager::LoadThemeList()
 {
-    FileList = File_Manager.GetStyleList();
+    FileList = File_Manager.GetThemeList();
+    emit ThemeListLoaded();
 }
 
 /**********************************************
  *  Loads a stylesheet into the program
  *********************************************/
-void StyleManager::LoadStyle(QString Filename)
+void ThemeManager::LoadTheme(QString Filename)
 {
-    if(Filename.isEmpty() || Filename.isNull()) ClearStyle();
+    if(Filename.isEmpty() || Filename.isNull()) ClearTheme();
 
-    QByteArray Data = File_Manager.LoadStyle(Filename);
+    QByteArray Data = File_Manager.LoadTheme(Filename);
     if(Data.isNull() || Data.isEmpty()) return;
 
-    CurrentStyle = Data;
+    CurrentTheme = QString(Data);
     CurrentFileName = Filename;
 
-    emit StyleChanged(CurrentStyle);
+    emit ThemeChanged(CurrentTheme);
 }

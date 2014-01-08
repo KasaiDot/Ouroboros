@@ -22,8 +22,7 @@ TEMPLATE = app
 SOURCES += main.cpp\
     singleapplication.cpp
 
-HEADERS  += singleapplication.h \
-    AutoTest.h
+HEADERS  += singleapplication.h
 
 #includes
 include(api/api.pri)
@@ -32,14 +31,6 @@ include(manager/manager.pri)
 include(ouroboros/ouroboros.pri)
 include(recognition/recognition.pri)
 include(ui/ui.pri)
-
-#Add "Config+=UnitTest" as an additional argument to qmake
-UnitTest
-{
-    QT += testlib
-    include(tests/tests.pri)
-}
-
 
 RESOURCES += \
     Resources.qrc

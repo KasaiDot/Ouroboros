@@ -19,7 +19,7 @@
 #include "dialog_about.h"
 #include "ui_dialog_about.h"
 
-#include "manager/stylemanager.h"
+#include "ui/thememanager.h"
 #include "ouroboros/appinfo.h"
 
 Dialog_About::Dialog_About(QWidget *parent) :
@@ -29,15 +29,15 @@ Dialog_About::Dialog_About(QWidget *parent) :
     ui->setupUi(this);
     ui->VersionLabel->setText(QString("Version: %1.%2").arg(APP_MAJOR_VERSION).arg(APP_MINOR_VERSION));
     setWindowFlags(this->windowFlags() |= Qt::MSWindowsFixedSizeDialogHint);
-    this->setStyleSheet(QString(Style_Manager.GetStyle()));
+    this->setStyleSheet(QString(Theme_Manager.GetTheme()));
 
     //Connect signals and slots
-    connect(&Style_Manager,&Manager::StyleManager::StyleChanged,[=](QByteArray NewStyle){
-        this->setStyleSheet(QString(NewStyle));
-    });
+    connect(&Theme_Manager,SIGNAL(ThemeChanged(QString)),this,SLOT(setStyleSheet(QString)));
 }
 
 Dialog_About::~Dialog_About()
 {
+    //disconnect signals
+    disconnect(&Theme_Manager,0,this,0);
     delete ui;
 }

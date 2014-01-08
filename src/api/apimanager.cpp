@@ -25,7 +25,8 @@
 
 #include "library/animedatabase.h"
 #include "library/user.h"
-#include "manager/guimanager.h"
+#include "ouroboros/settings.h"
+#include "ui/guimanager.h"
 
 using namespace Manager;
 
@@ -60,15 +61,14 @@ ApiManager::ApiReturnStatus ApiManager::Authenticate()
 /*************************************
  * Gets users library based on status
  *************************************/
-ApiManager::ApiReturnStatus ApiManager::GetLibrary(QString Status)
+ApiManager::ApiReturnStatus ApiManager::GetLibrary()
 {
-    emit ChangeStatus("Getting Library: " + Status);
+    emit ChangeStatus("Getting Library");
 
     //create network manager
     QScopedPointer<QNetworkAccessManager> NetworkManager(new QNetworkAccessManager);
     QString Url = API_URL_GETLIBRARY;
     Url.replace("<username>",CurrentUser.GetUsername());
-    Url.replace("<status>",Status);
     Url.replace("<key>",CurrentUser.GetAuthKey());
 
     QNetworkReply *Reply = DoHttpGet(NetworkManager.data(),QUrl(Url));
@@ -250,7 +250,7 @@ QNetworkReply *ApiManager::DoHttpGet(QNetworkAccessManager *NetworkManager, cons
     //Wait for the reply and add a timeout period
     QTimer Timer;
     Timer.setSingleShot(true);
-    Timer.setInterval(10000);
+    Timer.setInterval(Settings.Application.ReplyTimeout);
 
     QEventLoop Loop;
     QObject::connect(&Timer,SIGNAL(timeout()),&Loop,SLOT(quit()));
@@ -282,7 +282,7 @@ QNetworkReply *ApiManager::DoHttpPost(QNetworkAccessManager *NetworkManager, con
     //Wait for the reply and add a timeout period
     QTimer Timer;
     Timer.setSingleShot(true);
-    Timer.setInterval(10000);
+    Timer.setInterval(Settings.Application.ReplyTimeout);
 
     QEventLoop Loop;
     QObject::connect(&Timer,SIGNAL(timeout()),&Loop,SLOT(quit()));

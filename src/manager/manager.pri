@@ -1,9 +1,5 @@
 SOURCES += manager/threadmanager.cpp \
-    manager/filemanager.cpp \
-    manager/guimanager.cpp \
-    manager/stylemanager.cpp
+    manager/filemanager.cpp
 
 HEADERS += manager/threadmanager.h \
-    manager/filemanager.h \
-    manager/guimanager.h \
-    manager/stylemanager.h
+    manager/filemanager.h

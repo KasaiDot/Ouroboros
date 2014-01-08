@@ -36,6 +36,7 @@ OuroborosSettings::OuroborosSettings()
     SettingsName.Application.CloseToTray = "CloseToTray";
     SettingsName.Application.MinimizeToTray = "MinimizeToTray";
     SettingsName.Application.Stylesheet = "Stylesheet";
+    SettingsName.Application.ReplyTimeout = "ReplyTimeout";
 
     //Recognition
     SettingsName.Recognition.GroupName = "Recognition";
@@ -52,6 +53,7 @@ OuroborosSettings::OuroborosSettings()
     Default.Application.CloseToTray = true;
     Default.Application.MinimizeToTray = true;
     Default.Application.Stylesheet = "Default.css";
+    Default.Application.ReplyTimeout = 10000;
 
     //Recognition
     Default.Recognition.Enabled = true;
@@ -79,6 +81,7 @@ void OuroborosSettings::Load()
     Application.CloseToTray = Settings.value(ApplicationName.CloseToTray,Default.Application.CloseToTray).toBool();
     Application.MinimizeToTray = Settings.value(ApplicationName.MinimizeToTray,Default.Application.MinimizeToTray).toBool();
     Application.Stylesheet = Settings.value(ApplicationName.Stylesheet,Default.Application.Stylesheet).toString();
+    Application.ReplyTimeout = Settings.value(ApplicationName.ReplyTimeout,Default.Application.ReplyTimeout).toInt();
     Settings.endGroup();
 
     //Recognition
@@ -108,6 +111,7 @@ void OuroborosSettings::Save()
     Settings.setValue(ApplicationName.CloseToTray,Application.CloseToTray);
     Settings.setValue(ApplicationName.MinimizeToTray,Application.MinimizeToTray);
     Settings.setValue(ApplicationName.Stylesheet,Application.Stylesheet);
+    Settings.setValue(ApplicationName.ReplyTimeout,Application.ReplyTimeout);
     Settings.endGroup();
 
     //Recognition

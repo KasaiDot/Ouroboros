@@ -231,7 +231,17 @@ void GUIManager::UpdateAnime(Anime::AnimeEntity *Entity)
 void GUIManager::SetAnimeItemData(QStandardItem *Item_Name, QStandardItem *Item_Progress, QStandardItem *Item_Rating, QStandardItem *Item_Type, Anime::AnimeEntity *Entity)
 {
     //create the icon and set it
-    QString IconLocation = (Entity->GetAnimeStatus() == ANIME_STATUS_CURRENTLY_AIRING) ? ":/Resources/circle-green.png" : ":/Resources/circle-blue.png";
+    QString IconLocation;
+
+    if(Entity->GetAnimeStatus() == ANIME_STATUS_CURRENTLY_AIRING)
+        IconLocation = ":/Resources/circle-green.png";
+    else if(Entity->GetAnimeStatus() == ANIME_STATUS_FINISHED_AIRING)
+        IconLocation = ":/Resources/circle-blue.png";
+    else if(Entity->GetAnimeStatus() == ANIME_STATUS_NOT_AIRED)
+        IconLocation = ":/Resources/circle-red.png";
+    else
+        IconLocation = ":/Resources/circle-grey.png";
+
     QIcon AnimeIcon(IconLocation);
     Item_Name->setData(AnimeIcon,Qt::DecorationRole);
 

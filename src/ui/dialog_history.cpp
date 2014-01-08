@@ -21,7 +21,7 @@
 
 #include <QMenu>
 
-#include "manager/stylemanager.h"
+#include "ui/thememanager.h"
 
 Dialog_History::Dialog_History(QStack<Manager::HistoryItem> &HistoryStack) :
     ui(new Ui::Dialog_History),
@@ -31,17 +31,17 @@ Dialog_History::Dialog_History(QStack<Manager::HistoryItem> &HistoryStack) :
     SetupTreeWidget();
     PopulateWidget();
 
-    this->setStyleSheet(QString(Style_Manager.GetStyle()));
+    this->setStyleSheet(QString(Theme_Manager.GetTheme()));
 
     //connect signals and slots
-    connect(&Style_Manager,&Manager::StyleManager::StyleChanged,[=](QByteArray NewStyle){
-        this->setStyleSheet(QString(NewStyle));
-    });
+    connect(&Theme_Manager,SIGNAL(ThemeChanged(QString)),this,SLOT(setStyleSheet(QString)));
     connect(ui->HistoryTreeWidget,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowCustomContextMenu(QPoint)));
 }
 
 Dialog_History::~Dialog_History()
 {
+    //disconnect signals
+    disconnect(&Theme_Manager,0,this,0);
     delete ui;
 }
 

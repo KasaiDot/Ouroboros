@@ -26,8 +26,8 @@
 #include "library/animeentity.h"
 #include "library/historymanager.h"
 #include "manager/filemanager.h"
-#include "manager/guimanager.h"
-#include "manager/stylemanager.h"
+#include "ui/guimanager.h"
+#include "ui/thememanager.h"
 #include "recognition/recognitionengine.h"
 #include "recognition/mediamanager.h"
 #include "ouroboros/appinfo.h"
@@ -67,9 +67,9 @@ Ouroboros::Ouroboros(QWidget *parent) :
     Settings.Load();
 
     //Load the style
-    Style_Manager.LoadStyleList();
-    Style_Manager.LoadStyle(Settings.Application.Stylesheet);
-    this->setStyleSheet(QString(Style_Manager.GetStyle()));
+    Theme_Manager.LoadThemeList();
+    Theme_Manager.LoadTheme(Settings.Application.Stylesheet);
+    this->setStyleSheet(QString(Theme_Manager.GetTheme()));
 
     //Set the ui for the manager
     GUI_Manager.SetMainWindow(this);
@@ -92,7 +92,7 @@ Ouroboros::Ouroboros(QWidget *parent) :
     //Setup a timer to run the queue every 5 minutes
     QTimer *RunTimer = new QTimer(this);
     connect(RunTimer,SIGNAL(timeout()),&Queue_Manager,SLOT(Run()));
-    connect(RunTimer,SIGNAL(timeout()),&Style_Manager,SLOT(LoadStyleList()));
+    connect(RunTimer,SIGNAL(timeout()),&Theme_Manager,SLOT(LoadThemeList()));
     RunTimer->start(300000);
 
     //Connect signals and slots
@@ -100,9 +100,7 @@ Ouroboros::Ouroboros(QWidget *parent) :
     connect(&Api_Manager,SIGNAL(ChangeStatus(QString,int)),this,SLOT(ChangeStatus(QString,int)));
     connect(&GUI_Manager,SIGNAL(ShowTrayMessage(QString,QString,int)),this,SLOT(ShowTrayMessage(QString,QString,int)));
     connect(&Media_Manager,SIGNAL(ShowTrayMessage(QString,QString,int)),this,SLOT(ShowTrayMessage(QString,QString,int)));
-    connect(&Style_Manager,&Manager::StyleManager::StyleChanged,[=](QByteArray NewStyle){
-        this->setStyleSheet(QString(NewStyle));
-    });
+    connect(&Theme_Manager,SIGNAL(ThemeChanged(QString)),this,SLOT(setStyleSheet(QString)));
 
     //Load user info
     File_Manager.LoadUserInformation();

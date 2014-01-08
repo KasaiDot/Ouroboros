@@ -22,7 +22,7 @@
 
 #include "library/user.h"
 #include "manager/filemanager.h"
-#include "manager/guimanager.h"
+#include "ui/guimanager.h"
 #include "manager/threadmanager.h"
 
 using namespace Queue;
@@ -172,23 +172,16 @@ void QueueManager::AuthenticateUser()
  *************************************************/
 void QueueManager::GetAnimeLibrary()
 {
-    QueueItem *CurrentlyWatching = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_CURRENTLY_WATCHING);
-    AddItem(CurrentlyWatching);
+    bool QueueContainsItem = ItemContainsData("Library");
+    if(!QueueContainsItem || (QueueContainsItem && Running))
+    {
+        //We add in data so that we can check if there already is a get library queue item
+        QueueItem *Library = new QueueItem(this,QueueItem::Item_GetLibrary,"Library");
+        AddItem(Library);
 
-    QueueItem *Completed = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_COMPLETED);
-    AddItem(Completed);
-
-    QueueItem *OnHold = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_ON_HOLD);
-    AddItem(OnHold);
-
-    QueueItem *PlanToWatch = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_PLAN_TO_WATCH);
-    AddItem(PlanToWatch);
-
-    QueueItem *Dropped = new QueueItem(this,QueueItem::Item_GetLibrary,STATUS_DROPPED);
-    AddItem(Dropped);
-
-    QueueItem *PopulateModel = new QueueItem(this,QueueItem::Item_PopulateModel);
-    AddItem(PopulateModel);
+        QueueItem *PopulateModel = new QueueItem(this,QueueItem::Item_PopulateModel);
+        AddItem(PopulateModel);
+    }
 
     StartRunning();
 }

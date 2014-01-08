@@ -42,6 +42,7 @@ public:
             QString CloseToTray;
             QString MinimizeToTray;
             QString Stylesheet;
+            QString ReplyTimeout;
         }Application;
 
         //Recognition
@@ -66,6 +67,7 @@ public:
         bool CloseToTray;
         bool MinimizeToTray;
         QString Stylesheet;
+        int ReplyTimeout;
     }Application;
 
     //Recognition

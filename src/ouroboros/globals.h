@@ -34,6 +34,7 @@
 
 #define ANIME_STATUS_CURRENTLY_AIRING "Currently Airing"
 #define ANIME_STATUS_FINISHED_AIRING "Finished Airing"
+#define ANIME_STATUS_NOT_AIRED "Not Yet Aired"
 
 //********************************************* Roles **************************************************************
 #define ROLE_DEFAULT 0x0100 //Since we can't use Qt::UserRole in the macro, we have to manually assign it

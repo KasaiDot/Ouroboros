@@ -16,24 +16,46 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LIBRARY_TEST_H
-#define LIBRARY_TEST_H
+#ifndef THEMEMANAGER_H
+#define THEMEMANAGER_H
 
 #include <QObject>
-#include "AutoTest.h"
+#include <QStringList>
 
-class Library_test : public QObject
+namespace Manager
+{
+
+class ThemeManager : public QObject
 {
     Q_OBJECT
-//All tests have to be inside a private slot
-private slots:
+public:
+    ThemeManager();
 
-    /************************ Database *******************************/
-    void DatabaseAddFunction();
+public slots:
+    void LoadThemeList();
+    void LoadTheme(QString Filename);
+    inline void ClearTheme() { CurrentTheme = ""; emit ThemeChanged(CurrentTheme);}
 
+    QString GetTheme() const { return CurrentTheme; }
+    void SetTheme(QByteArray Style) { CurrentTheme = Style; }
+
+    QStringList GetFileList() const { return FileList; }
+
+private:
+    QString CurrentTheme;
+    QString CurrentFileName;
+
+    //List of the styles
+    QStringList FileList;
+
+signals:
+    void ThemeChanged(QString NewTheme);
+    void ThemeListLoaded();
 
 };
 
-DECLARE_TEST(Library_test)
+}
 
-#endif // LIBRARY_TEST_H
+extern Manager::ThemeManager Theme_Manager;
+
+#endif // THEMEMANAGER_H

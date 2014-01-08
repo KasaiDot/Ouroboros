@@ -24,7 +24,7 @@
 
 #include "library/historymanager.h"
 #include "manager/filemanager.h"
-#include "manager/guimanager.h"
+#include "ui/guimanager.h"
 
 using namespace Anime;
 

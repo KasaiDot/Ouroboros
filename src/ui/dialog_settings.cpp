@@ -27,8 +27,8 @@
 #include "api/queuemanager.h"
 #include "library/animedatabase.h"
 #include "manager/filemanager.h"
-#include "manager/guimanager.h"
-#include "manager/stylemanager.h"
+#include "ui/guimanager.h"
+#include "ui/thememanager.h"
 #include "ouroboros/settings.h"
 
 Dialog_Settings::Dialog_Settings(QWidget *parent) :
@@ -46,7 +46,7 @@ Dialog_Settings::Dialog_Settings(QWidget *parent) :
 
     SetSettings();
 
-    this->setStyleSheet(QString(Style_Manager.GetStyle()));
+    this->setStyleSheet(QString(Theme_Manager.GetTheme()));
     on_RefreshThemeListButton_clicked();
 }
 
@@ -150,10 +150,11 @@ void Dialog_Settings::on_buttonBox_accepted()
     //save application settings
     Settings.Application.CloseToTray = ui->Application_TrayClose->isChecked();
     Settings.Application.MinimizeToTray = ui->Application_TrayMinimize->isChecked();
+    Settings.Application.ReplyTimeout = ui->ReplyTimoutSpinBox->value();
 
     //Apply the stylesheet
     Settings.Application.Stylesheet = ui->ThemeComboBox->currentData().toString();
-    Style_Manager.LoadStyle(Settings.Application.Stylesheet);
+    Theme_Manager.LoadTheme(Settings.Application.Stylesheet);
 
     //recognition
     Settings.Recognition.Enabled = ui->Recognition_Enabled->isChecked();
@@ -194,8 +195,8 @@ void Dialog_Settings::on_DefaultSettingsButton_clicked()
  ***********************************************/
 void Dialog_Settings::on_RefreshThemeListButton_clicked()
 {
-    Style_Manager.LoadStyleList();
-    QStringList ThemeList = Style_Manager.GetFileList();
+    Theme_Manager.LoadThemeList();
+    QStringList ThemeList = Theme_Manager.GetFileList();
 
     //Clear the combo box
     ui->ThemeComboBox->clear();
@@ -225,8 +226,8 @@ void Dialog_Settings::on_RefreshThemeListButton_clicked()
  ********************************/
 void Dialog_Settings::on_RefreshThemeButton_clicked()
 {
-    Style_Manager.LoadStyle(Settings.Application.Stylesheet);
-    this->setStyleSheet(QString(Style_Manager.GetStyle()));
+    Theme_Manager.LoadTheme(Settings.Application.Stylesheet);
+    this->setStyleSheet(Theme_Manager.GetTheme());
 }
 
 /*************************************
@@ -234,7 +235,7 @@ void Dialog_Settings::on_RefreshThemeButton_clicked()
  ************************************/
 void Dialog_Settings::on_ApplyThemeButton_clicked()
 {
-    Style_Manager.LoadStyle(ui->ThemeComboBox->currentData().toString());
-    this->setStyleSheet(QString(Style_Manager.GetStyle()));
+    Theme_Manager.LoadTheme(ui->ThemeComboBox->currentData().toString());
+    this->setStyleSheet(Theme_Manager.GetTheme());
 }
 

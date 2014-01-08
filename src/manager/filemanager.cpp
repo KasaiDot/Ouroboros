@@ -51,7 +51,7 @@ FileManager::FileManager()
     FileManagerInfo.UserAnimePath = FileManagerInfo.UserFolderPath + "<user>/Anime/"; // <user> can be replaced easily with the user's Username
     FileManagerInfo.DatabaseAnimePath = FileManagerInfo.DatabaseFolderPath + "Anime/";
     FileManagerInfo.DatabaseImagePath = FileManagerInfo.DatabaseFolderPath + "Images/";
-    FileManagerInfo.StyleFolderPath = FileManagerInfo.DataFolderPath + "Theme/";
+    FileManagerInfo.ThemeFolderPath = FileManagerInfo.DataFolderPath + "Theme/";
 
 }
 
@@ -410,18 +410,18 @@ bool FileManager::LoadMedia()
 /**********************************************
  *  Loads a style file and return the data
  * ********************************************/
-QByteArray FileManager::LoadStyle(QString Filename)
+QByteArray FileManager::LoadTheme(QString Filename)
 {
-    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.StyleFolderPath;
+    QString Filepath = QApplication::applicationDirPath() + FileManagerInfo.ThemeFolderPath;
     return ReadFile(Filepath,Filename);
 }
 
 /**********************************************************
  *  Gets all the list of files inside the theme folder
  **********************************************************/
-QStringList FileManager::GetStyleList()
+QStringList FileManager::GetThemeList()
 {
-    return QDir(QApplication::applicationDirPath() + FileManagerInfo.StyleFolderPath).entryList(QDir::Files,QDir::Name);
+    return QDir(QApplication::applicationDirPath() + FileManagerInfo.ThemeFolderPath).entryList(QDir::Files,QDir::Name);
 }
 
 /********************************************

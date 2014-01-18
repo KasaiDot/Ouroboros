@@ -23,6 +23,7 @@
 #define SEARCH_HEADER_TITLE 0
 #define SEARCH_HEADER_EPISODE 1
 #define SEARCH_HEADER_TYPE 2
+#define SEARCH_HEADER_STATUS 3
 //*********************************************************************************************************
 
 #include <QDialog>

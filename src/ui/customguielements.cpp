@@ -70,6 +70,23 @@ void CustomGui::ProgressDelegate::paint(QPainter *Painter, const QStyleOptionVie
     if(CurrentStatus == STATUS_ON_HOLD) ProgressBarColor = Style.GetProgressbar_OnHold();
     if(CurrentStatus == STATUS_DROPPED) ProgressBarColor = Style.GetProgressbar_Dropped();
 
+    if(CurrentStatus == STATUS_CURRENTLY_WATCHING || CurrentStatus == STATUS_ON_HOLD)
+    {
+        int Priority = Index.data(ROLE_USER_PRIORITY).toInt();
+        switch(Priority)
+        {
+        case Anime::PRIORITY_HIGH:
+            ProgressBarColor = Style.GetPriorityHigh();
+            break;
+
+        case Anime::PRIORITY_MEDIUM:
+            ProgressBarColor = Style.GetPriorityMedium();
+            break;
+
+        default:
+            break;
+        }
+    }
 
     //create the text rect
     int MaxTextPixelSize = Option.fontMetrics.size(Qt::TextSingleLine,"999/999").width() + 8;

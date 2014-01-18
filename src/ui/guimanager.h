@@ -42,7 +42,6 @@
 #define TABNAME_DROPPED "Dropped"
 //*********************************************************************************************************
 
-
 #include <QObject>
 #include <QApplication>
 #include <QStandardItemModel>
@@ -92,6 +91,7 @@ public slots:
     //Add entities to the model
     void PopulateModel();
     void ClearModel();
+
     void AddAnime(Anime::AnimeEntity *Entity);
     void UpdateAnime(QStandardItem *Item,Anime::AnimeEntity *Entity);
     void UpdateAnime(QModelIndex Index,Anime::AnimeEntity *Entity);
@@ -118,7 +118,7 @@ public slots:
     void RenameTab(int TabIndex, QString TabName, int Count);
 
     //Context menus
-    void ShowViewItemComtextMenu(const QPoint &Pos);
+    void ShowViewItemContextMenu(const QPoint &Pos);
 
     //Menu functions
     void ShowAnimeInformationDialog(Anime::AnimeEntity &Entity, bool ShowMyInfo = true);
@@ -126,7 +126,7 @@ public slots:
     bool EditUserEpisodes(Anime::AnimeEntity *Entity);
 
     //push anime to the queue to update in the api
-    void UpdateHummingbirdAnime(QString AnimeSlug);
+    void UpdateOnlineLibrary(QString AnimeSlug);
 
     //connect double click signals
     void ConnectDoubleClickSignal(QTreeView *View);

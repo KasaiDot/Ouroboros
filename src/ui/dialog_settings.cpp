@@ -63,6 +63,7 @@ void Dialog_Settings::SetSettings()
     //application settings
     ui->Application_TrayClose->setChecked(Settings.Application.CloseToTray);
     ui->Application_TrayMinimize->setChecked(Settings.Application.MinimizeToTray);
+    ui->ReplyTimoutSpinBox->setValue(Settings.Application.ReplyTimeout);
 
     //recognition
     ui->Recognition_Enabled->setChecked(Settings.Recognition.Enabled);

@@ -38,9 +38,11 @@ class AnimeProgressBar : public QWidget
     Q_PROPERTY(QColor completed READ GetProgressbar_Completed WRITE SetProgressbar_Completed DESIGNABLE true SCRIPTABLE true)
     Q_PROPERTY(QColor onHold READ GetProgressbar_OnHold WRITE SetProgressbar_OnHold DESIGNABLE true SCRIPTABLE true)
     Q_PROPERTY(QColor dropped READ GetProgressbar_Dropped WRITE SetProgressbar_Dropped DESIGNABLE true SCRIPTABLE true)
+    Q_PROPERTY(QColor priorityHigh READ GetPriorityHigh WRITE SetPriorityHigh DESIGNABLE true SCRIPTABLE true)
+    Q_PROPERTY(QColor priorityMedium READ GetPriorityMedium WRITE SetPriorityMedium DESIGNABLE true SCRIPTABLE true)
 
 public:
-        inline AnimeProgressBar(QWidget* parent = 0) :
+    inline AnimeProgressBar(QWidget* parent = 0) :
         QWidget(parent),
         OutlineRadius(0),
         ProgressbarRadius(0),
@@ -50,7 +52,9 @@ public:
         Progressbar_Current(QColor(92,213,0)),
         Progressbar_Completed(QColor(51,153,255)),
         Progressbar_OnHold(QColor(255,230,0)),
-        Progressbar_Dropped(QColor(255,86,60))
+        Progressbar_Dropped(QColor(255,86,60)),
+        PriorityHigh(QColor(231, 76, 60)),
+        PriorityMedium(QColor(243, 156, 18))
     {}
 
     // *********************************** Set and get methods ************************************
@@ -81,6 +85,12 @@ public:
     QColor GetProgressbar_Dropped() const { return Progressbar_Dropped; }
     void SetProgressbar_Dropped(const QColor &Color) { Progressbar_Dropped = Color; }
 
+    QColor GetPriorityHigh() const { return PriorityHigh; }
+    void SetPriorityHigh(const QColor &Color) { PriorityHigh = Color; }
+
+    QColor GetPriorityMedium() const { return PriorityMedium; }
+    void SetPriorityMedium(const QColor &Color) { PriorityMedium = Color; }
+
 private:
 
     //Progress Delegate properties
@@ -93,6 +103,8 @@ private:
     QColor Progressbar_Completed;
     QColor Progressbar_OnHold;
     QColor Progressbar_Dropped;
+    QColor PriorityHigh;
+    QColor PriorityMedium;
 
 };
 

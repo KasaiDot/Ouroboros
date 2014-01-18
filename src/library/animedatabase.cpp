@@ -49,7 +49,7 @@ void AnimeDatabase::ClearDatabase()
 {
     foreach(AnimeEntity *Anime, Database.values())
     {
-       RemoveAnime(Anime);
+        RemoveAnime(Anime);
     }
 }
 
@@ -90,12 +90,17 @@ void AnimeDatabase::AddAnime(AnimeEntity *Anime)
             //Save the new anime
             File_Manager.SaveAnimeEntity(Anime);
 
-        //since the old information is not newer than the information we got from the api, we check to see if the anime episode count is valid
-        } else if(Anime->GetUserInfo()->GetEpisodesWatched() <= ANIMEENTITY_UNKNOWN_USER_EPISODE) {
-            //if the episode count returned was unknown, then we set the episode count of the old anime
-            Anime->GetUserInfo()->SetEpisodesWatched(OldAnime->GetUserInfo()->GetEpisodesWatched());
-        }
+            //since the old information is not newer than the information we got from the api, we check to see if the anime episode count is valid
+        }else{
+            if(Anime->GetUserInfo()->GetEpisodesWatched() <= ANIMEENTITY_UNKNOWN_USER_EPISODE)
+            {
+                //if the episode count returned was unknown, then we set the episode count of the old anime
+                Anime->GetUserInfo()->SetEpisodesWatched(OldAnime->GetUserInfo()->GetEpisodesWatched());
+            }
 
+            //Move the priorities over
+            Anime->GetUserInfo()->SetPriority(OldAnime->GetUserInfo()->GetPriority());
+        }
     }
 
     //replace the old anime
@@ -202,6 +207,7 @@ bool AnimeDatabase::CompareCleanTitles(AnimeEpisode &Episode, AnimeEntity *Entit
     //Check again to see if it has any clean titles
     if(!Entity->GetCleanTitles().size() > 0) return false;
 
+    //Compare all the titles in the anime with the episode clean title
     foreach (QString CleanTitle, Entity->GetCleanTitles())
     {
         //Compare with Title + number
@@ -289,8 +295,8 @@ void AnimeDatabase::ParseMultipleJson(QByteArray Data)
 
     foreach(QVariant Variant,AnimeList)
     {
-       QJsonDocument Doc = QJsonDocument::fromVariant(Variant);
-       ParseJson(Doc.toJson());
+        QJsonDocument Doc = QJsonDocument::fromVariant(Variant);
+        ParseJson(Doc.toJson());
     }
 }
 
@@ -300,13 +306,13 @@ void AnimeDatabase::ParseMultipleJson(QByteArray Data)
 void AnimeDatabase::UpdateEntity(AnimeEpisode &Episode, QString Slug) { UpdateEntity(Episode,GetAnime(Slug)); }
 void AnimeDatabase::UpdateEntity(AnimeEpisode &Episode, AnimeEntity *Entity)
 {
-   if(!Entity->GetUserInfo()->Update(Episode)) return;
+    if(!Entity->GetUserInfo()->Update(Episode)) return;
 
-   //Refresh the model
-   GUI_Manager.UpdateAnime(Entity);
-   GUI_Manager.UpdateHummingbirdAnime(Entity->GetAnimeSlug());
+    //Refresh the model
+    GUI_Manager.UpdateAnime(Entity);
+    GUI_Manager.UpdateOnlineLibrary(Entity->GetAnimeSlug());
 
-   QString Action = "Watched Episode: %1";
-   History_Manager.AddHistoryItem(Entity->GetAnimeTitle(),Action.arg(QString::number(Entity->GetUserInfo()->GetEpisodesWatched())),QDateTime::currentDateTime().toString(HISTORY_DATEFORMAT));
+    QString Action = "Watched Episode: %1";
+    History_Manager.AddHistoryItem(Entity->GetAnimeTitle(),Action.arg(QString::number(Entity->GetUserInfo()->GetEpisodesWatched())),QDateTime::currentDateTime().toString(HISTORY_DATEFORMAT));
 }
 

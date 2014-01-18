@@ -40,6 +40,14 @@
 namespace Anime
 {
 
+//**** Priorities ****//
+enum AnimePriority
+{
+    PRIORITY_NORMAL,
+    PRIORITY_MEDIUM,
+    PRIORITY_HIGH
+};
+
 //Contais user information for an anime entity
 class UserAnimeInformation
 {
@@ -86,7 +94,14 @@ public:
     //***************************************************************************************************************/
 
     QString GetStatus() const { return Status; }
-    inline void SetStatus(QString Status) { this->Status = Status; }
+    inline void SetStatus(QString Status)
+    {
+        this->Status = Status;
+
+        //Reset the priorities so that the views are sorted correctly
+        if(this->Status != STATUS_CURRENTLY_WATCHING && this->Status != STATUS_ON_HOLD)
+            Priority = PRIORITY_NORMAL;
+    }
 
     //***************************************************************************************************************/
 
@@ -110,6 +125,14 @@ public:
 
     inline void SetAnimeEpisodes(int Count) { AnimeEpisodeCount = Count; }
 
+    //***************************************************************************************************************/
+
+    int GetPriority() const { return Priority; }
+    inline void SetPriority(int Value) { Priority = Value; }
+
+    //***************************************************************************************************************/
+
+
 private:
 
     /*** User specific information ***/
@@ -124,6 +147,7 @@ private:
     bool Rewatching;
     QString RatingType;
     float RatingValue;
+    int Priority;
 
     //Number of anime episodes
     int AnimeEpisodeCount;

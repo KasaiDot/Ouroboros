@@ -78,105 +78,29 @@ public:
     int GetCommonCharIndex(QChar C);
     QChar GetMostCommonCharacter(QString &String);
 
-    inline bool IsAlphanumeric(QChar C) { return (C >= '0' && C <= '9') || (C >= 'A' && C <= 'Z') || (C >= 'a' && C <= 'z'); }
-    bool IsAlphanumeric(const QString &String)
-    {
-        if (String.isEmpty()) return false;
-        for (int i = 0; i < String.length(); ++i)
-            if (!IsAlphanumeric(String.at(i))) return false;
-        return true;
-    }
+    bool IsAlphanumeric(QChar C);
+    bool IsAlphanumeric(const QString &String);
 
     //checks if string or character is hex
-    bool IsHex(QChar c)
-    {
-        return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
-    }
-    bool IsHex(QString String)
-    {
-        if (String.isEmpty()) return false;
-        for (int i = 0; i < String.length(); i++)
-            if (!IsHex(String.at(i))) return false;
-        return true;
-    }
+    bool IsHex(QChar c);
+    bool IsHex(QString String);
     //*****************************************************************************
     //resoulution functions
-    bool IsResolution(QString &String)
-    {
-        return TranslateResolution(String, true) > 0;
-    }
+    bool IsResolution(QString &String);
 
     //Returns video resoultion
-    int TranslateResolution(QString& String, bool ReturnValidity)
-    {
-        // *###x###*
-        if (String.length() > 6) {
-            int Pos = String.indexOf("x");
-            if (Pos > -1)
-            {
-                for (int i = 0; i < String.length(); i++)
-                {
-                    if (i != Pos && !String.at(i).isNumber()) return 0;
-                }
-                return ReturnValidity ? 1 : (String.mid(Pos + 1)).toInt();
-            }
-
-            // *###p
-        } else if (String.length() > 3) {
-            if (String.at(String.length() - 1) == 'p')
-            {
-                for (int i = 0; i < String.length() - 1; i++)
-                {
-                    if (!String.at(i).isNumber()) return 0;
-                }
-                return ReturnValidity ? 1 : (String.mid(0, String.length() - 1)).toInt();
-            }
-        }
-
-        return 0;
-    }
+    int TranslateResolution(QString& String, bool ReturnValidity);
     //*****************************************************************************
     //Token functions
-    inline void RemoveWordFromToken(Token &CurToken,QString Word,bool CaseInsensitive)
-    {
-        if(CaseInsensitive)
-            CurToken.Content.replace(Word,"",Qt::CaseInsensitive);
-        else
-            CurToken.Content.replace(Word,"",Qt::CaseSensitive);
+    inline void RemoveWordFromToken(Token &CurToken,QString Word,bool CaseInsensitive);
 
-        CurToken.Virgin = false;
-    }
+    bool IsNumeric(QChar c);
+    bool IsNumeric(QString String);
 
-    inline bool IsNumeric(QChar c)  { return c >= '0' && c <= '9'; }
-    inline bool IsNumeric(QString String)
-    {
-        if (String.isEmpty()) return false;
-        for (int i = 0; i < String.length(); i++)
-            if (!IsNumeric(String.at(i))) return false;
-        return true;
-    }
-
-    inline bool IsCountingWord(QString String)
-    {
-        if (String.length() > 2) {
-            if (String.endsWith("th") || String.endsWith("nd") || String.endsWith("rd") || String.endsWith("st") ||
-                    String.endsWith("TH") || String.endsWith("ND") || String.endsWith("RD") || String.endsWith("ST"))
-            {
-                if (IsNumeric(String.mid(0, String.length() - 2)) ||
-                        String == "FIRST" ||
-                        String == "SECOND" ||
-                        String == "THIRD" ||
-                        String == "FOURTH" ||
-                        String == "FIFTH")
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+    bool IsCountingWord(QString String);
 
     bool IsEpisodeFormat(QString &str, Anime::AnimeEpisode &episode,char separator = ' ');
+    bool ValidateEpisodeNumber(Anime::AnimeEpisode &Episode);
 
     inline void Trim(QString &String, QString TrimChars, bool TrimLeft = true, bool TrimRight = true)
     {
@@ -201,17 +125,6 @@ public:
         Trim(String, TrimChars, false, true);
     }
 
-    inline bool ValidateEpisodeNumber(Anime::AnimeEpisode &Episode) {
-        int Number = Episode.Number.toInt();
-        if (Number <= 0 || Number > 1000) {
-            if (Number > 1950 && Number < 2050) {
-                Episode.Year = Episode.Number;
-            }
-            Episode.Number.clear();
-            return false;
-        }
-        return true;
-    }
 
     //*****************************************************************************
 

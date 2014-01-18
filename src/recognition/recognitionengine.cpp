@@ -42,7 +42,6 @@ RecognitionEngine::RecognitionEngine()
     EpisodeKeywords = TrimStrings(QString(RECOGNITION_KEYWORD_EPISODE).split(",")).toVector();
     EpisodePrefixes = TrimStrings(QString(RECOGNITION_KEYWORD_EPISODE_PREFIX).split(",")).toVector();
 
-
 }
 /***********************************************************
  * Removes all spaces and uneeded character from string
@@ -396,7 +395,7 @@ bool RecognitionEngine::ExamineTitle(QString Title, Anime::AnimeEpisode &Episode
 
     //*************************************************************
     // Set the final title, hopefully name of the anime
-     //************************************************************
+    //************************************************************
     Episode.Title = Title.trimmed();
     Episode.CleanTitle = Title;
     CleanTitle(Episode.CleanTitle);
@@ -432,7 +431,7 @@ void RecognitionEngine::ExamineToken(Token &CurToken, Anime::AnimeEpisode &Episo
     // Split into words. The most common non-alphanumeric character is the
     // separator.
     CurToken.Separator = GetMostCommonCharacter(CurToken.Content).toLatin1();
-    QVector<QString> Words = CurToken.Content.split(CurToken.Encloser).toVector();
+    QVector<QString> Words = CurToken.Content.split(CurToken.Separator).toVector();
 
     // Revert if there are words that are too short. This prevents splitting some
     // group names (e.g. "m.3.3.w") and keywords (e.g. "H.264").
@@ -596,6 +595,19 @@ bool RecognitionEngine::IsEpisodeFormat(QString &String, Anime::AnimeEpisode &Ep
     return false;
 }
 
+bool RecognitionEngine::ValidateEpisodeNumber(Anime::AnimeEpisode &Episode)
+{
+    int Number = Episode.Number.toInt();
+    if (Number <= 0 || Number > 1000) {
+        if (Number > 1950 && Number < 2050) {
+            Episode.Year = Episode.Number;
+        }
+        Episode.Number.clear();
+        return false;
+    }
+    return true;
+}
+
 
 /***********************************************************************
  * Gets the most common non alpha-numeric character  from the string
@@ -646,6 +658,119 @@ QChar RecognitionEngine::GetMostCommonCharacter(QString &String)
     }
     return CharCount.empty() ? '\0' : CharCount.at(CharIndex).first;
 }
+
+
+/******************************************************
+ * Checks whether a character is a letter or a number
+ *****************************************************/
+bool RecognitionEngine::IsAlphanumeric(QChar C) { return (C >= '0' && C <= '9') || (C >= 'A' && C <= 'Z') || (C >= 'a' && C <= 'z'); }
+bool RecognitionEngine::IsAlphanumeric(const QString &String)
+{
+    if (String.isEmpty()) return false;
+    for (int i = 0; i < String.length(); ++i)
+        if (!IsAlphanumeric(String.at(i))) return false;
+    return true;
+}
+
+/******************************************************
+ * Checks whether a character is hex
+ *****************************************************/
+bool RecognitionEngine::IsHex(QChar c) { return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f'); }
+bool RecognitionEngine::IsHex(QString String)
+{
+    if (String.isEmpty()) return false;
+    for (int i = 0; i < String.length(); i++)
+        if (!IsHex(String.at(i))) return false;
+    return true;
+}
+
+/******************************************************
+ * Checks whether a string represents a resoultion
+ *****************************************************/
+bool RecognitionEngine::IsResolution(QString &String)
+{
+    return TranslateResolution(String, true) > 0;
+}
+
+int RecognitionEngine::TranslateResolution(QString &String, bool ReturnValidity)
+{
+    // *###x###*
+    if (String.length() > 6)
+    {
+        int Pos = String.indexOf("x");
+        if (Pos > -1)
+        {
+            for (int i = 0; i < String.length(); i++)
+            {
+                if (i != Pos && !String.at(i).isNumber()) return 0;
+            }
+            return ReturnValidity ? 1 : (String.mid(Pos + 1)).toInt();
+        }
+
+        // *###p
+    } else if (String.length() > 3) {
+        if (String.at(String.length() - 1) == 'p')
+        {
+            for (int i = 0; i < String.length() - 1; i++)
+            {
+                if (!String.at(i).isNumber()) return 0;
+            }
+            return ReturnValidity ? 1 : (String.mid(0, String.length() - 1)).toInt();
+        }
+    }
+
+    return 0;
+}
+
+/***************************************
+ * Removes a word from the token
+ **************************************/
+void RecognitionEngine::RemoveWordFromToken(Token &CurToken, QString Word, bool CaseInsensitive)
+{
+    if(CaseInsensitive)
+        CurToken.Content.replace(Word,"",Qt::CaseInsensitive);
+    else
+        CurToken.Content.replace(Word,"",Qt::CaseSensitive);
+
+    CurToken.Virgin = false;
+}
+
+/********************************************
+ * Checks whether a character is a number
+ ********************************************/
+bool RecognitionEngine::IsNumeric(QChar c)  { return c >= '0' && c <= '9'; }
+bool RecognitionEngine::IsNumeric(QString String)
+{
+    if (String.isEmpty()) return false;
+    for (int i = 0; i < String.length(); i++)
+        if (!IsNumeric(String.at(i))) return false;
+    return true;
+}
+
+/******************************************
+ * Checks if a string is a counting word
+ *****************************************/
+bool RecognitionEngine::IsCountingWord(QString String)
+{
+    if (String.length() > 2) {
+        if (String.endsWith("th") || String.endsWith("nd") || String.endsWith("rd") || String.endsWith("st") ||
+                String.endsWith("TH") || String.endsWith("ND") || String.endsWith("RD") || String.endsWith("ST"))
+        {
+            if (IsNumeric(String.mid(0, String.length() - 2)) ||
+                    String == "FIRST" ||
+                    String == "SECOND" ||
+                    String == "THIRD" ||
+                    String == "FOURTH" ||
+                    String == "FIFTH")
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
 
 //*****************************************************************************
 Token::Token() :

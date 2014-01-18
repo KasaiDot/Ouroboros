@@ -62,12 +62,12 @@ void GUIManager::SetMainWindow(Ouroboros *Main)
     ConnectDoubleClickSignal(MainWindow->GetView(Ouroboros::Search));
 
     //connect context menus
-    connect(MainWindow->GetView(Ouroboros::CurrentlyWatching),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
-    connect(MainWindow->GetView(Ouroboros::OnHold),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
-    connect(MainWindow->GetView(Ouroboros::Completed),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
-    connect(MainWindow->GetView(Ouroboros::PlanToWatch),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
-    connect(MainWindow->GetView(Ouroboros::Dropped),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
-    connect(MainWindow->GetView(Ouroboros::Search),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemComtextMenu(QPoint)));
+    connect(MainWindow->GetView(Ouroboros::CurrentlyWatching),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemContextMenu(QPoint)));
+    connect(MainWindow->GetView(Ouroboros::OnHold),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemContextMenu(QPoint)));
+    connect(MainWindow->GetView(Ouroboros::Completed),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemContextMenu(QPoint)));
+    connect(MainWindow->GetView(Ouroboros::PlanToWatch),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemContextMenu(QPoint)));
+    connect(MainWindow->GetView(Ouroboros::Dropped),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemContextMenu(QPoint)));
+    connect(MainWindow->GetView(Ouroboros::Search),SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowViewItemContextMenu(QPoint)));
 
     //Set defaults
     TabChanged(MainWindow->GetMainTabWidget()->currentIndex());
@@ -270,9 +270,14 @@ void GUIManager::SetAnimeItemData(QStandardItem *Item_Name, QStandardItem *Item_
     Item_Rating->setTextAlignment(Qt::AlignCenter);
     Item_Type->setTextAlignment(Qt::AlignCenter);
 
+    //Set the priority data
+    int Priority = Entity->GetUserInfo()->GetPriority();
+    Item_Progress->setData(Priority,ROLE_USER_PRIORITY);
+
     //hide text in progress bar column
     Item_Progress->font().setPixelSize(1);
     Item_Progress->setTextAlignment(Qt::AlignCenter);
+
 }
 
 /************************************************************************************************************
@@ -304,7 +309,7 @@ void GUIManager::ProgressBarButtonClicked(QString Slug, CustomGui::ProgressDeleg
 
     //Update hummingbird anime only when needed, to reduce api calls
     if(Update)
-        UpdateHummingbirdAnime(Slug);
+        UpdateOnlineLibrary(Slug);
 
     QString Action = "Watched Episode: %1";
     History_Manager.AddHistoryItem(Entity->GetAnimeTitle(),Action.arg(QString::number(Entity->GetUserInfo()->GetEpisodesWatched())),QDateTime::currentDateTime().toString(HISTORY_DATEFORMAT));
@@ -498,7 +503,7 @@ void GUIManager::SetUpDelegates()
 /*********************************************************
  * Calls the api function to update anime to hummingbird
  *********************************************************/
-void GUIManager::UpdateHummingbirdAnime(QString AnimeSlug)
+void GUIManager::UpdateOnlineLibrary(QString AnimeSlug)
 {
     Queue_Manager.UpdateLibrary(AnimeSlug);
 }
@@ -568,7 +573,7 @@ void GUIManager::FinishWatching(Anime::AnimeEpisode &Episode, Anime::AnimeEntity
 /**********************************************************
  * Menu for when user right clicks on an item in the view
  **********************************************************/
-void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
+void GUIManager::ShowViewItemContextMenu(const QPoint &Pos)
 {
     QModelIndex Index = CurrentView->indexAt(Pos);
     if(Index.row() < 0) return;
@@ -589,7 +594,11 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
     QMenu RatingMenu(MainWindow);
     RatingMenu.setTitle("Rating");
 
+    QMenu PriorityMenu(MainWindow);
+    PriorityMenu.setTitle("Priority");
+
     //Menu data
+
     QString Data_Information = "Information";
     QString Data_EditEpisode = "Edit_Episodes";
 
@@ -691,6 +700,55 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
     RatingMenu.addActions(RatingGroup->actions());
     EditMenu.addMenu(&RatingMenu);
 
+    /************ Priority menu *************/
+    QActionGroup *PriorityGroup = new QActionGroup(this);
+    PriorityGroup->setExclusive(true);
+
+    int CurrentPriority;
+
+    QAction Action_Normal(this);
+    Action_Normal.setText("Normal");
+    Action_Normal.setCheckable(true);
+    Action_Normal.setActionGroup(PriorityGroup);
+    Action_Normal.setData(Anime::PRIORITY_NORMAL);
+
+    QAction Action_Medium(this);
+    Action_Medium.setText("Medium");
+    Action_Medium.setCheckable(true);
+    Action_Medium.setActionGroup(PriorityGroup);
+    Action_Medium.setData(Anime::PRIORITY_MEDIUM);
+
+    QAction Action_High(this);
+    Action_High.setText("High");
+    Action_High.setCheckable(true);
+    Action_High.setActionGroup(PriorityGroup);
+    Action_High.setData(Anime::PRIORITY_HIGH);
+
+    CurrentPriority = Entity->GetUserInfo()->GetPriority();
+    switch(CurrentPriority)
+    {
+    case Anime::PRIORITY_HIGH:
+        Action_High.setChecked(true);
+        break;
+    case Anime::PRIORITY_MEDIUM:
+        Action_Medium.setChecked(true);
+        break;
+
+    case Anime::PRIORITY_NORMAL:
+    default:
+        Action_Normal.setChecked(true);
+        break;
+
+    }
+
+    if(CurrentStatus == STATUS_CURRENTLY_WATCHING || CurrentStatus == STATUS_ON_HOLD)
+    {
+        PriorityMenu.addAction(&Action_Normal);
+        PriorityMenu.addAction(&Action_Medium);
+        PriorityMenu.addAction(&Action_High);
+        EditMenu.addMenu(&PriorityMenu);
+    }
+
     /*********** Main menu ******************/
 
     //Add edit menu
@@ -741,7 +799,17 @@ void GUIManager::ShowViewItemComtextMenu(const QPoint &Pos)
         History_Manager.AddHistoryItem(Entity->GetAnimeTitle(),Action.arg(QString::number(Entity->GetUserInfo()->GetRatingValue())),QDateTime::currentDateTime().toString(HISTORY_DATEFORMAT));
     }
 
-    UpdateHummingbirdAnime(Slug);
+    //Change priority clicked
+    if(PriorityGroup->checkedAction()->data().toInt() != CurrentPriority)
+    {
+        int NewPriority = PriorityGroup->checkedAction()->data().toInt();
+
+        Entity->GetUserInfo()->SetPriority(NewPriority);
+
+        if(ModelContains(Entity->GetAnimeTitle()))
+            UpdateAnime(Entity);
+    }
+
 }
 
 /************************************************* View info edit functions ******************************************/
@@ -756,7 +824,7 @@ void GUIManager::ShowAnimeInformationDialog(Anime::AnimeEntity &Entity, bool Sho
     connect(&InfoDialog,SIGNAL(UpdateAnime(Anime::AnimeEntity*)),this,SLOT(UpdateAnime(Anime::AnimeEntity*)));
     connect(&InfoDialog,&Dialog_AnimeInformation::UpdateAnime,[=](Anime::AnimeEntity *AnimeEntity)
     {
-        UpdateHummingbirdAnime(AnimeEntity->GetAnimeSlug());
+        UpdateOnlineLibrary(AnimeEntity->GetAnimeSlug());
     });
 
     InfoDialog.ParseAnime(Entity,ShowMyInfo);

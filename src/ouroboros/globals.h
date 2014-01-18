@@ -41,7 +41,8 @@
 #define ROLE_ANIME_SLUG (ROLE_DEFAULT + 1)
 #define ROLE_ANIME_EPISODES (ROLE_DEFAULT + 2)
 #define ROLE_USER_STATUS (ROLE_DEFAULT + 3)
-#define ROLE_USER_EPISODES 0//Make this equal to the display role so we can sort the progress
+#define ROLE_USER_EPISODES (ROLE_DEFAULT + 4)
+#define ROLE_USER_PRIORITY 0 //Make this equal to the display role so we can sort the progress
 
 
 #endif // GLOBALS_H

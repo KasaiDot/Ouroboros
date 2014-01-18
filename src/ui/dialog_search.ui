@@ -102,6 +102,11 @@
          <string>Type</string>
         </property>
        </column>
+       <column>
+        <property name="text">
+         <string>Status</string>
+        </property>
+       </column>
       </widget>
      </item>
     </layout>

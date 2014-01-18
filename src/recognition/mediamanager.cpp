@@ -176,7 +176,7 @@ int MediaManager::DetectMediaPlayer()
     HWND Handle = GetWindow(GetTopWindow(nullptr), GW_HWNDFIRST);
     while (Handle != nullptr)
     {
-        //Iterate thorugh all our media players
+        //Iterate through all our media players
         const int ListSize = MediaList.size();
         for(int i = 0; i < ListSize; ++i)
         {

@@ -81,6 +81,7 @@ void Dialog_Search::SetupTreeWidget()
     Header->resizeSection(SEARCH_HEADER_TITLE,Font.width("------------------- abcdefghijklmnopqrstuvwxyz1234567890 ----------------"));
     Header->resizeSection(SEARCH_HEADER_EPISODE, Font.width("--- Episodes ---"));
     Header->resizeSection(SEARCH_HEADER_TYPE, Font.width("--- Special ---"));
+    Header->resizeSection(SEARCH_HEADER_STATUS,Font.width("---- Currently Airing -----"));
 }
 
 /*********************************
@@ -137,12 +138,14 @@ void Dialog_Search::PopulateWidget()
         ItemStrings << Entity.GetAnimeTitle();
         ItemStrings << EpisodeCount;
         ItemStrings << Entity.GetAnimeShowType();
+        ItemStrings << Entity.GetAnimeStatus();
 
         QTreeWidgetItem *Item = new QTreeWidgetItem(ItemStrings);
         Item->setData(SEARCH_HEADER_TITLE,Qt::DecorationRole,ListIcon);
         Item->setData(SEARCH_HEADER_TITLE,ROLE_ANIME_SLUG,Entity.GetAnimeSlug());
         Item->setTextAlignment(SEARCH_HEADER_EPISODE,Qt::AlignCenter);
         Item->setTextAlignment(SEARCH_HEADER_TYPE,Qt::AlignCenter);
+        Item->setTextAlignment(SEARCH_HEADER_STATUS,Qt::AlignCenter);
 
         ui->SearchTreeWidget->addTopLevelItem(Item);
     }

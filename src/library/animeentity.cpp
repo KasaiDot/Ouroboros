@@ -245,6 +245,7 @@ QJsonDocument AnimeEntity::ConstructUserJsonDocument()
     QJsonValue Status(UserInfo.GetStatus());
     QJsonValue Private(UserInfo.isPrivate());
     QJsonValue Rewatching(UserInfo.isRewatching());
+    QJsonValue Priority(UserInfo.GetPriority());
 
     //**********************************************************
     QJsonObject RatingObject;
@@ -273,6 +274,7 @@ QJsonDocument AnimeEntity::ConstructUserJsonDocument()
     UserObject.insert("private",Private);
     UserObject.insert("rewatching",Rewatching);
     UserObject.insert("rating",Rating);
+    UserObject.insert("priority",Priority);
 
     QJsonDocument UserDoc(UserObject);
 
@@ -373,6 +375,7 @@ UserAnimeInformation::UserAnimeInformation():
     Rewatching(false),
     RatingType(""),
     RatingValue(0),
+    Priority(PRIORITY_NORMAL),
     AnimeEpisodeCount(ANIMEENTITY_UNKNOWN_ANIME_EPISODE)
 {
 }
@@ -392,6 +395,7 @@ void UserAnimeInformation::ParseUserMap(QVariantMap UserInfoMap)
     SetRewatching(UserInfoMap.value("rewatching",false).toBool());
     SetRatingType(UserInfoMap.value("rating").toMap().value("type","simple").toString());
     SetRatingValue(UserInfoMap.value("rating").toMap().value("value",0).toFloat());
+    SetPriority(UserInfoMap.value("priority",PRIORITY_NORMAL).toInt());
 }
 
 /****************************************************

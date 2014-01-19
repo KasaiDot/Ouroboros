@@ -302,15 +302,21 @@ bool RecognitionEngine::ExamineTitle(QString Title, Anime::AnimeEpisode &Episode
             {
                 for (int i = Words.size() - 2; i > 0; i--)
                 {
-                    if (Words[i] == "-" && IsNumeric(Words[i + 1]))
+                    //Check to see that the next numeric word doesn't have a colon (:), e.g (05:) won't be recognised
+                    QString NewWord = Words[i + 1];
+                    if(NewWord.contains(":"))
+                        NewWord.replace(":","");
+
+                    if (Words[i] == "-" && IsNumeric(NewWord))
                     {
-                        Episode.Number = Words[i + 1];
+                        Episode.Number = NewWord;
                         if (ValidateEpisodeNumber(Episode))
                         {
                             NumberIndex = i + 1;
                             break;
                         }
                     }
+
                 }
             }
 
@@ -428,8 +434,7 @@ size_t RecognitionEngine::TokenizeTitle(const QString &Title, const QString &Del
 
 void RecognitionEngine::ExamineToken(Token &CurToken, Anime::AnimeEpisode &Episode, bool CompareExtras)
 {
-    // Split into words. The most common non-alphanumeric character is the
-    // separator.
+    // Split into words. The most common non-alphanumeric character is the separator.
     CurToken.Separator = GetMostCommonCharacter(CurToken.Content).toLatin1();
     QVector<QString> Words = CurToken.Content.split(CurToken.Separator).toVector();
 

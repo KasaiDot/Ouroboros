@@ -67,14 +67,16 @@ void AnimeDatabase::AddAnime(AnimeEntity *Anime)
         //get the old anime from the database since we haven't replaced it
         AnimeEntity *OldAnime = GetAnime(Anime->GetAnimeSlug());
 
-        //check if the old informations' last watched was later than the last watched returned by the api
+        //Move the titles to the new anime incase we do replace it
+        QStringList RecognitionTitles = OldAnime->GetRecognitionTitles();
+        Anime->SetRecognitionTitles(RecognitionTitles);
+
+        //check if the old informations' last watched was more recent than the last watched returned by the api
         if(OldAnime->GetUserInfo()->isLastWatchedRecentThan(Anime->GetUserInfo()->GetLastWatched()))
         {
             //Move the userinfo of the old anime to the new one, incase the anime information (not user information) has been updated
             UserAnimeInformation *OldInfo = OldAnime->GetUserInfo();
-            QStringList RecognitionTitles = OldAnime->GetRecognitionTitles();
             Anime->SetUserInfo(*OldInfo);
-            Anime->SetRecognitionTitles(RecognitionTitles);
 
             //Check if the new anime episode count increased compared to old one, if so move that anime to currently watching
             if(OldInfo->GetStatus() == STATUS_COMPLETED)

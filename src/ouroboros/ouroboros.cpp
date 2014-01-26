@@ -93,7 +93,7 @@ Ouroboros::Ouroboros(QWidget *parent) :
     QTimer *RunTimer = new QTimer(this);
     connect(RunTimer,SIGNAL(timeout()),&Queue_Manager,SLOT(Run()));
     connect(RunTimer,SIGNAL(timeout()),&Theme_Manager,SLOT(LoadThemeList()));
-    RunTimer->start(300000);
+    RunTimer->start(30000);
 
     //Connect signals and slots
     connect(RunTimer,SIGNAL(timeout()),&Queue_Manager,SLOT(StartRunning()));

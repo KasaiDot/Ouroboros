@@ -43,9 +43,11 @@ namespace Anime
 //**** Priorities ****//
 enum AnimePriority
 {
-    PRIORITY_NORMAL,
-    PRIORITY_MEDIUM,
-    PRIORITY_HIGH
+    //Start at -10 because these values cannot match any anime episode count or else progress sorting will not work properley.
+    //they also have to be lower than 0 so that they go to the top of the sort when sorting by progress
+    PRIORITY_NORMAL = -12,
+    PRIORITY_MEDIUM = -11,
+    PRIORITY_HIGH = -10
 };
 
 //Contais user information for an anime entity
@@ -88,8 +90,7 @@ public:
 
     //***************************************************************************************************************/
 
-    bool isNotePresent() const { return NotesPresent; }
-    inline void SetNotePresent(bool Present) { NotesPresent = Present; }
+    bool isNotePresent() const { return !(Notes.isEmpty() || Notes.isNull()); }
 
     //***************************************************************************************************************/
 
@@ -140,7 +141,6 @@ private:
     QDateTime LastWatched;
     int RewatchedTimes;
     QString Notes;
-    bool NotesPresent;
     QString Status;
     //QString Id;
     bool Private;

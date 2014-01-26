@@ -325,9 +325,14 @@ bool RecognitionEngine::ExamineTitle(QString Title, Anime::AnimeEpisode &Episode
             {
                 for (int i = Words.size() - 1; i > 0; i--)
                 {
-                    if (IsNumeric(Words[i]))
+                    //Do the same as above, as sometimes the episode number is not always after a "-"
+                    QString NewWord = Words[i];
+                    if(NewWord.contains(":"))
+                        NewWord.replace(":","");
+
+                    if (IsNumeric(NewWord))
                     {
-                        Episode.Number = Words[i];
+                        Episode.Number = NewWord;
                         if (ValidateEpisodeNumber(Episode))
                         {
                             // Discard and give up if movie or season number (Episode numbers cannot precede them)

@@ -252,7 +252,7 @@ void GUIManager::SetAnimeItemData(QStandardItem *Item_Name, QStandardItem *Item_
     Item_Rating->setData(Slug,ROLE_ANIME_SLUG);
     Item_Type->setData(Slug,ROLE_ANIME_SLUG);
 
-    //Set the slug, user episode count, etc
+    //Set the user episode count, etc
     Item_Name->setData(Entity->GetUserInfo()->GetStatus(),ROLE_USER_STATUS);
     Item_Progress->setData(Entity->GetUserInfo()->GetStatus(),ROLE_USER_STATUS);
 
@@ -271,12 +271,15 @@ void GUIManager::SetAnimeItemData(QStandardItem *Item_Name, QStandardItem *Item_
     Item_Type->setTextAlignment(Qt::AlignCenter);
 
     //Set the priority data
+    //If the priority is normal we set the data to be the user episode so that sorting works properley
     int Priority = Entity->GetUserInfo()->GetPriority();
+    if(Priority == Anime::PRIORITY_NORMAL)
+        Priority = Entity->GetUserInfo()->GetEpisodesWatched();
+
     Item_Progress->setData(Priority,ROLE_USER_PRIORITY);
 
     //hide text in progress bar column
     Item_Progress->font().setPixelSize(1);
-    Item_Progress->setTextAlignment(Qt::AlignCenter);
 
 }
 
@@ -565,7 +568,8 @@ void GUIManager::FinishWatching(Anime::AnimeEpisode &Episode, Anime::AnimeEntity
     MainWindow->PlayStatus = Ouroboros::PLAYSTATUS_STOPPED;
 
     //Set the slug
-    Episode.Slug = ANIMEDATABASE_UKNOWN_SLUG;
+    //Episode.Slug = ANIMEDATABASE_UKNOWN_SLUG;
+    Episode.Clear();
 }
 
 /************************************************** Context Menus************************************************************************/

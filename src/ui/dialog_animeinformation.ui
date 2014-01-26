@@ -289,7 +289,7 @@
          <item>
           <widget class="QStackedWidget" name="stackedWidget">
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="GeneralInfo">
             <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -987,6 +987,16 @@
                 </layout>
                </item>
               </layout>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>Notes:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPlainTextEdit" name="NotesTextBox"/>
              </item>
              <item>
               <spacer name="verticalSpacer_3">

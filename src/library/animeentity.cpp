@@ -369,7 +369,6 @@ UserAnimeInformation::UserAnimeInformation():
     LastWatched(QDateTime::currentDateTime()),
     RewatchedTimes(-1),
     Notes(""),
-    NotesPresent(false),
     Status(""),
     Private(false),
     Rewatching(false),
@@ -389,7 +388,6 @@ void UserAnimeInformation::ParseUserMap(QVariantMap UserInfoMap)
     SetLastWatched(QDateTime::fromString(UserInfoMap.value("last_watched",QDateTime::currentDateTime().toString(ANIMEENTITY_DATE_FORMAT)).toString(),ANIMEENTITY_DATE_FORMAT));
     SetRewatchedTimes(UserInfoMap.value("rewatched_times",0).toInt());
     SetNotes(UserInfoMap.value("notes","").toString());
-    SetNotePresent(UserInfoMap.value("notes_present",false).toBool());
     SetStatus(UserInfoMap.value("status","").toString());
     SetPrivate(UserInfoMap.value("private",false).toBool());
     SetRewatching(UserInfoMap.value("rewatching",false).toBool());
@@ -410,7 +408,7 @@ bool UserAnimeInformation::Update(AnimeEpisode &Episode)
 
     //Set the episode count
     SetEpisodesWatched(Episode.GetEpisodeNumberHigh(),true);
-    if(GetStatus() == STATUS_PLAN_TO_WATCH)
+    if(GetStatus() == STATUS_PLAN_TO_WATCH || GetStatus() == STATUS_ON_HOLD)
         SetStatus(STATUS_CURRENTLY_WATCHING);
 
     return true;

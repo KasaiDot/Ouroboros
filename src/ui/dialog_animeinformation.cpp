@@ -142,6 +142,9 @@ void Dialog_AnimeInformation::ParseAnime(Anime::AnimeEntity &Entity, bool ShowMy
         ui->StatusComboBox->setCurrentIndex(GetStatusIndex(UserInfo->GetStatus()));
         ui->ScoreComboBox->setCurrentIndex(UserInfo->GetRatingValue() * 2);
 
+        //Set the notes
+        ui->NotesTextBox->setPlainText(UserInfo->GetNotes());
+
         Episode = CurrentEpisode;
         Status = UserInfo->GetStatus();
         Score = UserInfo->GetRatingValue();
@@ -190,6 +193,8 @@ void Dialog_AnimeInformation::on_MainButtonBox_accepted()
 
         if(static_cast<float>(ui->ScoreComboBox->currentIndex()) / 2 != Score)
             Entity->GetUserInfo()->SetRatingValue(static_cast<float>(ui->ScoreComboBox->currentIndex()) / 2);
+
+        Entity->GetUserInfo()->SetNotes(ui->NotesTextBox->toPlainText());
 
         emit UpdateAnime(Entity);
     }

@@ -602,6 +602,9 @@
      <bool>true</bool>
     </property>
     <addaction name="Action_Synchronize_Anime"/>
+    <addaction name="separator"/>
+    <addaction name="Action_Export_Anime"/>
+    <addaction name="Action_Import_Anime"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -718,6 +721,22 @@
    </property>
    <property name="toolTip">
     <string>View about dialog</string>
+   </property>
+  </action>
+  <action name="Action_Export_Anime">
+   <property name="text">
+    <string>Export Anime List</string>
+   </property>
+   <property name="toolTip">
+    <string>Exports anime data to a JSON file</string>
+   </property>
+  </action>
+  <action name="Action_Import_Anime">
+   <property name="text">
+    <string>Import Anime List</string>
+   </property>
+   <property name="toolTip">
+    <string>Imports anime data from a JSON file</string>
    </property>
   </action>
  </widget>

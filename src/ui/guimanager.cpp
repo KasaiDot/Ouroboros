@@ -280,6 +280,7 @@ void GUIManager::SetAnimeItemData(QStandardItem *Item_Name, QStandardItem *Item_
 
     //hide text in progress bar column
     Item_Progress->font().setPixelSize(1);
+    Item_Progress->setTextAlignment(Qt::AlignCenter);
 
 }
 

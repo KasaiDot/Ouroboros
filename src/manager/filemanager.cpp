@@ -27,11 +27,14 @@
 #include <QVariantMap>
 #include <QDebug>
 #include <QScopedPointer>
+#include <QFileDialog>
+#include <QDebug>
 
 #include "api/apimanager.h"
 #include "api/queuemanager.h"
 #include "library/historymanager.h"
 #include "recognition/mediamanager.h"
+#include "ui/guimanager.h"
 
 using namespace Manager;
 FileManager File_Manager;
@@ -424,6 +427,105 @@ QStringList FileManager::GetThemeList()
     return QDir(QApplication::applicationDirPath() + FileManagerInfo.ThemeFolderPath).entryList(QDir::Files,QDir::Name);
 }
 
+/***********************************************************
+ * Combines all user information of an anime into one file
+ ***********************************************************/
+bool FileManager::ExportAnime()
+{
+    //First get the file path
+    QFileDialog Dialog;
+    Dialog.setAcceptMode(QFileDialog::AcceptSave);
+    Dialog.setNameFilter("Json File (*.json)");
+    if(Dialog.exec() == QFileDialog::Rejected) return false;
+
+    QString Path = Dialog.selectedFiles().at(0);
+    QFileInfo File(Path);
+
+    //Seperate the file name and the path so we can use them in the save function
+    QString Filepath = File.absolutePath() + QDir::separator();
+    QString Filename = File.fileName();
+
+    //Get all the entities
+    QList<Anime::AnimeEntity *> AnimeList = Anime_Database.GetAnimeEntities();
+    QJsonArray MainArray;
+
+    //Go through each entity and add it to the list
+    foreach(Anime::AnimeEntity *Entity, AnimeList)
+    {
+        //We have to combine the arrays before parsing it
+        QJsonObject UserObject(QJsonObject::fromVariantMap(Entity->ConstructUserJsonDocument().toVariant().toMap()));
+        QJsonObject AnimeObject(QJsonObject::fromVariantMap(Entity->ConstructAnimeJsonDocument().toVariant().toMap()));
+
+        QJsonValue AnimeValue(AnimeObject);
+        UserObject.insert("anime",AnimeValue);
+
+        //Add it to the main array
+        QJsonValue ObjectValue(UserObject);
+        MainArray.append(ObjectValue);
+    }
+
+    return WriteDataToFile(Filepath,Filename,QJsonDocument(MainArray).toJson());
+}
+
+/***************************************
+ * Imports all user data to the list
+ ***************************************/
+bool FileManager::ImportAnime()
+{
+    //Clear the slugs in import list
+    Anime_Database.ClearAnimeSlugsInImportList();
+
+    //First get the file path
+    QFileDialog Dialog;
+    Dialog.setNameFilter("Json File (*.json)");
+    if(Dialog.exec() == QFileDialog::Rejected) return false;
+
+    QString Path = Dialog.selectedFiles().at(0);
+    QFileInfo File(Path);
+
+    //Seperate the file name and the path so we can use them in the save function
+    QString Filepath = File.absolutePath() + QDir::separator();
+    QString Filename = File.fileName();
+
+    //Make sure user knows that anime data will be overrided
+    if(QMessageBox::warning(0,"Are you sure you want to import?","Importing the data selected may override existing data in the list, are you sure you want to proceed?",QMessageBox::Yes,QMessageBox::No) == QMessageBox::No)
+        return false;
+
+    QByteArray Data = ReadFile(Filepath,Filename);
+    if(Data.isNull() || Data.isEmpty()) return false;
+
+    Anime_Database.ParseMultipleJson(Data,false,true);
+
+    //Push anime to the update queue
+    QList<QString> AnimeSlugsInImportList = Anime_Database.GetAnimeSlugsInImportList();
+    foreach (QString Slug, AnimeSlugsInImportList)
+    {
+        Queue_Manager.UpdateLibrary(Slug);
+    }
+
+    GUI_Manager.PopulateModel();
+    return true;
+
+}
+
+/****************************************************************
+ * Deletes the anime information file inside user anime folder
+ ****************************************************************/
+void FileManager::DeleteAnimeEntityFile(QString Slug)
+{
+    //We just want to delete it from the user folder, so that offline information of the anime is still available
+    if(!CurrentUser.isValid()) return;
+
+
+    //Construct the paths
+    QString UserFilePath = QApplication::applicationDirPath() + FileManagerInfo.UserAnimePath;
+    UserFilePath.replace(QString("<user>"),CurrentUser.GetUsername());
+
+    QString Filename = Slug + ".json";
+
+    FM_DeleteFile(UserFilePath,Filename);
+}
+
 /********************************************
  * Deletes a directory and all of its files
  *******************************************/
@@ -431,6 +533,20 @@ void FileManager::DeleteDirectory(QString Path)
 {
     if(!QDir(Path).exists()) return;
     QDir(Path).removeRecursively();
+}
+
+/****************************************************************
+ * Deletes a specific file
+ ***************************************************************/
+void FileManager::FM_DeleteFile(QString AbsolutePath)
+{
+    if(!QFile(AbsolutePath).exists()) return;
+    QFile(AbsolutePath).remove();
+}
+
+void FileManager::FM_DeleteFile(QString Filepath, QString Filename)
+{
+    FM_DeleteFile(Filepath.append(Filename));
 }
 
 /********************************

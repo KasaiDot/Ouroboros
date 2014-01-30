@@ -127,6 +127,10 @@ private slots:
 
     void on_Action_About_triggered();
 
+    void on_Action_Export_Anime_triggered();
+
+    void on_Action_Import_Anime_triggered();
+
 signals:
     void StopDetectionTimer();
 

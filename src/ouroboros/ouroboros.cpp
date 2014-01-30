@@ -423,3 +423,19 @@ void Ouroboros::on_Action_About_triggered()
     Dialog_About Dialog;
     Dialog.exec();
 }
+
+/**********************
+ * Exports anime data
+ **********************/
+void Ouroboros::on_Action_Export_Anime_triggered()
+{
+    File_Manager.ExportAnime();
+}
+
+/**********************
+ * Imports anime data
+ **********************/
+void Ouroboros::on_Action_Import_Anime_triggered()
+{
+    File_Manager.ImportAnime();
+}

@@ -73,6 +73,7 @@ public:
     bool SaveHistory();
     bool SaveMedia();
 
+    //Load functions
     bool LoadSettings();
     bool LoadUserInformation();
     bool LoadAnimeDatabase();
@@ -81,13 +82,27 @@ public:
     bool LoadQueue();
     bool LoadHistory();
     bool LoadMedia();
-    QByteArray LoadTheme(QString Filename);
 
+    //Theme functions
+    QByteArray LoadTheme(QString Filename);
     QStringList GetThemeList();
 
+    //Other functions
+    bool ExportAnime();
+    bool ImportAnime();
+
+    //Delete functions
+    void DeleteAnimeEntityFile(QString Slug);
     void DeleteDirectory(QString Path);
 
+    //Contains a FM_ prefix as to not override MinGW DeleteFile definition
+    void FM_DeleteFile(QString AbsolutePath);
+    void FM_DeleteFile(QString Filepath,QString Filename);
+
 private:
+    //IO Functions
+    //TODO: Make a copy of these functions which accept 1 filepath parameter instead of 2
+    //E.G WriteDataToFile(QString Filepath,QByteArray Data)
     bool WriteDataToFile(QString Filepath,QString Filename,QByteArray Data);
     QByteArray ReadFile(QString Filepath,QString Filename);
 

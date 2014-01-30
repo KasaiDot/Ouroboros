@@ -231,10 +231,13 @@ void QueueManager::StartRunning()
 {
     int InitialDelay = 3000;
     int AdditionalDelay = 1000;
+    int MaxDelay = 8000;
+
     if(DelayTimer->isActive())
-        DelayTimer->setInterval(InitialDelay + AdditionalDelay);
-    else
     {
+        if(DelayTimer->interval() <= MaxDelay)
+            DelayTimer->setInterval(InitialDelay + AdditionalDelay);
+    } else {
         DelayTimer->setInterval(InitialDelay);
         DelayTimer->start();
     }
@@ -370,6 +373,27 @@ bool QueueManager::ItemContainsData(QString Data)
     for(QList<QueueItem*>::const_iterator i = FailedUpdates.begin(); i != FailedUpdates.end(); ++i)
     {
         if((*i)->GetData() == Data)
+            Found = true;
+    }
+
+    return Found;
+}
+
+/******************************************************************
+ * Checks whether an update queue item has data set to given slug
+ ******************************************************************/
+bool QueueManager::ContainsUpdateItem(QString Slug)
+{
+    bool Found = false;
+    foreach(QueueItem *Item, ItemQueue)
+    {
+        if((Item->GetData().trimmed() == Slug.trimmed()) && Item->GetItemType() == QueueItem::Item_UpdateLibrary)
+            Found = true;
+    }
+
+    foreach(QueueItem *Item, FailedUpdates)
+    {
+        if((Item->GetData().trimmed() == Slug.trimmed()) && Item->GetItemType() == QueueItem::Item_UpdateLibrary)
             Found = true;
     }
 

@@ -22,6 +22,7 @@
 #include <QVariantMap>
 #include <QVariantList>
 
+#include "api/queuemanager.h"
 #include "library/historymanager.h"
 #include "manager/filemanager.h"
 #include "ui/guimanager.h"
@@ -89,10 +90,7 @@ void AnimeDatabase::AddAnime(AnimeEntity *Anime)
                 }
             }
 
-            //Save the new anime
-            File_Manager.SaveAnimeEntity(Anime);
-
-            //since the old information is not newer than the information we got from the api, we check to see if the anime episode count is valid
+        //since the old information is not newer than the information we got from the api, we check to see if the anime episode count is valid
         }else{
             if(Anime->GetUserInfo()->GetEpisodesWatched() <= ANIMEENTITY_UNKNOWN_USER_EPISODE)
             {
@@ -103,10 +101,14 @@ void AnimeDatabase::AddAnime(AnimeEntity *Anime)
             //Move the priorities over
             Anime->GetUserInfo()->SetPriority(OldAnime->GetUserInfo()->GetPriority());
         }
+
     }
 
     //replace the old anime
     Database.insert(Anime->GetAnimeSlug(),Anime);
+
+    //Save the anime
+    File_Manager.SaveAnimeEntity(Anime);
 }
 
 /*******************************************************
@@ -131,24 +133,25 @@ void AnimeDatabase::NewAnime(AnimeEntity *Anime, QString UserStatus)
  * Removes anime from the database
  * If databse doesn't contain the anime it will return false
  **************************************************************/
-AnimeEntity* AnimeDatabase::RemoveAnime(QString Slug, bool Delete)
+AnimeEntity* AnimeDatabase::RemoveAnime(QString Slug, bool DeletePointer, bool DeleteAnimeFile)
 {
     if(!Database.contains(Slug)) return nullptr;
 
     AnimeEntity *Anime = GetAnime(Slug);
-    RemoveAnime(Anime,Delete);
+    RemoveAnime(Anime,DeletePointer,DeleteAnimeFile);
 
-    if(Delete)
+    if(DeletePointer)
         return nullptr;
 
     return Anime;
 }
 
-bool AnimeDatabase::RemoveAnime(AnimeEntity *Anime, bool Delete)
+bool AnimeDatabase::RemoveAnime(AnimeEntity *Anime, bool DeletePointer, bool DeleteAnimeFile)
 {
     if(!Database.contains(Anime->GetAnimeSlug())) return false;
     Database.remove(Anime->GetAnimeSlug());
-    if(Delete) delete Anime;
+    if(DeleteAnimeFile) File_Manager.DeleteAnimeEntityFile(Anime->GetAnimeSlug());
+    if(DeletePointer) delete Anime;
     return true;
 }
 
@@ -272,7 +275,7 @@ QString AnimeDatabase::GetAnimeSlug(QString Title, bool Strict)
  * Gets the json data from the library
  * or from file and turns it into an entity
  *******************************************/
-void AnimeDatabase::ParseJson(QByteArray Data)
+void AnimeDatabase::ParseJson(QByteArray Data, bool FromOnlineList, bool FromImport)
 {
     AnimeEntity *Entity = new AnimeEntity();
     if(!Entity->ParseAnimeJson(Data,true))
@@ -284,22 +287,51 @@ void AnimeDatabase::ParseJson(QByteArray Data)
     //Now add it to the list
     AddAnime(Entity);
 
+    if(FromOnlineList && !Entity->GetAnimeSlug().isEmpty())
+        AnimeSlugsInOnlineList.append(Entity->GetAnimeSlug().trimmed());
+
+    if(FromImport && !Entity->GetAnimeSlug().isEmpty())
+        AnimeSlugsInImportList.append(Entity->GetAnimeSlug().trimmed());
+
 }
 
 /*************************************************
  * Splits json data up and calls parse json
  * used when you have multiple anime information
  *************************************************/
-void AnimeDatabase::ParseMultipleJson(QByteArray Data)
+void AnimeDatabase::ParseMultipleJson(QByteArray Data, bool FromOnlineList, bool FromImport)
 {
+    //Clear the list of slugs from online
+    if(FromOnlineList)
+        AnimeSlugsInOnlineList.clear();
+
     QJsonDocument MainDoc = QJsonDocument::fromJson(Data);
     QVariantList AnimeList = MainDoc.toVariant().toList();
 
     foreach(QVariant Variant,AnimeList)
     {
         QJsonDocument Doc = QJsonDocument::fromVariant(Variant);
-        ParseJson(Doc.toJson());
+        ParseJson(Doc.toJson(),FromOnlineList,FromImport);
     }
+
+    //Now go through each anime in the list and see if it is also in the online list
+    if(FromOnlineList && AnimeSlugsInOnlineList.size() > 0)
+    {
+        foreach(QString Slug, Database.keys())
+        {
+            if(!AnimeSlugsInOnlineList.contains(Slug.trimmed()))
+            {
+                //If it doesn't contain it we check the queue to see if it's currently in the update queue
+                //if it doesn't then we can safely delete that anime
+                if(!Queue_Manager.ContainsUpdateItem(Slug))
+                {
+                    RemoveAnime(Slug,true,true);
+                }
+
+            }
+        }
+    }
+
 }
 
 /***********************************************************

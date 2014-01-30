@@ -491,7 +491,7 @@ QTabBar::tab::hover
 }
 
 /* Headers (e.g Name, progress) */
-QTreeView QHeaderView::section
+QAbstractItemView QHeaderView::section
 {
   background-color:#fff;
   border:1px solid #acacac;
@@ -501,7 +501,7 @@ QTreeView QHeaderView::section
   padding:3px 3px 3px 4px;
 }
 
-QTreeView QHeaderView::section:hover
+QAbstractItemView QHeaderView::section:hover
 {
   background-color:#ecb282;
   border-color:transparent #ec8661 #ec8661;
@@ -510,27 +510,27 @@ QTreeView QHeaderView::section:hover
 /* Not working atm */
 /* QHeaderView::section:checked { background-color: #ec8661 } */
 /* Views */
-QTreeView
+QAbstractItemView
 {
   outline:0;
   show-decoration-selected:0;
 }
 
-QTreeView::item
+QAbstractItemView::item
 {
   border-bottom:1px solid transparent;
   border-top:1px solid transparent;
   color:#303030;
 }
 
-QTreeView::item::hover
+QAbstractItemView::item::hover
 {
   background-color:#E0E0E0;
   border-bottom-color:silver;
   border-top-color:silver;
 }
 
-QTreeView::item::hover::first
+QAbstractItemView::item::hover::first
 {
   border-bottom-left-radius:3px;
   border-left:1px solid silver;
@@ -538,7 +538,7 @@ QTreeView::item::hover::first
   padding-left:-1px;
 }
 
-QTreeView::item::hover::last
+QAbstractItemView::item::hover::last
 {
   border-bottom-right-radius:3px;
   border-right:1px solid silver;
@@ -546,14 +546,14 @@ QTreeView::item::hover::last
   padding-right:-1px;
 }
 
-QTreeView::item::selected
+QAbstractItemView::item::selected
 {
   background-color:#ecb282;
   border-bottom-color:#ec8661;
   border-top-color:#ec8661;
 }
 
-QTreeView::item::selected::first
+QAbstractItemView::item::selected::first
 {
   border-bottom-left-radius:3px;
   border-left:1px solid #ec8661;
@@ -561,7 +561,7 @@ QTreeView::item::selected::first
   padding-left:-1px;
 }
 
-QTreeView::item::selected::last
+QAbstractItemView::item::selected::last
 {
   border-bottom-right-radius:3px;
   border-right:1px solid #ec8661;

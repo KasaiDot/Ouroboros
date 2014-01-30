@@ -42,8 +42,8 @@ public:
     //Basic database functions
     void AddAnime(AnimeEntity* Anime);
     void NewAnime(AnimeEntity* Anime, QString UserStatus);
-    AnimeEntity* RemoveAnime(QString Slug, bool Delete = true);
-    bool RemoveAnime(AnimeEntity* Anime, bool Delete = true);
+    AnimeEntity* RemoveAnime(QString Slug, bool DeletePointer = true, bool DeleteAnimeFile = false);
+    bool RemoveAnime(AnimeEntity* Anime, bool DeletePointer = true, bool DeleteAnimeFile = false);
 
     AnimeEntity* GetAnime(QString Slug) const;
     AnimeEntity* GetAnime(Anime::AnimeEpisode &Episode, bool Strict = false);
@@ -66,18 +66,26 @@ public:
     QString GetAnimeSlug(QString Title, bool Strict = false);
 
     //Parses JSON data recieved from the api and creates a list
-    void ParseJson(QByteArray Data);
-    void ParseMultipleJson(QByteArray Data);
+    void ParseJson(QByteArray Data, bool FromOnlineList = false, bool FromImport = false);
+    void ParseMultipleJson(QByteArray Data, bool FromOnlineList = false, bool FromImport = false);
 
     //updates a specific entity with the episode within the database
     void UpdateEntity(AnimeEpisode &Episode,AnimeEntity *Entity);
     void UpdateEntity(AnimeEpisode &Episode,QString Slug);
+
+    //Other public functions
+    QList<QString> GetAnimeSlugsInImportList() { return AnimeSlugsInImportList; }
+    void ClearAnimeSlugsInImportList() { AnimeSlugsInImportList.clear(); }
 
 
 private:
 
     //Database of the anime. Each anime has a slug which is used as the key
     QMap<QString,AnimeEntity*> Database;
+
+    //Holds the slugs of the anime recieved from list, so that we can determine if user has deleted an anime we have
+    QList<QString> AnimeSlugsInOnlineList;
+    QList<QString> AnimeSlugsInImportList;
 
 signals:
 

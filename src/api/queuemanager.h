@@ -81,6 +81,9 @@ public slots:
     //checks whether an item in the queue contains given data
     bool ItemContainsData(QString Data);
 
+    //checks whether an update item in the queue has the given slug
+    bool ContainsUpdateItem(QString Slug);
+
     //Api functions
     void AuthenticateUser();
     void GetAnimeLibrary();

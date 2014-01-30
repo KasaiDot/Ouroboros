@@ -218,7 +218,7 @@ ApiManager::ApiReturnStatus ApiManager::ProcessReply(QNetworkReply *Reply, ApiMa
         break;
 
         case Call_GetLibrary:
-            Anime_Database.ParseMultipleJson(ReplyData);
+            Anime_Database.ParseMultipleJson(ReplyData,true);
             emit ChangeStatus("Completed",StatusTimeout);
         break;
 

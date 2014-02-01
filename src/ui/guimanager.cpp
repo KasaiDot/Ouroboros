@@ -569,8 +569,7 @@ void GUIManager::FinishWatching(Anime::AnimeEpisode &Episode, Anime::AnimeEntity
     MainWindow->PlayStatus = Ouroboros::PLAYSTATUS_STOPPED;
 
     //Set the slug
-    //Episode.Slug = ANIMEDATABASE_UKNOWN_SLUG;
-    Episode.Clear();
+    Episode.Slug = ANIMEDATABASE_UKNOWN_SLUG;
 }
 
 /************************************************** Context Menus************************************************************************/
@@ -763,6 +762,7 @@ void GUIManager::ShowViewItemContextMenu(const QPoint &Pos)
     QAction *Action = Menu.exec(QCursor::pos());
 
     if(!Action) return;
+    bool UpdateOnlineAnime = true;
 
     //Information clicked
     if(Action->data().toString() == Data_Information)
@@ -807,6 +807,7 @@ void GUIManager::ShowViewItemContextMenu(const QPoint &Pos)
     //Change priority clicked
     if(PriorityGroup->checkedAction()->data().toInt() != CurrentPriority)
     {
+        UpdateOnlineAnime = false;
         int NewPriority = PriorityGroup->checkedAction()->data().toInt();
 
         Entity->GetUserInfo()->SetPriority(NewPriority);
@@ -814,6 +815,10 @@ void GUIManager::ShowViewItemContextMenu(const QPoint &Pos)
         if(ModelContains(Entity->GetAnimeTitle()))
             UpdateAnime(Entity);
     }
+
+    //Update the online library to the changes made by user
+    if(UpdateOnlineAnime)
+        UpdateOnlineLibrary(Slug);
 
 }
 

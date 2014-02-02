@@ -22,7 +22,7 @@
 //*********************************************************************************************************
 #define ANIMEENTITY_UNKNOWN_ANIME_EPISODE 0
 #define ANIMEENTITY_UNKNOWN_USER_EPISODE -1
-#define ANIMEENTITY_DATE_FORMAT "yyyy-MM-ddThh:mm:ssZ"
+#define ANIMEENTITY_DATE_FORMAT "yyyy-MM-ddThh:mm:ss.zzzZ"
 //*********************************************************************************************************
 
 #include <QObject>

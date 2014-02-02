@@ -385,7 +385,7 @@ UserAnimeInformation::UserAnimeInformation():
 void UserAnimeInformation::ParseUserMap(QVariantMap UserInfoMap)
 {
     SetEpisodesWatched(UserInfoMap.value("episodes_watched",ANIMEENTITY_UNKNOWN_USER_EPISODE).toInt());
-    SetLastWatched(QDateTime::fromString(UserInfoMap.value("last_watched",QDateTime::currentDateTime().toString(ANIMEENTITY_DATE_FORMAT)).toString(),ANIMEENTITY_DATE_FORMAT));
+    SetLastWatched(QDateTime::fromString(UserInfoMap.value("last_watched",QDateTime::currentDateTimeUtc().toString(ANIMEENTITY_DATE_FORMAT)).toString(),ANIMEENTITY_DATE_FORMAT));
     SetRewatchedTimes(UserInfoMap.value("rewatched_times",0).toInt());
     SetNotes(UserInfoMap.value("notes","").toString());
     SetStatus(UserInfoMap.value("status","").toString());

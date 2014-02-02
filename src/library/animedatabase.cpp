@@ -284,6 +284,10 @@ void AnimeDatabase::ParseJson(QByteArray Data, bool FromOnlineList, bool FromImp
         return;
     }
 
+    //Update the last watched time so that the imported anime overrides current anime
+    if(FromImport)
+        Entity->GetUserInfo()->UpdateLastWatched();
+
     //Now add it to the list
     AddAnime(Entity);
 

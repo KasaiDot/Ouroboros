@@ -53,8 +53,8 @@ public:
         Progressbar_Completed(QColor(51,153,255)),
         Progressbar_OnHold(QColor(255,230,0)),
         Progressbar_Dropped(QColor(255,86,60)),
-        PriorityHigh(QColor(231, 76, 60)),
-        PriorityMedium(QColor(243, 156, 18))
+        PriorityHigh(QColor(127, 140, 141)),
+        PriorityMedium(QColor(189, 195, 199))
     {}
 
     // *********************************** Set and get methods ************************************

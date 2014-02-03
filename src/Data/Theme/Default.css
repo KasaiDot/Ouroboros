@@ -31,7 +31,9 @@ CustomGui--AnimeProgressBar
   qproperty-borderRadius:4; /* Don't put units */
   
   /* Other properties 
-   * qproperty-progressBarRadius
+   * qproperty-progressBarRadius (int)
+   * qproperty-priorityHigh (color)
+   * qproperty-priorityMedium (color)
    */
 }
 

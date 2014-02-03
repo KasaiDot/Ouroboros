@@ -45,9 +45,11 @@ enum AnimePriority
 {
     //Start at -10 because these values cannot match any anime episode count or else progress sorting will not work properley.
     //they also have to be lower than 0 so that they go to the top of the sort when sorting by progress
-    PRIORITY_NORMAL = -12,
-    PRIORITY_MEDIUM = -11,
-    PRIORITY_HIGH = -10
+
+    //NOTE: wierd bug where setting medium to be lower than high will cause it to sort medium -> high -> normal
+    PRIORITY_MEDIUM = -10,
+    PRIORITY_HIGH = -11,
+    PRIORITY_NORMAL = -12
 };
 
 //Contais user information for an anime entity

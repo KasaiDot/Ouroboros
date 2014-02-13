@@ -82,3 +82,10 @@
  - You can no longer change progress bar colors through settings, instead you have to use a stylesheet (found in Data/Themes/)
  - Fixed some recognition titles
  - Many bug fixes
+
+----------
+ **0.1.0**
+ 
+ - Users can now set priorities for anime (right-click anime item)
+ - Notes can now be edited
+ - Added ability to import and export anime
